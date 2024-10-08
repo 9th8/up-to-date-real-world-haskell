@@ -4,12 +4,12 @@ Type classes are among the most powerful features in Haskell. They allow
 you to define generic interfaces that provide a common feature set over
 a wide variety of types. Type classes are at the heart of some basic
 language features such as equality testing and numeric operators. Before
-we talk about what exactly type classes are, though, we\'d like to
+we talk about what exactly type classes are, though, we'd like to
 explain the need for them.
 
 ## The need for type classes
 
-Let\'s imagine that for some unfathomable reason, the designers of the
+Let's imagine that for some unfathomable reason, the designers of the
 Haskell language neglected to implement the equality test `==`. Once you
 got over your shock at hearing this, you resolved to implement your own
 equality tests. Your application consisted of a simple `Color` type, and
@@ -44,7 +44,7 @@ ghci> colorEq Red Green
 False
 ```
 
-Now, let\'s say that you want to add an equality test for
+Now, let's say that you want to add an equality test for
 `String~s. Since a Haskell ~String` is a list of characters, we can
 write a simple function to perform that test. For simplicity, we cheat a
 bit and use the `==` operator here to illustrate.
@@ -70,17 +70,17 @@ stringEq _ _ = False
 
 You should now be able to see a problem: we have to use a function with
 a different name for every different type that we want to be able to
-compare. That\'s inefficient and annoying. It\'s much more convenient to
+compare. That's inefficient and annoying. It's much more convenient to
 be able to just use `==` to compare anything. It may also be useful to
 write generic functions such as `/=` that could be implemented in terms
 of `==`, and valid for almost anything. By having a generic function
 that can compare anything, we can also make our code generic: if a piece
 of code only needs to compare things, then it ought to be able to accept
-any data type that the compiler knows how to compare. And, what\'s more,
-if new data types are added later, the existing code shouldn\'t have to
+any data type that the compiler knows how to compare. And, what's more,
+if new data types are added later, the existing code shouldn't have to
 be modified.
 
-Haskell\'s type classes are designed to address all of these things.
+Haskell's type classes are designed to address all of these things.
 
 ## What are type classes?
 
@@ -89,11 +89,11 @@ implementations depending on the type of data they are given. Type
 classes may look like the objects of object-oriented programming, but
 they are truly quite different.
 
-Let\'s use type classes to solve our equality dilemma from earlier in
+Let's use type classes to solve our equality dilemma from earlier in
 the chapter. To begin with, we must define the type class itself. We
 want a function that takes two parameters, both the same type, and
-returns a `Bool` indicating whether or not they are equal. We don\'t
-care what that type is, but we just want two items of that type. Here\'s
+returns a `Bool` indicating whether or not they are equal. We don't
+care what that type is, but we just want two items of that type. Here's
 our first definition of a type class:
 
 :::: captioned-content
@@ -107,7 +107,7 @@ class BasicEq a where
 ```
 ::::
 
-This says that we are declaring a type class named `BasicEq`, and we\'ll
+This says that we are declaring a type class named `BasicEq`, and we'll
 refer to instance types with the letter `a`. An instance type of this
 type class is any type that implements the functions defined in the type
 class. This type class defines one function. That function takes two
@@ -130,8 +130,8 @@ On the first line, the name of the parameter `a` was chosen arbitrarily.
 We could have used any name. The key is that, when you list the types of
 your functions, you must use that name to refer to instance types.
 
-Let\'s look at this in `ghci`. Recall that you can type `:type` in
-`ghci` to have it show you the type of something. Let\'s see what it
+Let's look at this in `ghci`. Recall that you can type `:type` in
+`ghci` to have it show you the type of something. Let's see what it
 says about `isEqual`:
 
 ``` screen
@@ -139,9 +139,9 @@ says about `isEqual`:
 isEqual :: BasicEq a => a -> a -> Bool
 ```
 
-You can read that this way: \"For all types `a`, so long as `a` is an
+You can read that this way: "For all types `a`, so long as `a` is an
 instance of `BasicEq`, `isEqual` takes two parameters of type `a` and
-returns a `Bool`\". Let\'s take a quick look at defining `isEqual` for a
+returns a `Bool`". Let's take a quick look at defining `isEqual` for a
 particular type.
 
 :::: captioned-content
@@ -177,16 +177,16 @@ False
 ```
 
 Notice that when we tried to compare two strings, `ghci` noticed that we
-hadn\'t provided an instance of `BasicEq` for `String`. It therefore
-didn\'t know how to compare a `String`, and suggested that we could fix
+hadn't provided an instance of `BasicEq` for `String`. It therefore
+didn't know how to compare a `String`, and suggested that we could fix
 the problem by defining an instance of `BasicEq` for `[Char]`, which is
 the same as `String`.
 
-We\'ll go into more detail on defining instances in [the section called
-\"Declaring type class
-instances\"](6-using-typeclasses.org::*Declaring type class instances)
-let\'s continue to look at ways to define type classes. In this example,
-a not-equal-to function might be useful. Here\'s what we might say to
+We'll go into more detail on defining instances in [the section called
+"Declaring type class
+instances"](6-using-typeclasses.org::*Declaring type class instances)
+let's continue to look at ways to define type classes. In this example,
+a not-equal-to function might be useful. Here's what we might say to
 define a type class with two functions:
 
 :::: captioned-content
@@ -204,13 +204,13 @@ class BasicEq2 a where
 Someone providing an instance of `BasicEq2` will be required to define
 two functions: `isEqual2` and `isNotEqual2`.
 
-While our definition of `BasicEq2` is fine, it seems that we\'re making
+While our definition of `BasicEq2` is fine, it seems that we're making
 extra work for ourselves. Logically speaking, if we know what `isEqual`
 or `isNotEqual` would return, we know how to figure out what the other
 function would return, for all types. Rather than making users of the
 type class define both functions for all types, we can provide default
 implementations for them. Then, users will only have to implement one
-function.[^1] Here\'s an example that shows how to do this.
+function.[^1] Here's an example that shows how to do this.
 
 :::: captioned-content
 ::: caption
@@ -231,12 +231,12 @@ People implementing this class must provide an implementation of at
 least one function. They can implement both if they wish, but they will
 not be required to. While we did provide defaults for both functions,
 each function depends on the presence of the other to calculate an
-answer. If we don\'t specify at least one, the resulting code would be
+answer. If we don't specify at least one, the resulting code would be
 an endless loop. Therefore, at least one function must always be
 implemented.
 
 With `BasicEq3`, we have provided a class that does very much the same
-thing as Haskell\'s built-in `==` and `/=` operators. In fact, these
+thing as Haskell's built-in `==` and `/=` operators. In fact, these
 operators are defined by a type class that looks almost identical to
 `BasicEq3`. The Haskell 2010 Report defines a type class that implements
 equality comparison. Here is the code for the built-in `Eq` type class.
@@ -253,14 +253,14 @@ class Eq a where
 
 ## Declaring type class instances
 
-Now that you know how to define type classes, it\'s time to learn how to
+Now that you know how to define type classes, it's time to learn how to
 define instances of type classes. Recall that types are made instances
 of a particular type class by implementing the functions necessary for
 that type class.
 
 Recall our attempt to create a test for equality over a `Color` type
-back in [the section called \"The need for type
-classes\"](6-using-typeclasses.org::*The need for type classes) let\'s
+back in [the section called "The need for type
+classes"](6-using-typeclasses.org::*The need for type classes) let's
 see how we could make that same `Color` type a member of the `BasicEq3`
 class.
 
@@ -281,31 +281,31 @@ instance BasicEq3 Color where
 ::::
 
 Notice that we provide essentially the same function as we used back in
-[the section called \"The need for type
-classes\"](6-using-typeclasses.org::*The need for type classes) the
+[the section called "The need for type
+classes"](6-using-typeclasses.org::*The need for type classes) the
 implementation is identical. However, in this case, we can use
 `isEqual3` on *any* type that we declare is an instance of `BasicEq3`,
 not just this one color type. We could define equality tests for
 anything from numbers to graphics using the same basic pattern. In fact,
-as you will see in [the section called \"Equality, Ordering, and
-Comparisons\"](6-using-typeclasses.org::*Equality, Ordering, and Comparisons)
-exactly how you can make Haskell\'s `==` operator work for your own
+as you will see in [the section called "Equality, Ordering, and
+Comparisons"](6-using-typeclasses.org::*Equality, Ordering, and Comparisons)
+exactly how you can make Haskell's `==` operator work for your own
 custom types.
 
 Note also that the `BasicEq3` class defined both `isEqual3` and
 `isNotEqual3`, but we implemented only one of them in the `Color`
-instance. That\'s because of the default implementation contained in
-`BasicEq3`. Since we didn\'t explicitly define `isNotEqual3`, the
+instance. That's because of the default implementation contained in
+`BasicEq3`. Since we didn't explicitly define `isNotEqual3`, the
 compiler automatically uses the default implementation given in the
 `BasicEq3` declaration.
 
 ## Important Built-In Type Classes
 
-Now that we\'ve discussed defining your own type classes and making your
-types instances of type classes, it\'s time to introduce you to type
+Now that we've discussed defining your own type classes and making your
+types instances of type classes, it's time to introduce you to type
 classes that are a standard part of the Haskell prelude. As we mentioned
 at the beginning of this chapter, type classes are at the core of some
-important aspects of the language. We\'ll cover the most common ones
+important aspects of the language. We'll cover the most common ones
 here. For more details, the Haskell library reference is a good
 resource. It will give you a description of the type classes, and
 usually also will tell you which functions you must implement to have a
@@ -329,7 +329,7 @@ ghci> :type show
 show :: Show a => a -> String
 ```
 
-Let\'s look at some examples of converting values to strings:
+Let's look at some examples of converting values to strings:
 
 ``` screen
 ghci> show 1
@@ -356,17 +356,17 @@ You can also use `show` on \~String\~s:
 
 ``` screen
 ghci> show "Hello!"
-"\"Hello!\""
+""Hello!""
 ghci> putStrLn (show "Hello!")
 "Hello!"
 ghci> show ['H', 'i']
-"\"Hi\""
+""Hi""
 ghci> putStrLn (show "Hi")
 "Hi"
-ghci> show "Hi, \"Jane\""
-"\"Hi, \\\"Jane\\\"\""
-ghci> putStrLn (show "Hi, \"Jane\"")
-"Hi, \"Jane\""
+ghci> show "Hi, "Jane""
+""Hi, \\"Jane\\"""
+ghci> putStrLn (show "Hi, "Jane"")
+"Hi, "Jane""
 ```
 
 Running `show` on `String~s can be confusing. Since ~show` generates a
@@ -375,7 +375,7 @@ escaping suitable for inclusion in a Haskell program. `ghci` also uses
 `show` to display results, so quotes and escaping get added twice. Using
 `putStrLn` can help make this difference clear.
 
-You can define a `Show` instance for your own types easily. Here\'s an
+You can define a `Show` instance for your own types easily. Here's an
 example:
 
 :::: captioned-content
@@ -392,10 +392,10 @@ instance Show Color where
 ::::
 
 This example defines an instance of `Show` for our type `Color` (see
-[the section called \"The need for type
-classes\"](6-using-typeclasses.org::*The need for type classes)
-implementation is simple: we define a function `show` and that\'s all
-that\'s needed.
+[the section called "The need for type
+classes"](6-using-typeclasses.org::*The need for type classes)
+implementation is simple: we define a function `show` and that's all
+that's needed.
 
 :::: note
 ::: title
@@ -423,7 +423,7 @@ ghci> :type read
 read :: (Read a) => String -> a
 ```
 
-Here\'s an example illustrating the use of `read` and `show`:
+Here's an example illustrating the use of `read` and `show`:
 
 :::: captioned-content
 ::: caption
@@ -440,13 +440,13 @@ main = do
 ::::
 
 This is a simple example of `read` and `show` together. Notice that we
-gave an explicit type of `Double` when processing the `read`. That\'s
+gave an explicit type of `Double` when processing the `read`. That's
 because `read` returns a value of type `Read a => a` and `show` expects
 a value of type `Show a => a`. There are many types that have instances
 defined for both `Read` and `Show`. Without knowing a specific type, the
 compiler must guess from these many types which one is needed. In
 situations like this, it may often choose `Integer`. If we wanted to
-accept floating-point input, this wouldn\'t work, so we provided an
+accept floating-point input, this wouldn't work, so we provided an
 explicit type.
 
 :::: tip
@@ -466,7 +466,7 @@ case arising from the fact that the literal `2` is treated as an
 You can see the same effect at work if you try to use `read` on the
 `ghci` command line. `ghci` internally uses `show` to display results,
 meaning that you can hit this ambiguous typing problem there as well.
-You\'ll need to explicitly give types for your `read` results in `ghci`
+You'll need to explicitly give types for your `read` results in `ghci`
 as shown here:
 
 ``` screen
@@ -483,7 +483,7 @@ ghci> (read "5") :: Double
 Recall the type of `read`: `(Read a) => String -> a`. The `a` here is
 the type of each instance of `Read`. Which particular parsing function
 is called depends upon the type that is expected from the return value
-of `read`. Let\'s see how that works:
+of `read`. Let's see how that works:
 
 ``` screen
 ghci> (read "5.0") :: Double
@@ -495,14 +495,14 @@ ghci> (read "5.0") :: Integer
 Notice the error when trying to parse `5.0` as an `Integer`. The
 interpreter selected a different instance of `Read` when the return
 value was expected to be `Integer` than it did when a `Double` was
-expected. The `Integer` parser doesn\'t accept decimal points, and
+expected. The `Integer` parser doesn't accept decimal points, and
 caused an exception to be raised.
 
 The `Read` class provides for some fairly complicated parsers. You can
 define a simple parser by providing an implementation for the
 `readsPrec` function. Your implementation can return a list containing
 exactly one tuple on a successful parse, or an empty list on an
-unsuccessful parse. Here\'s an example implementation:
+unsuccessful parse. Here's an example implementation:
 
 :::: captioned-content
 ::: caption
@@ -532,10 +532,10 @@ instance Read Color where
 ::::
 
 This example handles the known cases for the three colors. It returns an
-empty list (resulting in a \"no parse\" message) for others. The
+empty list (resulting in a "no parse" message) for others. The
 function is supposed to return the part of the input that was not
 parsed, so that the system can integrate the parsing of different types
-together. Here\'s an example of using this new instance of `Read`:
+together. Here's an example of using this new instance of `Read`:
 
 ``` screen
 ghci> (read "Red")::Color
@@ -552,7 +552,7 @@ ghci> (read "[Red, Red, Blue]")::[Color]
 *** Exception: Prelude.read: no parse
 ```
 
-Notice the error on the final attempt. That\'s because our parser is not
+Notice the error on the final attempt. That's because our parser is not
 smart enough to handle leading spaces yet. If we modified it to accept
 leading spaces, that attempt would work. You could rectify this by
 modifying your `Read` instance to discard any leading spaces, which is
@@ -598,7 +598,7 @@ pure Haskell. For information on how to handle parsing exceptions, refer
 to [Chapter 19, *Error handling*](19-error-handling.org).
 ::::
 
-Let\'s try it out in `ghci`:
+Let's try it out in `ghci`:
 
 ``` screen
 ghci> d1 = [Just 5, Nothing, Nothing, Just 8, Just 9] :: [Maybe Int]
@@ -611,7 +611,7 @@ First, we assign `d1` to be a list. Next, we print out the result of
 `show d1` so we can see what it generates. Then, we write the result of
 `show d1` to a file named `test`.
 
-Let\'s try reading it back.
+Let's try reading it back.
 
 ``` screen
 ghci> input <- readFile "test"
@@ -622,8 +622,8 @@ ghci> print d2
 
 First, we ask Haskell to read the file back.[^2] Then, we assign the
 result of `read input` to `d2` and try to print it. That generates an
-error. The reason is that the interpreter doesn\'t know what type `d2`
-is meant to be, so it doesn\'t know how to parse the input. If we give
+error. The reason is that the interpreter doesn't know what type `d2`
+is meant to be, so it doesn't know how to parse the input. If we give
 it an explicit type, it works, and we can verify that the two sets of
 data are equal.
 
@@ -638,8 +638,8 @@ True
 
 Since so many different types are instances of `Read` and `Show` by
 default (and others can be made instances easily; see [the section
-called \"Automatic
-Derivation\"](6-using-typeclasses.org::*Automatic Derivation) some
+called "Automatic
+Derivation"](6-using-typeclasses.org::*Automatic Derivation) some
 really complex data structures. Here are a few examples of slightly more
 complex data structures:
 
@@ -663,9 +663,9 @@ all of these. This feature is implemented using type classes. As a side
 benefit, it allows you to define your own numeric types and make them
 first-class citizens in Haskell.
 
-Let\'s begin our discussion of the type classes surrounding numeric
+Let's begin our discussion of the type classes surrounding numeric
 types with an examination of the types themselves. [*Table 6.1,
-\"Selected Numeric Types\"*]{.spurious-link
+"Selected Numeric Types"*]{.spurious-link
 target="Table%C2%A06.1.%C2%A0Selected Numeric Types"} describes the most
 commonly-used numeric types in Haskell. Note that there are also many
 more numeric types available for specific purposes such as interfacing
@@ -694,11 +694,11 @@ to C.
 These are quite a few different numeric types. There are some
 operations, such as addition, that work with all of them. There are
 others, such as `asin`, that only apply to floating-point types.
-[*Table 6.2, \"Selected Numeric Functions and
-Constants\"*]{.spurious-link
+[*Table 6.2, "Selected Numeric Functions and
+Constants"*]{.spurious-link
 target="Table%C2%A06.2.%C2%A0Selected Numeric Functions and Constants"}
 summarizes the different functions that operate on numeric types, and
-[*Table 6.3, \"Type Class Instances for Numeric Types\"*]{.spurious-link
+[*Table 6.3, "Type Class Instances for Numeric Types"*]{.spurious-link
 target="Table%C2%A06.3.%C2%A0Type Class Instances for Numeric Types"}
 matches the types with their respective type classes. As you read that
 table, keep in mind that Haskell operators are just functions: you can
@@ -766,12 +766,12 @@ parenthesis as seen in this table.
   {#Table 6.3. Type Class Instances for Numeric Types}
 
 Converting between numeric types is another common need. [*Table 6.2,
-\"Selected Numeric Functions and Constants\"*]{.spurious-link
+"Selected Numeric Functions and Constants"*]{.spurious-link
 target="Table%C2%A06.2.%C2%A0Selected Numeric Functions and Constants"}
 listed many functions that can be used for conversion. However, it is
 not always obvious how to apply them to convert between two arbitrary
-types. To help you out, [*Table 6.4, \"Conversion Between Numeric
-Types\"*]{.spurious-link
+types. To help you out, [*Table 6.4, "Conversion Between Numeric
+Types"*]{.spurious-link
 target="Table%C2%A06.4.%C2%A0Conversion Between Numeric Types"} provides
 information on converting between different types.
 
@@ -789,12 +789,12 @@ information on converting between different types.
   {#Table 6.4. Conversion Between Numeric Types}
 
 For an extended example demonstrating the use of these numeric type
-classes, see [the section called \"Extended example: Numeric
-Types\"](13-data-structures.org::*Extended example: Numeric Types)
+classes, see [the section called "Extended example: Numeric
+Types"](13-data-structures.org::*Extended example: Numeric Types)
 
 ### Equality, Ordering, and Comparisons
 
-We\'ve already talked about the arithmetic operators such as `+` that
+We've already talked about the arithmetic operators such as `+` that
 can be used for all sorts of different numbers. But there are some even
 more widely-applied operators in Haskell. The most obvious, of course,
 are the equality tests: `==` and `/=`. These operators are defined in
@@ -851,7 +851,7 @@ derive instances of these specific type classes. This automation is not
 available for other type classes.
 ::::
 
-Let\'s take a look at how these derived instances work for us:
+Let's take a look at how these derived instances work for us:
 
 ``` screen
 ghci> show Red
@@ -877,7 +877,7 @@ constructors were defined.
 
 Automatic derivation is not always possible. For instance, if you
 defined a type `data MyType = MyType (Int -> Bool)`, the compiler will
-not be able to derive an instance of `Show` because it doesn\'t know how
+not be able to derive an instance of `Show` because it doesn't know how
 to render a function. We will get a compilation error in such a
 situation.
 
@@ -910,8 +910,8 @@ data ThisWorks = ThisWorks OK
 ## Type classes at work: making JSON easier to use
 
 The `JValue` type that we introduced in [the section called
-\"Representing JSON data in
-Haskell\"](5-writing-a-library.org::*Representing JSON data in Haskell)
+"Representing JSON data in
+Haskell"](5-writing-a-library.org::*Representing JSON data in Haskell)
 especially easy to work with. Here is a truncated and tidied snippet of
 some real JSON data, produced by a well known search engine.
 
@@ -934,7 +934,7 @@ some real JSON data, produced by a well known search engine.
 }
 ```
 
-And here\'s a further slimmed down fragment of that data, represented in
+And here's a further slimmed down fragment of that data, represented in
 Haskell.
 
 :::: captioned-content
@@ -960,14 +960,14 @@ result = JObject [
 ```
 ::::
 
-Because Haskell doesn\'t natively support lists that contain types of
-different value, we can\'t directly represent a JSON object that
+Because Haskell doesn't natively support lists that contain types of
+different value, we can't directly represent a JSON object that
 contains values of different types. Instead, we must wrap each value
 with a `JValue` constructor. This limits our flexibility: if we want to
 change the number `3920` to a string `"3,920"`, we must change the
 constructor that we use to wrap it from `JNumber` to `JString`.
 
-Haskell\'s type classes offer a tempting solution to this problem.
+Haskell's type classes offer a tempting solution to this problem.
 
 :::: captioned-content
 ::: caption
@@ -990,7 +990,7 @@ instance JSON JValue where
 ::::
 
 Now, instead of applying a constructor like `JNumber` to a value to wrap
-it, we apply the `toJValue` function. If we change a value\'s type, the
+it, we apply the `toJValue` function. If we change a value's type, the
 compiler will choose a suitable implementation of `toJValue` to use with
 it.
 
@@ -1000,13 +1000,13 @@ We also provide a `fromJValue` function, which attempts to convert a
 ### More helpful errors
 
 The return type of our `fromJValue` function uses the `Either` type.
-Like `Maybe`, this type is predefined for us, and we\'ll often use it to
+Like `Maybe`, this type is predefined for us, and we'll often use it to
 represent a computation that could fail.
 
 While `Maybe` is useful for this purpose, it gives us no information if
 a failure occurs: we literally have `Nothing`. The `Either` type has a
-similar structure, but instead of `Nothing`, the \"something bad
-happened\" constructor is named `Left`, and it takes a parameter.
+similar structure, but instead of `Nothing`, the "something bad
+happened" constructor is named `Left`, and it takes a parameter.
 
 :::: captioned-content
 ::: caption
@@ -1026,7 +1026,7 @@ data Either a b = Left a
 
 Quite often, the type we use for the `a` parameter value is `String`, so
 we can provide a useful description if something goes wrong. To see how
-we use the `Either` type in practice, let\'s look at a simple instance
+we use the `Either` type in practice, let's look at a simple instance
 of our type class.
 
 :::: captioned-content
@@ -1063,7 +1063,7 @@ instance JSON String where
 
 Recall that `String` is a synonym for `[Char]`, which in turn is the
 type `[a]` where `Char` is substituted for the type parameter `a`.
-According to Haskell 2010\'s rules, we are not allowed to supply a type
+According to Haskell 2010's rules, we are not allowed to supply a type
 in place of a type parameter when we write an instance. In other words,
 it would be legal for us to write an instance for `[a]`, but not for
 `[Char]`.
@@ -1084,7 +1084,7 @@ JSONClass.hs
 
 This comment is a directive to the compiler, called a *pragma*, which
 tells it to enable a language extension. The `TypeSynonymInstances`
-language extension makes the above code legal. We\'ll encounter a few
+language extension makes the above code legal. We'll encounter a few
 other language extensions in this chapter, and a handful more later in
 this book.
 
@@ -1106,7 +1106,7 @@ command line, for example: `-XTypeSynonymInstances`.
 
 ## Flexible instances
 
-The code above doesn\'t compile yet.
+The code above doesn't compile yet.
 
 ``` scree
 ghci> :l JSONClass.hs
@@ -1136,7 +1136,7 @@ is implied by `FlexibleInstances`.
 
 ## Living in an open world
 
-Haskell\'s type classes are intentionally designed to let us create new
+Haskell's type classes are intentionally designed to let us create new
 instances of a type class whenever we see fit.
 
 :::: captioned-content
@@ -1166,12 +1166,12 @@ instance JSON Double where
 We can add new instances anywhere; they are not confined to the module
 where we define a type class. This feature of the type class system is
 referred to as its *open world assumption*. If we had a way to express a
-notion of \"the following are the only instances of this type class that
-can exist\", we would have a *closed* world.
+notion of "the following are the only instances of this type class that
+can exist", we would have a *closed* world.
 
 We would like to be able to turn a list into what JSON calls an array.
-We won\'t worry about implementation details just yet, so let\'s use
-`undefined` as the bodies of the instance\'s methods.
+We won't worry about implementation details just yet, so let's use
+`undefined` as the bodies of the instance's methods.
 
 :::: captioned-content
 ::: caption
@@ -1238,9 +1238,9 @@ ghci> toJValue [("foo","bar")]
       In an equation for ‘it’: it = toJValue [("foo", "bar")]
 ```
 
-This problem of *overlapping instances* is a consequence of Haskell\'s
-open world assumption. Here\'s a simpler example that makes it clearer
-what\'s going on.
+This problem of *overlapping instances* is a consequence of Haskell's
+open world assumption. Here's a simpler example that makes it clearer
+what's going on.
 
 :::: captioned-content
 ::: caption
@@ -1413,8 +1413,8 @@ cannot see that it is implemented as an `Int`.
 ::::::
 
 When we declare a `newtype`, we must choose which of the underlying
-type\'s type class instances we want to expose. Here, we\'ve elected to
-make `NewtypeInt` provide `Int`\'s instances for `Eq`, `Ord` and `Show`.
+type's type class instances we want to expose. Here, we've elected to
+make `NewtypeInt` provide `Int`'s instances for `Eq`, `Ord` and `Show`.
 As a result, we can compare and print values of type `NewtypeInt`.
 
 ``` screen
@@ -1422,8 +1422,8 @@ ghci> N 1 < N 2
 True
 ```
 
-Since we are *not* exposing `Int`\'s `Num` or `Integral` instances,
-values of type `NewtypeInt` are not numbers. For instance, we can\'t add
+Since we are *not* exposing `Int`'s `Num` or `Integral` instances,
+values of type `NewtypeInt` are not numbers. For instance, we can't add
 them.
 
 ``` screen
@@ -1435,11 +1435,11 @@ ghci> N 313 + N 37
       In an equation for ‘it’: it = N 313 + N 37
 ```
 
-As with the `data` keyword, we can use a `newtype`\'s value constructor
+As with the `data` keyword, we can use a `newtype`'s value constructor
 to create a new value, or to pattern match on an existing value.
 
 If a `newtype` does not use automatic deriving to expose the underlying
-type\'s implementation of a type class, we are free to either write a
+type's implementation of a type class, we are free to either write a
 new instance or leave the type class unimplemented.
 
 ### Differences between data and newtype declarations
@@ -1481,19 +1481,19 @@ newtype TooManyCtors = Bad Int
 ```
 ::::
 
-Beyond this, there\'s another important difference between `data` and
+Beyond this, there's another important difference between `data` and
 `newtype`. A type created with the `data` keyword has a book-keeping
 cost at runtime, for example to track which constructor a value was
 created with. A `newtype` value, on the other hand, can only have one
 constructor, and so does not need this overhead. This makes it more
 space-- and time--efficient at runtime.
 
-Because a `newtype`\'s constructor is used only at compile time and does
+Because a `newtype`'s constructor is used only at compile time and does
 not even exist at runtime, pattern matching on `undefined` behaves
 differently for types defined using `newtype` than for those that use
 `data`.
 
-To understand the difference, let\'s first review what we might expect
+To understand the difference, let's first review what we might expect
 with a normal data type. We are already familiar with the idea that if
 `undefined` is evaluated at runtime, it causes a crash.
 
@@ -1510,11 +1510,11 @@ ghci> case D undefined of D _ -> 1
 1
 ```
 
-Since our pattern matches against the constructor but doesn\'t inspect
+Since our pattern matches against the constructor but doesn't inspect
 the payload, the `undefined` remains unevaluated and does not cause an
 exception to be thrown.
 
-In this example, we\'re not using the `D` constructor, so the
+In this example, we're not using the `D` constructor, so the
 unprotected `undefined` is evaluated when the pattern match occurs, and
 we throw an exception.
 
@@ -1524,7 +1524,7 @@ ghci> case undefined of D _ -> 1
 ```
 
 When we use the `N` constructor for the `NewtypeInt` type, we see the
-same behaviour as with the `DataInt` type\'s `D` constructor: no
+same behaviour as with the `DataInt` type's `D` constructor: no
 exception.
 
 ``` screen
@@ -1540,7 +1540,7 @@ ghci> case undefined of N _ -> 1
 1
 ```
 
-We don\'t crash! Because there\'s no constructor present at runtime,
+We don't crash! Because there's no constructor present at runtime,
 matching against `N _` is in fact equivalent to matching against the
 plain wild card `_`: since the wild card always matches, the expression
 does not need to be evaluated.
@@ -1554,7 +1554,7 @@ Another perspective on newtype constructors
 
 Even though we use the value constructor for a `newtype` in the same way
 as that of a type defined using the `data` keyword, all it does is
-coerce a value between its \"normal\" type and its `newtype` type.
+coerce a value between its "normal" type and its `newtype` type.
 
 In other words, when we apply the `N` constructor in an expression, we
 coerce an expression from type `Int` to type `NewtypeInt` as far as we
@@ -1562,13 +1562,13 @@ and the compiler are concerned, but absolutely nothing occurs at
 runtime.
 
 Similarly, when we match on the `N` constructor in a pattern, we coerce
-an expression from type `NewtypeInt` to `Int`, but again there\'s no
+an expression from type `NewtypeInt` to `Int`, but again there's no
 overhead involved at runtime.
 ::::
 
 ### Summary: the three ways of naming types
 
-Here\'s a brief recap of Haskell\'s three ways to introduce new names
+Here's a brief recap of Haskell's three ways to introduce new names
 for types.
 
 -   The `data` keyword introduces a truly new albegraic data type.
@@ -1579,12 +1579,12 @@ for types.
 
 ## JSON type classes without overlapping instances
 
-Enabling GHC\'s support for overlapping instances is an effective and
+Enabling GHC's support for overlapping instances is an effective and
 quick way to make our JSON code happy. In more complex cases, we will
 occasionally be faced with several equally good instances for some type
 class, in which case overlapping instances will not help us and we will
-need to put some `newtype` declarations into place. To see what\'s
-involved, let\'s rework our JSON type class instances to use
+need to put some `newtype` declarations into place. To see what's
+involved, let's rework our JSON type class instances to use
 \~newtype\~s instead of overlapping instances.
 
 Our first task, then, is to help the compiler to distinguish between
@@ -1605,7 +1605,7 @@ newtype JAry a = JAry
 ```
 ::::
 
-When we export this type from our module, we\'ll export the complete
+When we export this type from our module, we'll export the complete
 details of the type. Our module header will look like this:
 
 :::: captioned-content
@@ -1620,8 +1620,8 @@ module JSONClass
 ```
 ::::
 
-The \"`(..)`\" following the `JAry` name means \"export all details of
-this type\".
+The "`(..)`" following the `JAry` name means "export all details of
+this type".
 
 :::: note
 ::: title
@@ -1649,14 +1649,14 @@ module JSONClass
     ) where
 ```
 
-When we don\'t export a type\'s data constructor, clients of our library
+When we don't export a type's data constructor, clients of our library
 can only use the functions we provide to construct and deconstruct
 values of that type. This gives us, the library authors, the liberty to
 change our internal representation if we need to.
 
 If we export the data constructor, clients are likely to start depending
 on it, for instance by using it in patterns. If we later wish to change
-the innards of our type, we\'ll risk breaking any code that uses the
+the innards of our type, we'll risk breaking any code that uses the
 constructor.
 
 In our circumstances here, we have nothing to gain by making the array
@@ -1698,7 +1698,7 @@ data JValue = JString String
 ```
 ::::
 
-And to the module\'s header.
+And to the module's header.
 
 :::: captioned-content
 ::: caption
@@ -1714,8 +1714,8 @@ module JSONClass
 ```
 ::::
 
-This change doesn\'t affect the instances of the JSON type class that
-we\'ve already written, but we will want to write instances for our new
+This change doesn't affect the instances of the JSON type class that
+we've already written, but we will want to write instances for our new
 `JAry` and `JObj` types.
 
 :::: captioned-content
@@ -1734,7 +1734,7 @@ instance (JSON a) => JSON (JAry a) where
 ```
 ::::
 
-Let\'s take a slow walk through the individual steps of converting a
+Let's take a slow walk through the individual steps of converting a
 `JAry` a to a `JValue`. Given a list where we know that everything
 inside is a JSON instance, converting it to a list of `JValues` is easy.
 
@@ -1750,7 +1750,7 @@ listToJValues = map toJValue
 ::::
 
 Taking this and wrapping it to become a `JAry JValue` is just a matter
-of applying the `newtype`\'s type constructor.
+of applying the `newtype`'s type constructor.
 
 :::: captioned-content
 ::: caption
@@ -1763,8 +1763,8 @@ jvaluesToJAry = JAry
 ```
 ::::
 
-(Remember, this has no performance cost. We\'re just telling the
-compiler to hide the fact that we\'re using a list.) To turn this into a
+(Remember, this has no performance cost. We're just telling the
+compiler to hide the fact that we're using a list.) To turn this into a
 `JValue`, we apply another type constructor.
 
 :::: captioned-content
@@ -1792,7 +1792,7 @@ jaryToJValue = JArray . JAry . map toJValue . fromJAry
 ::::
 
 We have more work to do to convert *from* a `JValue` to a `JAry a`, but
-we\'ll break it into reusable parts. The basic function is
+we'll break it into reusable parts. The basic function is
 straightforward.
 
 :::: captioned-content
@@ -1875,7 +1875,7 @@ instance (JSON a) => JSON (JObj a) where
 ## The dreaded monomorphism restriction
 
 The Haskell 2010 standard has a subtle feature that can sometimes bite
-us in unexpected circumstances. Here\'s a simple function definition
+us in unexpected circumstances. Here's a simple function definition
 that illustrates the issue.
 
 :::: captioned-content
@@ -1916,13 +1916,13 @@ Monomorphism.hs:1:10: error:
 Failed, no modules loaded.
 ```
 
-The \"monomorphism restriction\" to which the error message refers is a
+The "monomorphism restriction" to which the error message refers is a
 part of the Haskell 2010 standard. *Monomorphism* is simply the opposite
 of polymorphism: it indicates that an expression has exactly one type.
 The *restriction* lies in the fact that Haskell sometimes forces a
 declaration to be less polymorphic than we would expect.
 
-We mention the monomorphism restriction here because although it isn\'t
+We mention the monomorphism restriction here because although it isn't
 specifically related to type classes, they usually provide the
 circumstances in which it crops up.
 
@@ -1933,16 +1933,16 @@ Tip
 
 Tip
 
-It\'s possible that you will not run into the monomorphism restriction
-in real code for a long time. We don\'t think you need to try to
+It's possible that you will not run into the monomorphism restriction
+in real code for a long time. We don't think you need to try to
 remember the details of this section. It should suffice to make a mental
 note of its existence, until eventually GHC complains at you with
 something like the above error message. If that occurs, simply remember
 that you read about the error here, and come back for guidance.
 ::::
 
-We won\'t attempt to explain the monomorphism restriction.[^3] The
-consensus within the Haskell community is that it doesn\'t arise often;
+We won't attempt to explain the monomorphism restriction.[^3] The
+consensus within the Haskell community is that it doesn't arise often;
 it is tricky to explain; it provides almost no practical benefit; and so
 it mostly serves to trip people up. For an example of its trickiness,
 while the definition above falls afoul of it, the following two compile
@@ -1964,7 +1964,7 @@ myShow3 = show
 As these alternative definitions suggest, if GHC complains about the
 monomorphism restriction, we have three easy ways to address the error.
 
--   Make the function\'s arguments explicit, instead of leaving them
+-   Make the function's arguments explicit, instead of leaving them
     implicit.
 -   Give the definition an explicit type signature, instead of making
     the compiler infer its type.
@@ -1977,8 +1977,8 @@ almost certainly be dropped from the next revision of the Haskell
 standard. This does not quite mean that compiling with
 `NoMonomorphismRestriction` is always the right thing to do: some
 Haskell compilers (including older versions of GHC) do not understand
-this extension, but they\'ll accept either of the other approaches to
-making the error disappear. If this degree of portability isn\'t a
+this extension, but they'll accept either of the other approaches to
+making the error disappear. If this degree of portability isn't a
 concern to you, then by all means enable the language extension.
 
 ## Conclusion
@@ -1997,8 +1997,8 @@ automatically derive instances of certain type classes for your types.
     which would have forced users to implement the other every time. As
     it is, users can implement one or both, as they see fit.
 
-[^2]: As you will see in [the section called \"Lazy
-    I/O\"](7-io.org::*Lazy I/O) doesn\'t actually read the entire file
+[^2]: As you will see in [the section called "Lazy
+    I/O"](7-io.org::*Lazy I/O) doesn't actually read the entire file
     at this point. But for the purposes of this example, we can ignore
     that distinction.
 

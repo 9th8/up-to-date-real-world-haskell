@@ -1,7 +1,7 @@
 # Appendix. Characters, strings, and escaping rules
 
 This appendix covers the escaping rules used to represent non-ASCII
-characters in Haskell character and string literals. Haskell\'s escaping
+characters in Haskell character and string literals. Haskell's escaping
 rules follow the pattern established by the C programming language, but
 expand considerably upon them.
 
@@ -61,12 +61,12 @@ Note
 
 Although Haskell represents characters and strings internally using
 Unicode, there is no standardised way to do I/O on files that contain
-Unicode data. Haskell\'s standard text I/O functions treat text as a
+Unicode data. Haskell's standard text I/O functions treat text as a
 sequence of 8-bit characters, and do not perform any character set
 conversion.
 
 There exist third-party libraries that will convert between the many
-different encodings used in files and Haskell\'s internal Unicode
+different encodings used in files and Haskell's internal Unicode
 representation.
 ::::
 
@@ -92,9 +92,9 @@ language and many other popular languages.
   `\r`{.verbatim}   U+000D    carriage return
   `\t`{.verbatim}   U+0009    horizontal tab
   `\v`{.verbatim}   U+000B    vertical tab
-  `\"`{.verbatim}   U+0022    double quote
+  `"`{.verbatim}   U+0022    double quote
   `\&`{.verbatim}   *n/a*     empty string
-  `\'`{.verbatim}   U+0027    single quote
+  `'`{.verbatim}   U+0027    single quote
   `\\`{.verbatim}   U+005C    backslash
 
   : Single-character escape codes
@@ -107,8 +107,8 @@ arbitrary amount of whitespace (of any kind) can fill the gap between
 the two backslashes.
 
 ``` haskell
-"this is a \
-\long string,\
+"this is a 
+\long string,
 \ spanning multiple lines"
 ```
 

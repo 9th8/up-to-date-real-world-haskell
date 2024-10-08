@@ -25,7 +25,7 @@ outperform Haskell code that uses `String` by an order of magnitude.
 
 The `bytestring` library provides a fast, cheap alternative to the
 `String` type. Code written with `bytestring` can often match or exceed
-the performance and memory footprint of C, while maintaining Haskell\'s
+the performance and memory footprint of C, while maintaining Haskell's
 expressivity and conciseness.
 
 The library supplies two modules. Each defines functions that are nearly
@@ -41,7 +41,7 @@ drop-in replacements for their `String` counterparts.
 Each `ByteString` type performs better under particular circumstances.
 For streaming a large quantity (hundreds of megabytes to terabytes) of
 data, the lazy `ByteString` type is usually best. Its chunk size is
-tuned to be friendly to a modern CPU\'s L1 cache, and a garbage
+tuned to be friendly to a modern CPU's L1 cache, and a garbage
 collector can quickly discard chunks of streamed data that are no longer
 being used.
 
@@ -51,13 +51,13 @@ randomly.
 
 ### Binary I/O and qualified imports
 
-Let\'s develop a small function to illustrate some of the `ByteString`
+Let's develop a small function to illustrate some of the `ByteString`
 API. We will determine if a file is an ELF object file: this is the
 format used for executables on almost all modern Unix-like systems.
 
 This is a simple matter of looking at the first four bytes in the file,
 and seeing if they match a specific sequence of bytes. A byte sequence
-that identifies a file\'s type is often known as a *magic number*.
+that identifies a file's type is often known as a *magic number*.
 
 ``` example
 import qualified Data.ByteString.Lazy as L
@@ -67,11 +67,11 @@ hasElfMagic content = L.take 4 content == elfMagic
     where elfMagic = L.pack [0x7f, 0x45, 0x4c, 0x46]
 ```
 
-We import the `ByteString` modules using Haskell\'s *qualified import*
+We import the `ByteString` modules using Haskell's *qualified import*
 syntax, the `import qualified` that we see above. This lets us refer to
 a module with a name of our choosing.
 
-For instance, when we want to refer to the lazy `ByteString` module\'s
+For instance, when we want to refer to the lazy `ByteString` module's
 `take` function, we must write `L.take`, since we imported the module
 under the name `L`. If we are not explicit about which version of e.g.
 `take` we want, the compiler will report an error.
@@ -91,7 +91,7 @@ Qualified imports make it easy to switch between `ByteString` types. All
 you should need to do is modify an `import` declaration at the top of
 your source file; the rest of your code will probably not need any
 changes. You can thus handily benchmark the two types, to see which is
-best suited to your application\'s needs.
+best suited to your application's needs.
 ::::
 
 Whether or not we use qualified imports, we can always use the entire
@@ -245,15 +245,15 @@ Nothing
 Many systems-oriented programming languages provide library routines
 that let us match a file name against a pattern, or that will give a
 list of files that match the pattern. In other languages, this function
-is often named `fnmatch`.) Although Haskell\'s standard library
-generally has good systems programming facilities, it doesn\'t provide
-these kinds of pattern matching functions. We\'ll take this as an
+is often named `fnmatch`.) Although Haskell's standard library
+generally has good systems programming facilities, it doesn't provide
+these kinds of pattern matching functions. We'll take this as an
 opportunity to develop our own.
 
-The kinds of patterns we\'ll be dealing with are commonly referred to as
-*glob patterns* (the term we\'ll use), wild card patterns, or
+The kinds of patterns we'll be dealing with are commonly referred to as
+*glob patterns* (the term we'll use), wild card patterns, or
 shell-style patterns. They have just a few simple rules. You probably
-already know them, but we\'ll quickly recap here.
+already know them, but we'll quickly recap here.
 
 -   Matching a string against a pattern starts at the beginning of the
     string, and finishes at the end.
@@ -262,7 +262,7 @@ already know them, but we\'ll quickly recap here.
     `foo` in a pattern will match `foo`, and only `foo`, in an input
     string.
 
--   The `*` (asterisk) character means \"match anything\"; it will match
+-   The `*` (asterisk) character means "match anything"; it will match
     any text, including the empty string. For instance, the pattern
     `foo*` will match any string that begins with `foo`, such as `foo`
     itself, `foobar`, or `foo.c`. The pattern `quux*.c` will match any
@@ -274,26 +274,26 @@ already know them, but we\'ll quickly recap here.
     `pic01.jpg`.
 
 -   A `[` (open square bracket) character begins a *character class*,
-    which is ended by a `]`. Its meaning is \"match any character in
-    this class\". A character class can be *negated* by following the
-    opening `[` with a `!`, so that it means \"match any character *not*
-    in this class\".
+    which is ended by a `]`. Its meaning is "match any character in
+    this class". A character class can be *negated* by following the
+    opening `[` with a `!`, so that it means "match any character *not*
+    in this class".
 
     As a shorthand, a character followed by a `-` (dash), followed by
-    another character, denotes a *range*: \"match any character within
-    this set\".
+    another character, denotes a *range*: "match any character within
+    this set".
 
-    Character classes have an added subtlety; they can\'t be empty. The
+    Character classes have an added subtlety; they can't be empty. The
     first character after the opening `[` or `[!` is part of the class,
     so we can write a class containing the `]` character as `[]aeiou]`.
     The pattern `pic[0-9].[pP][nN][gG]` will match a name consisting of
     the string `pic`, followed by a single digit, followed by any
     capitalization of the string `.png`.
 
-While Haskell doesn\'t provide a way to match glob patterns among its
+While Haskell doesn't provide a way to match glob patterns among its
 standard libraries, it provides a good regular expression matching
 library. Glob patterns are nothing more than cut-down regular
-expressions with slightly different syntax. It\'s easy to convert glob
+expressions with slightly different syntax. It's easy to convert glob
 patterns into regular expressions, but to do so, we must first
 understand how to use regular expressions in Haskell.
 
@@ -303,16 +303,16 @@ In this section, we will be assume that you are already familiar with
 regular expressions by way of some other language, such as Python, Perl,
 or Java[^1].
 
-For brevity, we will abbreviate \"regular expression\" as *regexp* from
+For brevity, we will abbreviate "regular expression" as *regexp* from
 here on.
 
-Rather than introduce regexps as something new, we will focus on what\'s
+Rather than introduce regexps as something new, we will focus on what's
 different about regexp handling in Haskell, compared to other languages.
-Haskell\'s regular expression matching libraries are a lot more
-expressive than those of other languages, so there\'s plenty to talk
+Haskell's regular expression matching libraries are a lot more
+expressive than those of other languages, so there's plenty to talk
 about.
 
-To begin our exploration of the regexp libraries, the only module we\'ll
+To begin our exploration of the regexp libraries, the only module we'll
 need to work with is `Text.Regex.Posix`. As usual, the most convenient
 way to explore this module is by interacting with it via `ghci`.
 
@@ -322,9 +322,9 @@ way to explore this module is by interacting with it via `ghci`.
 ghci> :module +Text.Regex.Posix
 ```
 
-The only function that we\'re likely to need for normal use is the
+The only function that we're likely to need for normal use is the
 regexp matching function, an infix operator named `(=`)\~ (borrowed from
-Perl). The first hurdle to overcome is that Haskell\'s regexp libraries
+Perl). The first hurdle to overcome is that Haskell's regexp libraries
 make heavy use of polymorphism. As a result, the type signature of the
 `(=`)\~ operator is difficult to understand, so we will not explain it
 here.
@@ -340,13 +340,13 @@ argument.
 The `=~` operator is polymorphic in its return type, so the Haskell
 compiler needs some way to know what type of result we would like. In
 real code, it may be able to infer the right type, due to the way we
-subsequently use the result. But such cues are often lacking when we\'re
-exploring with `ghci`. If we omit a specific type for the result, we\'ll
+subsequently use the result. But such cues are often lacking when we're
+exploring with `ghci`. If we omit a specific type for the result, we'll
 get an error from the interpreter, as it does not have enough
 information to successfully infer the result type.
 
-When `ghci` can\'t infer the `target` type, we tell it what we\'d like
-the type to be. If we want a result of type `Bool`, we\'ll get a
+When `ghci` can't infer the `target` type, we tell it what we'd like
+the type to be. If we want a result of type `Bool`, we'll get a
 pass/fail answer.
 
 ``` screen
@@ -358,7 +358,7 @@ ghci> "your right hand" =~ "(hand|foot)" :: Bool
 True
 ```
 
-In the bowels of the regexp libraries, there\'s a type class named
+In the bowels of the regexp libraries, there's a type class named
 `RegexContext` that describes how a `target` type should behave; the
 base library defines many instances of this type class for us. The
 `Bool` type is an instance of this type class, so we get back a usable
@@ -372,7 +372,7 @@ ghci> "honorificabilitudinitatibus" =~ "[aeiou]" :: Int
 13
 ```
 
-If we ask for a `String` result, we\'ll get the first substring that
+If we ask for a `String` result, we'll get the first substring that
 matches, or an empty string if nothing matches.
 
 ``` screen
@@ -397,15 +397,15 @@ Note
 
 Watch out for `String` results
 
-If you want a result that\'s a plain `String`, beware. Since `(=`)\~
-returns an empty string to signify \"no match\", this poses an obvious
+If you want a result that's a plain `String`, beware. Since `(=`)\~
+returns an empty string to signify "no match", this poses an obvious
 difficulty if the empty string could also be a valid match for the
 regexp. If such a case arises, you should use a different return type
 instead, such as `[String]`.
 ::::
 
-That\'s about it for \"simple\" result types, but we\'re not by any
-means finished. Before we continue, let\'s use a single pattern for our
+That's about it for "simple" result types, but we're not by any
+means finished. Before we continue, let's use a single pattern for our
 remaining examples. We can define this pattern as a variable in `ghci`,
 to save a little typing.
 
@@ -414,7 +414,7 @@ ghci> pat = "(foo[a-z]*bar|quux)"
 ```
 
 We can obtain quite a lot of information about the context in which a
-match occurs. If we ask for a `(String, String, String)` tuple, we\'ll
+match occurs. If we ask for a `(String, String, String)` tuple, we'll
 get back the text *before* the first match, the text *of* that match,
 and the text that *follows* it.
 
@@ -423,7 +423,7 @@ ghci> "before foodiebar after" =~ pat :: (String,String,String)
 ("before ","foodiebar"," after")
 ```
 
-If the match fails, the entire text is returned as the \"before\"
+If the match fails, the entire text is returned as the "before"
 element of the tuple, with the other two elements left empty.
 
 ``` screen
@@ -431,7 +431,7 @@ ghci> "no match here" =~ pat :: (String,String,String)
 ("no match here","","")
 ```
 
-Asking for a four-element tuple gives us a fourth element that\'s a list
+Asking for a four-element tuple gives us a fourth element that's a list
 of all groups in the pattern that matched.
 
 ``` screen
@@ -441,7 +441,7 @@ ghci> "before foodiebar after" =~ pat :: (String,String,String,[String])
 
 We can get numeric information about matches, too. A pair of \~Int\~s
 gives us the starting offset of the first match, and its length. If we
-ask for a list of these pairs using the `getAllMatches` function we\'ll
+ask for a list of these pairs using the `getAllMatches` function we'll
 get this information for all matches.
 
 ``` screen
@@ -452,8 +452,8 @@ ghci> getAllMatches ("i foobarbar a quux" =~ pat) :: [(Int,Int)]
 ```
 
 A failed match is represented by the value `-1` as the first element of
-the tuple (the match offset) if we\'ve asked for a single tuple, or an
-empty list if we\'ve asked for a list of tuples.
+the tuple (the match offset) if we've asked for a single tuple, or an
+empty list if we've asked for a list of tuples.
 
 ``` screen
 ghci> "eleemosynary" =~ pat :: (Int,Int)
@@ -497,17 +497,17 @@ ghci> getAllMatches (pack "foo" =~ pack "o") :: [(Int, Int)]
 ```
 
 However, we need to be aware that if we want a string value in the
-result of a match, the text we\'re matching against must be the same
-type of string. Let\'s see what this means in practice.
+result of a match, the text we're matching against must be the same
+type of string. Let's see what this means in practice.
 
 ``` screen
 ghci> getAllTextMatches (pack "good food" =~ ".ood") :: [ByteString]
 ["good","food"]
 ```
 
-In the above example, we\'ve used the `pack` to turn a `String` into a
+In the above example, we've used the `pack` to turn a `String` into a
 `ByteString`. The type checker accepts this because `ByteString` appears
-in the result type. But if we try getting a `String` out, that *won\'t*
+in the result type. But if we try getting a `String` out, that *won't*
 work.
 
 ``` screen
@@ -533,15 +533,15 @@ ghci> getAllTextMatches ("good food" =~ ".ood") :: [String]
 ["good","food"]
 ```
 
-This restriction does *not* apply to the type of the regexp we\'re
+This restriction does *not* apply to the type of the regexp we're
 matching against. It can be either a `String` or `ByteString`,
 unconstrained by the other types in use.
 
 ### Other things you should know
 
-When you look through Haskell library documentation, you\'ll see several
+When you look through Haskell library documentation, you'll see several
 regexp-related modules. The modules under `Text.Regex.Base` define the
-common API adhered to by all of the other regexp modules. It\'s possible
+common API adhered to by all of the other regexp modules. It's possible
 to have multiple implementations of the regexp API installed at one
 time. The module used in this chapter, `Text.Regex.Posix`, as its name
 suggests, provides POSIX regexp semantics.
@@ -553,8 +553,8 @@ Note
 
 Perl and POSIX regular expressions
 
-If you\'re coming to Haskell from a language like Perl, Python, or Java,
-and you\'ve used regular expressions in one of those languages, you
+If you're coming to Haskell from a language like Perl, Python, or Java,
+and you've used regular expressions in one of those languages, you
 should be aware that the POSIX regexps handled by the `Text.Regex.Posix`
 module are different in some significant ways from Perl-style regexps.
 Here are a few of the more notable differences.
@@ -579,8 +579,8 @@ standard API that we have covered in this section.
 
 ## Translating a glob pattern into a regular expression
 
-Now that we\'ve seen the myriad of ways to match text against regular
-expressions, let\'s turn our attention back to glob patterns. We want to
+Now that we've seen the myriad of ways to match text against regular
+expressions, let's turn our attention back to glob patterns. We want to
 write a function that will take a glob pattern and return its
 representation as a regular expression. Both glob patterns and regexps
 are text strings, so the type that our function ought to have seems
@@ -617,22 +617,22 @@ Note
 Using a value before defining it
 
 Haskell does not require that a value or function be declared or defined
-in a source file before it\'s used. It\'s perfectly normal for a
-definition to come *after* the first place it\'s used. The Haskell
-compiler doesn\'t care about ordering at this level. This grants us the
+in a source file before it's used. It's perfectly normal for a
+definition to come *after* the first place it's used. The Haskell
+compiler doesn't care about ordering at this level. This grants us the
 flexibility to structure our code in the manner that makes most logical
 sense to us, rather than follow an order that makes the compiler
-writer\'s life easiest.
+writer's life easiest.
 
-Haskell module writers often use this flexibility to put \"more
-important\" code earlier in a source file, relegating \"plumbing\" to
+Haskell module writers often use this flexibility to put "more
+important" code earlier in a source file, relegating "plumbing" to
 later. This is exactly how we are presenting the `globToRegex` function
 and its helpers here.
 ::::
 
 With the regular expression rooted, the `globToRegex'` function will do
-the bulk of the translation work. We\'ll use the convenience of
-Haskell\'s pattern matching to enumerate each of the cases we\'ll need
+the bulk of the translation work. We'll use the convenience of
+Haskell's pattern matching to enumerate each of the cases we'll need
 to cover.
 
 ``` example
@@ -647,8 +647,8 @@ globToRegex' (c:cs)         = escape c ++ globToRegex' cs
 ```
 
 Our first clause stipulates that if we hit the end of our glob pattern
-(by which time we\'ll be looking at the empty string), we return `$`,
-the regular expression symbol for \"match end-of-line\". Following this
+(by which time we'll be looking at the empty string), we return `$`,
+the regular expression symbol for "match end-of-line". Following this
 is a series of clauses that switch our pattern from glob syntax to
 regexp syntax. The last clause passes every other character through,
 possibly escaping it first.
@@ -658,7 +658,7 @@ certain characters as pieces of regular expression syntax.
 
 ``` example
 escape :: Char -> String
-escape c | c `elem` regexChars = '\\' : [c]
+escape c | c `elem` regexChars = '\' : [c]
          | otherwise = [c]
     where regexChars = "\\+()^$.{}]|"
 ```
@@ -676,7 +676,7 @@ charClass []       = error "unterminated character class"
 matchesGlob = undefined
 ```
 
-Now that we\'ve finished defining `globToRegex` and its helpers, let\'s
+Now that we've finished defining `globToRegex` and its helpers, let's
 load it into `ghci` and try it out.
 
 ``` screen
@@ -697,7 +697,7 @@ ghci> "taste.txt" =~ globToRegex "t[ea]s*" :: Bool
 True
 ```
 
-It works! Now let\'s play around a little with `ghci`. We can create a
+It works! Now let's play around a little with `ghci`. We can create a
 temporary definition for `fnmatch` and try it out.
 
 ### [TODO]{.todo .TODO} Explain -XFlexibleContexts {#explain--xflexiblecontexts}
@@ -714,13 +714,13 @@ ghci> fnmatch "d*" "myname"
 False
 ```
 
-The name `fnmatch` doesn\'t really have the \"Haskell nature\", though.
+The name `fnmatch` doesn't really have the "Haskell nature", though.
 By far the most common Haskell style is for functions to have
-descriptive, \"camel cased\" names. Camel casing concatenates words,
+descriptive, "camel cased" names. Camel casing concatenates words,
 capitalising all but possibly the first word. For instance, the words
-\"file name matches\" would become the name `fileNameMatches`. The name
-\"camel case\" comes from the \"humps\" introduced by the capital
-letters. In our library, we\'ll give this function the name
+"file name matches" would become the name `fileNameMatches`. The name
+"camel case" comes from the "humps" introduced by the capital
+letters. In our library, we'll give this function the name
 `matchesGlob`.
 
 ``` example
@@ -739,21 +739,21 @@ value.
 1.  Use `ghci` to explore what happens if you pass a malformed pattern,
     such as `[`, to `globToRegex`. Write a small function that calls
     `globToRegex`, and pass it a malformed pattern. What happens?
-2.  While filesystems on Unix are usually sensitive to case (e.g. \"G\"
-    vs. \"g\") in file names, Windows filesystems are not. Add a
+2.  While filesystems on Unix are usually sensitive to case (e.g. "G"
+    vs. "g") in file names, Windows filesystems are not. Add a
     parameter to the `globToRegex` and `matchesGlob` functions that
     allows control over case sensitive matching.
 
 ## An important aside: writing lazy functions
 
-In an imperative language, the `globToRegex'` function is one that we\'d
-usually express as a loop. For example, Python\'s standard fnmatch
+In an imperative language, the `globToRegex'` function is one that we'd
+usually express as a loop. For example, Python's standard fnmatch
 module includes a function named `translate` that does exactly the same
-job as our `globToRegex` function. It\'s written as a loop.
+job as our `globToRegex` function. It's written as a loop.
 
-If you\'ve been exposed to functional programming through a language
-such as Scheme or ML, you\'ve probably had drilled into your head the
-notion that \"the way to emulate a loop is via tail recursion\".
+If you've been exposed to functional programming through a language
+such as Scheme or ML, you've probably had drilled into your head the
+notion that "the way to emulate a loop is via tail recursion".
 
 Looking at the `globToRegex'` function, we can see that it is *not* tail
 recursive. To see why, examine its final clause again (several of its
@@ -765,13 +765,13 @@ globToRegex' (c:cs) = escape c ++ globToRegex' cs
 
 It applies itself recursively, and the result of the recursive
 application is used as a parameter to the `(++)` function. Since the
-recursive application *isn\'t* the last thing the function does,
+recursive application *isn't* the last thing the function does,
 `globToRegex'` is not tail recursive.
 
 Why is our definition of this function not tail recursive? The answer
-lies with Haskell\'s non-strict evaluation strategy. Before we start
-talking about that, let\'s quickly talk about why, in a traditional
-language, we\'d try to avoid this kind of recursive definition. Here is
+lies with Haskell's non-strict evaluation strategy. Before we start
+talking about that, let's quickly talk about why, in a traditional
+language, we'd try to avoid this kind of recursive definition. Here is
 a simpler definition, of the `(++)` operator. It is recursivem, but not
 tail recursive.
 
@@ -787,7 +787,7 @@ is constructed, then returned. Non-strict evaluation defers much of the
 work until it is needed.
 
 If we demand an element of the expression `"foo" ++ "bar"`, the first
-pattern of the function\'s definition matches, and we return the
+pattern of the function's definition matches, and we return the
 expression `x : (xs ++ ys)`. Because the `(:)` constructor is
 non-strict, the evaluation of `xs ++ ys` can be deferred: we generate
 more elements of the result at whatever rate they are demanded. When we
@@ -798,12 +798,12 @@ compiler can evaluate our code in constant space.
 
 ## Making use of our pattern matcher
 
-It\'s all very well to have a function that can match glob patterns, but
-we\'d like to be able to put this to practical use. On Unix-like
+It's all very well to have a function that can match glob patterns, but
+we'd like to be able to put this to practical use. On Unix-like
 systems, the `glob` function returns the names of all files and
-directories that match a given glob pattern. Let\'s build a similar
+directories that match a given glob pattern. Let's build a similar
 function in Haskell. Following the Haskell norm of descriptive naming,
-we\'ll call our function `namesMatching`.
+we'll call our function `namesMatching`.
 
 ``` example
 module Glob (namesMatching) where
@@ -813,7 +813,7 @@ We specify that `namesMatching` is the only name that users of our
 `Glob` module will be able to see.
 
 This function will obviously have to manipulate filesystem paths a lot,
-splicing and joining them as it goes. We\'ll need to use a few
+splicing and joining them as it goes. We'll need to use a few
 previously unfamiliar modules along the way.
 
 The `System.Directory` module provides standard functions for working
@@ -825,7 +825,7 @@ import System.Directory (doesDirectoryExist, doesFileExist,
 ```
 
 The `System.FilePath` module abstracts the details of an operating
-system\'s path name conventions. The `(</>)` function joins two path
+system's path name conventions. The `(</>)` function joins two path
 components.
 
 ``` screen
@@ -859,7 +859,7 @@ Unix-like and Windows systems.
 import System.FilePath (dropTrailingPathSeparator, splitFileName, (</>))
 ```
 
-In this module, we\'ll be emulating a \"for\" loop; getting our first
+In this module, we'll be emulating a "for" loop; getting our first
 taste of exception handling in Haskell; and of course using the
 `matchesGlob` function we just wrote.
 
@@ -869,14 +869,14 @@ import Control.Monad (forM)
 import GlobRegex (matchesGlob)
 ```
 
-Since directories and files live in the \"real world\" of activities
+Since directories and files live in the "real world" of activities
 that have effects, our globbing function will have to have `IO` in its
 result type.
 
-If the string we\'re passed contains no pattern characters, we simply
+If the string we're passed contains no pattern characters, we simply
 check that the given name exists in the filesystem. (Notice that we use
-Haskell\'s function guard syntax here to write a nice tidy definition.
-An \"if\" would do, but isn\'t as aesthetically pleasing.)
+Haskell's function guard syntax here to write a nice tidy definition.
+An "if" would do, but isn't as aesthetically pleasing.)
 
 ``` example
 isPattern :: String -> Bool
@@ -913,9 +913,9 @@ continues.
         return (concat pathNames)
 ```
 
-We use `splitFileName` to split the string into a pair of \"everything
-but the final name\" and \"the final name\". If the first element is
-empty, we\'re looking for a pattern in the current directory. Otherwise,
+We use `splitFileName` to split the string into a pair of "everything
+but the final name" and "the final name". If the first element is
+empty, we're looking for a pattern in the current directory. Otherwise,
 we must check the directory name and see if it contains patterns. If it
 does not, we create a singleton list of the directory name. If it
 contains a pattern, we list all of the matching directories.
@@ -937,7 +937,7 @@ ghci> splitFileName "foo/bar"
 ("foo/","bar")
 ```
 
-If we didn\'t remember (or know enough) to remove that slash, we\'d
+If we didn't remember (or know enough) to remove that slash, we'd
 recurse endlessly in `namesMatching`, because of the following behaviour
 of `splitFileName`.
 
@@ -952,13 +952,13 @@ You can guess what happened to us that led us to add this note!
 Finally, we collect all matches in every directory, giving us a list of
 lists, and concatenate them into a single list of names.
 
-The unfamiliar `forM` function above acts a little like a \"for\" loop:
+The unfamiliar `forM` function above acts a little like a "for" loop:
 it maps its second argument (an action) over its first (a list), and
 returns the list of results.
 
 We have a few loose ends to clean up. The first is the definition of the
 `doesNameExist` function, used above. The `System.Directory` module
-doesn\'t let us check to see if a name exists in the filesystem. It
+doesn't let us check to see if a name exists in the filesystem. It
 forces us to decide whether we want to check for a file or a directory.
 This API is ungainly, so we roll the two checks into a single function.
 In the name of performance, we make the check for a file first, since
@@ -995,7 +995,7 @@ isHidden _       = False
 ```
 
 The `listPlain` function returns either an empty or singleton list,
-depending on whether the single name it\'s passed exists.
+depending on whether the single name it's passed exists.
 
 ``` example
 listPlain :: FilePath -> String -> IO [String]
@@ -1006,10 +1006,10 @@ listPlain dirName baseName = do
     return (if exists then [baseName] else [])
 ```
 
-If we look closely at the definition of `listMatches` above, we\'ll see
+If we look closely at the definition of `listMatches` above, we'll see
 a call to a function named `handle`. Earlier on, we imported this from
 the `Control.Exception` module; as that import implies, this gives us
-our first taste of exception handling in Haskell. Let\'s drop into
+our first taste of exception handling in Haskell. Let's drop into
 `ghci` and see what we can find out.
 
 ``` screen
@@ -1046,35 +1046,35 @@ We use `const` to write an exception handler that ignores the exception
 it is passed. Instead, it causes our code to return an empty list if we
 catch an exception.
 
-We won\'t have anything more to say about exception handling here.
-There\'s plenty more to cover, though, so we\'ll be returning to the
+We won't have anything more to say about exception handling here.
+There's plenty more to cover, though, so we'll be returning to the
 subject of exceptions in chapter [Chapter 19, *Error
 handling*](19-error-handling.org).
 
 ### Exercises
 
-1.  Although we\'ve gone to some lengths to write a portable
+1.  Although we've gone to some lengths to write a portable
     `namesMatching` function, the function uses our case sensitive
     `globToRegex` function. Find a way to modify `namesMatching` to be
     case sensitive on Unix, and case insensitive on Windows, without
     modifying its type signature. *Hint*: consider reading the
     documentation for `System.FilePath` to look for a variable that
-    tells us whether we\'re running on a Unix-like system, or on
+    tells us whether we're running on a Unix-like system, or on
     Windows.
-2.  If you\'re on a Unix-like system, look through the documentation for
+2.  If you're on a Unix-like system, look through the documentation for
     the `System.Posix.Files` module, and see if you can find a
     replacement for the `doesNameExist` function.
 3.  The `*` wild card only matches names within a single directory. Many
     shells have an extended wild card syntax, `**`, that matches names
     recursively in all directories. For example, `**.c` would mean
-    \"match a name ending in `.c` in this directory or any subdirectory
-    at any depth\". Implement matching on `**` wildcards.
+    "match a name ending in `.c` in this directory or any subdirectory
+    at any depth". Implement matching on `**` wildcards.
 
 ## Handling errors through API design
 
-It\'s not necessarily a disaster if our `globToRegex` is passed a
+It's not necessarily a disaster if our `globToRegex` is passed a
 malformed pattern. Perhaps a user mistyped a pattern, in which case
-we\'d like to be able to report a meaningful error message.
+we'd like to be able to report a meaningful error message.
 
 Calling the `error` function when this kind of problem occurs can be a
 drastic response (exploring its consequences was the focus of exercise
@@ -1086,16 +1086,16 @@ handler is installed, the Haskell runtime will default to terminating
 our program (or print a nasty error message, in `ghci`).
 
 So calling `error` is a little like pulling the handle of a fighter
-plane\'s ejection seat. We\'re bailing out of a catastrophic situation
-that we can\'t deal with gracefully, and there\'s likely to be a lot of
+plane's ejection seat. We're bailing out of a catastrophic situation
+that we can't deal with gracefully, and there's likely to be a lot of
 flaming wreckage strewn about by the time we hit the ground.
 
-We\'ve established that `error` is for disasters, but we\'re still using
+We've established that `error` is for disasters, but we're still using
 it in `globToRegex`. In that case, malformed input should be rejected,
 but not turned into a big deal. What would be a better way to handle
 this?
 
-Haskell\'s type system and libraries to the rescue! We can encode the
+Haskell's type system and libraries to the rescue! We can encode the
 possibility of failure in the type signature of `globToRegex`, using the
 predefined Either type.
 
@@ -1107,7 +1107,7 @@ globToRegex :: String -> Either GlobError String
 
 A value returned by `globToRegex` will now be either `Left "an
 error message"` or `Right "a valid regexp"`. This return type forces our
-callers to deal with the possibility of error. (You\'ll find that this
+callers to deal with the possibility of error. (You'll find that this
 use of the `Either` type occurs frequently in Haskell code.)
 
 ### Exercises
@@ -1128,18 +1128,18 @@ Tip
 Tip
 
 You may find the amount of work involved to be surprisingly large.
-Don\'t worry; we will introduce more concise and sophisticated ways of
+Don't worry; we will introduce more concise and sophisticated ways of
 dealing with errors in later chapters.
 ::::
 
 ## Putting our code to work
 
-The `namesMatching` function isn\'t very exciting by itself, but it\'s a
+The `namesMatching` function isn't very exciting by itself, but it's a
 useful building block. Combine it with a few more functions, and we can
 start to do interesting things.
 
-Here\'s one such example. Let\'s define a `renameWith` function that,
-instead of simply renaming a file, applies a function to the file\'s
+Here's one such example. Let's define a `renameWith` function that,
+instead of simply renaming a file, applies a function to the file's
 name, and renames the file to whatever that function returns.
 
 ``` example
@@ -1181,7 +1181,7 @@ cc2cpp =
   mapM (renameWith (flip replaceExtension ".cpp")) =<< namesMatching "*.cc"
 ```
 
-The `cc2cpp` function uses a few functions we\'ll be seeing over and
+The `cc2cpp` function uses a few functions we'll be seeing over and
 over. The `flip` function takes another function as argument, and swaps
 the order of its arguments (inspect the type of `replaceExtension` in
 `ghci` to see why). The `=<<` function feeds the result of the action on
@@ -1189,11 +1189,11 @@ its right side to the action on its left.
 
 ## Exercises
 
-1.  Glob patterns are simple enough to interpret that it\'s easy to
+1.  Glob patterns are simple enough to interpret that it's easy to
     write a matcher directly in Haskell, rather than going through the
     regexp machinery. Give it a try.
 
 ## Footnotes
 
 [^1]: If you are not acquainted with regular expressions, we recommend
-    Jeffrey Friedl\'s book Mastering Regular Expressions.
+    Jeffrey Friedl's book Mastering Regular Expressions.

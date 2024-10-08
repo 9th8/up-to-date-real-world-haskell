@@ -2,7 +2,7 @@
 
 ## A whirlwind tour of JSON
 
-In this chapter, we\'ll develop a small, but complete, Haskell library.
+In this chapter, we'll develop a small, but complete, Haskell library.
 Our library will manipulate and serialize data in a popular form known
 as JSON.
 
@@ -74,7 +74,7 @@ JBool True :: JValue
 
 We can see how to use a constructor to take a normal Haskell value and
 turn it into a `JValue`. To do the reverse, we use pattern matching.
-Here\'s a function that we can add to `SimpleJSON.hs` that will extract
+Here's a function that we can add to `SimpleJSON.hs` that will extract
 a string from a JSON value for us. If the JSON value actually contains a
 string, our function will wrap the string with the `Just` constructor.
 Otherwise, it will return `Nothing`.
@@ -104,7 +104,7 @@ ghci> getString (JNumber 3)
 Nothing
 ```
 
-A few more accessor functions, and we\'ve got a small body of code to
+A few more accessor functions, and we've got a small body of code to
 work with.
 
 :::: captioned-content
@@ -193,12 +193,12 @@ world. The special notation `(..)` that follows the name `JValue`
 indicates that we are exporting both the type and all of its
 constructors.
 
-It might seem strange that we can export a type\'s name (i.e. its type
+It might seem strange that we can export a type's name (i.e. its type
 constructor), but not its value constructors. The ability to do this is
 important: it lets us hide the details of a type from its users, making
-the type *abstract*. If we cannot see a type\'s value constructors, we
+the type *abstract*. If we cannot see a type's value constructors, we
 cannot pattern match against a value of that type, nor can we construct
-a new value of that type. Later in this chapter, we\'ll discuss some
+a new value of that type. Later in this chapter, we'll discuss some
 situations in which we might want to make a type abstract.
 
 If we omit the exports (and the parentheses that enclose them) from a
@@ -232,7 +232,7 @@ module ExportNothing () where
 In addition to the `ghci` interpreter, the GHC distribution includes a
 compiler, `ghc`, that generates native code. If you are already familiar
 with a command line compiler such as `gcc` or `cl` (the C++ compiler
-component of Microsoft\'s Visual Studio), you\'ll immediately be at home
+component of Microsoft's Visual Studio), you'll immediately be at home
 with `ghc`.
 
 To compile a source file, we first open a terminal or command prompt
@@ -244,7 +244,7 @@ ghc -c SimpleJSON.hs
 
 The `-c` option tells `ghc` to only generate object code. If we were to
 omit the `-c` option, the compiler would attempt to generate a complete
-executable. That would fail, because we haven\'t written a `main`
+executable. That would fail, because we haven't written a `main`
 function, which GHC calls to start the execution of a standalone
 program.
 
@@ -256,7 +256,7 @@ is an *object file*, which contains the generated machine code.
 
 ## Generating a Haskell program, and importing modules
 
-Now that we\'ve successfully compiled our minimal library, we\'ll write
+Now that we've successfully compiled our minimal library, we'll write
 a tiny program to exercise it. Create the following file in your text
 editor, and save it as `Main.hs`.
 
@@ -284,38 +284,38 @@ code. We cannot, for example, scatter them throughout a source file.
 Our choice of naming for the source file and function is deliberate. To
 create an executable, `ghc` expects a module named `Main` that contains
 a function named `main`. The `main` function is the one that will be
-called when we run the program once we\'ve built it.
+called when we run the program once we've built it.
 
 ``` screen
 ghc -o simple Main.hs
 ```
 
-This time around, we\'re omitting the `-c` option when we invoke `ghc`,
+This time around, we're omitting the `-c` option when we invoke `ghc`,
 so it will attempt to generate an executable. The process of generating
 an executable is called *linking*. As our command line suggests, `ghc`
 is perfectly able to both compile source files and link an executable in
 a single invocation.
 
 We pass `ghc` a new option, `-o`, which takes one argument: this is the
-name of the executable that `ghc` should create[^1]. Here, we\'ve
+name of the executable that `ghc` should create[^1]. Here, we've
 decided to name the program `simple`. On Windows, the program will have
 the suffix `.exe`, but on Unix variants there will not be a suffix.
 
 Finally, we supply the name of our new source file, `Main.hs`. If `ghc`
 notices that it has already compiled a source file into an object file,
-it will only recompile the source file if we\'ve modified it.
+it will only recompile the source file if we've modified it.
 
 Once `ghc` has finished compiling and linking our `simple` program, we
 can run it from the command line.
 
 ## Printing JSON data
 
-Now that we have a Haskell representation for JSON\'s types, we\'d like
+Now that we have a Haskell representation for JSON's types, we'd like
 to be able to take Haskell values and render them as JSON data.
 
 There are a few ways we could go about this. Perhaps the most direct
 would be to write a rendering function that prints a value in JSON form.
-Once we\'re done, we\'ll explore some more interesting approaches.
+Once we're done, we'll explore some more interesting approaches.
 
 :::: captioned-content
 ::: caption
@@ -380,14 +380,14 @@ the data.
 
 ## Type inference is a double-edged sword
 
-A Haskell compiler\'s ability to infer types is powerful and valuable.
-Early on, you\'ll probably be faced by a strong temptation to take
+A Haskell compiler's ability to infer types is powerful and valuable.
+Early on, you'll probably be faced by a strong temptation to take
 advantage of type inference by omitting as many type declarations as
-possible: let\'s simply make the compiler figure the whole lot out!
+possible: let's simply make the compiler figure the whole lot out!
 
 Skimping on explicit type information has a downside, one that
 disproportionately affects new Haskell programmer. As a new Haskell
-programmer, we\'re extremely likely to write code that will fail to
+programmer, we're extremely likely to write code that will fail to
 compile due to straightforward type errors.
 
 When we omit explicit type information, we force the compiler to figure
@@ -397,7 +397,7 @@ disagree about what is going on, it will naturally take us longer to
 find the source of our problem.
 
 Suppose, for instance, that we write a function that we believe returns
-a `String`, but we don\'t write a type signature for it.
+a `String`, but we don't write a type signature for it.
 
 :::: captioned-content
 ::: caption
@@ -411,10 +411,10 @@ upcaseFirst (c:cs) = toUpper c -- forgot ":cs" here
 ```
 ::::
 
-Here, we want to upper-case the first character of a word, but we\'ve
+Here, we want to upper-case the first character of a word, but we've
 forgotten to append the rest of the word onto the result. We think our
-function\'s type is `String -> String`, but the compiler will correctly
-infer its type as `String -> Char`. Let\'s say we then try to use this
+function's type is `String -> String`, but the compiler will correctly
+infer its type as `String -> Char`. Let's say we then try to use this
 function somewhere else.
 
 :::: captioned-content
@@ -428,7 +428,7 @@ camelCase xs = concat (map upcaseFirst (words xs))
 ```
 ::::
 
-When we try to compile this code or load it into `ghci`, we won\'t
+When we try to compile this code or load it into `ghci`, we won't
 necessarily get an obvious error message.
 
 ``` screen
@@ -451,20 +451,20 @@ Failed, no modules loaded.
 ```
 
 Notice that the error is reported where we *use* the `upcaseFirst`
-function. If we\'re erroneously convinced that our definition and type
+function. If we're erroneously convinced that our definition and type
 for `upcaseFirst` are correct, we may end up staring at the wrong piece
 of code for quite a while, until enlightenment strikes.
 
 Every time we write a type signature, we remove a degree of freedom from
 the type inference engine. This reduces the likelihood of divergence
-between our understanding of our code and the compiler\'s. Type
+between our understanding of our code and the compiler's. Type
 declarations also act as shorthand for ourselves as readers of our own
 code, making it easier for us to develop a sense of what must be going
 on.
 
 This is not to say that we need to pepper every tiny fragment of code
 with a type declaration. It is, however, usually good form to add a
-signature to every top-level definition in our code. It\'s best to start
+signature to every top-level definition in our code. It's best to start
 out fairly aggressive with explicit type signatures, and slowly ease
 back as your mental model of how type checking works becomes more
 accurate.
@@ -518,11 +518,11 @@ a degree of compatibility with existing mature libraries.
 ::::
 
 To make sure that `Prettify` meets practical needs, we write a new JSON
-renderer that uses the `Prettify` API. After we\'re done, we\'ll go back
+renderer that uses the `Prettify` API. After we're done, we'll go back
 and fill in the details of the `Prettify` module.
 
 Instead of rendering straight to a string, our `Prettify` module will
-use an abstract type that we\'ll call `Doc`. By basing our generic
+use an abstract type that we'll call `Doc`. By basing our generic
 rendering library on an abstract type, we can choose an implementation
 that is flexible and efficient. If we decide to change the underlying
 code, our users will not be able to tell.
@@ -555,20 +555,20 @@ Early on, as we come to grips with Haskell development, we have so many
 new, unfamiliar concepts to keep track of at one time that it can be a
 challenge to write code that compiles at all.
 
-As we write our first substantial body of code, it\'s a *huge* help to
-pause every few minutes and try to compile what we\'ve produced so far.
+As we write our first substantial body of code, it's a *huge* help to
+pause every few minutes and try to compile what we've produced so far.
 Because Haskell is so strongly typed, if our code compiles cleanly,
-we\'re assuring ourselves that we\'re not wandering too far off into the
+we're assuring ourselves that we're not wandering too far off into the
 programming weeds.
 
 One useful technique for quickly developing the skeleton of a program is
 to write placeholder, or *stub* versions of types and functions. For
 instance, we mentioned above that our `string`, `text` and `double`
-functions would be provided by our `Prettify` module. If we don\'t
+functions would be provided by our `Prettify` module. If we don't
 provide definitions for those functions or the `Doc` type, our attempts
-to \"compile early, compile often\" with our JSON renderer will fail, as
-the compiler won\'t know anything about those functions. To avoid this
-problem, we write stub code that doesn\'t do anything.
+to "compile early, compile often" with our JSON renderer will fail, as
+the compiler won't know anything about those functions. To avoid this
+problem, we write stub code that doesn't do anything.
 
 :::: captioned-content
 ::: caption
@@ -611,7 +611,7 @@ CallStack (from HasCallStack):
   undefined, called at PrettyStub.hs:11:14 in main:Main
 ```
 
-Even though we can\'t yet run our stubbed code, the compiler\'s type
+Even though we can't yet run our stubbed code, the compiler's type
 checker will ensure that our program is sensibly typed.
 
 ## Pretty printing a string
@@ -639,14 +639,14 @@ Note
 Point-free style
 
 This style of writing a definition exclusively as a composition of other
-functions is called *point-free style*. The use of the word \"point\" is
-not related to the \"`.`\" character used for function composition. The
+functions is called *point-free style*. The use of the word "point" is
+not related to the "`.`" character used for function composition. The
 term *point* is roughly synonymous (in Haskell) with *value*, so a
 *point-free* expression makes no mention of the values that it operates
 on.
 
 Contrast the point-free definition of `string` above with this
-\"pointy\" version, which uses a variable `s` to refer to the value on
+"pointy" version, which uses a variable `s` to refer to the value on
 which it operates.
 
 :::: captioned-content
@@ -676,7 +676,7 @@ enclose left right x = char left <> x <> char right
 ::::
 
 We provide a `(<>)` function in our pretty printing library. It appends
-two `Doc` values, so it\'s the `Doc` equivalent of `(++)`.
+two `Doc` values, so it's the `Doc` equivalent of `(++)`.
 
 :::: captioned-content
 ::: caption
@@ -693,7 +693,7 @@ char c = undefined
 ::::
 
 Our pretty printing library also provides `hcat`, which concatenates
-multiple `Doc` values into one: it\'s the analogue of `concat` for
+multiple `Doc` values into one: it's the analogue of `concat` for
 lists.
 
 :::: captioned-content
@@ -725,8 +725,8 @@ oneChar c = case lookup c simpleEscapes of
     where mustEscape c = c < ' ' || c == '\x7f' || c > '\xff'
 
 simpleEscapes :: [(Char, String)]
-simpleEscapes = zipWith ch "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
-    where ch a b = (a, ['\\',b])
+simpleEscapes = zipWith ch "\b\n\f\r\t\\"/" "bnfrt\\"/"
+    where ch a b = (a, ['\',b])
 ```
 ::::
 
@@ -747,7 +747,7 @@ plain character. To be conservative, the only unescaped characters we
 emit are printable ASCII characters.
 
 The more complicated escaping involves turning a character into the
-string \"`\u`\" followed by a four-character sequence of hexadecimal
+string "`\u`" followed by a four-character sequence of hexadecimal
 digits representing the numeric value of the Unicode character.
 
 :::: captioned-content
@@ -781,7 +781,7 @@ ghci> replicate 5 "foo"
 ["foo","foo","foo","foo","foo"]
 ```
 
-There\'s a wrinkle: the four-digit encoding that `smallHex` provides can
+There's a wrinkle: the four-digit encoding that `smallHex` provides can
 only represent Unicode characters up to `0xffff`. Valid Unicode
 characters can range up to `0x10ffff`. To properly represent a character
 above `0xffff` in a JSON string, we follow some complicated rules to
@@ -812,7 +812,7 @@ ghci> 7 .&. 2   :: Int
 2
 ```
 
-Now that we\'ve written `smallHex` and `astral`, we can provide a
+Now that we've written `smallHex` and `astral`, we can provide a
 definition for `hexEscape`.
 
 :::: captioned-content
@@ -833,7 +833,7 @@ hexEscape c | d < 0x10000 = smallHex d
 Compared to strings, pretty printing arrays and objects is a snap. We
 already know that the two are visually similar: each starts with an
 opening character, followed by a series of values separated with commas,
-followed by a closing character. Let\'s write a function that captures
+followed by a closing character. Let's write a function that captures
 the common structure of arrays and objects.
 
 :::: captioned-content
@@ -848,7 +848,7 @@ series open close item = enclose open close
 ```
 ::::
 
-We\'ll start by interpreting this function\'s type. It takes an opening
+We'll start by interpreting this function's type. It takes an opening
 and closing character, then a function that knows how to pretty print a
 value of some unknown type `a`, followed by a list of values of type
 `a`, and it returns a value of type `Doc`.
@@ -879,7 +879,7 @@ following the examples we have supplied. We will not explicitly define
 any more stubs.
 
 The `punctuate` function will also live in our `Prettify` module, and we
-can define it in terms of functions for which we\'ve already written
+can define it in terms of functions for which we've already written
 stubs.
 
 :::: captioned-content
@@ -896,7 +896,7 @@ punctuate p (d : ds) = (d <> p) : punctuate p ds
 ::::
 
 With this definition of `series`, pretty printing an array is entirely
-straightforward. We add this equation to the end of the block we\'ve
+straightforward. We add this equation to the end of the block we've
 already written for our `renderJValue` function.
 
 :::: captioned-content
@@ -960,39 +960,39 @@ import Prettify
 
 We export just one name from this module: `renderJValue`, our JSON
 rendering function. The other definitions in the module exist purely to
-support `renderJValue`, so there\'s no reason to make them visible to
+support `renderJValue`, so there's no reason to make them visible to
 other modules.
 
 Regarding imports, the `Numeric` and `Data.Bits` modules are distributed
-with GHC. We\'ve already written the `SimpleJSON` module, and filled our
-`Prettify` module with skeletal definitions. Notice that there\'s no
-difference in the way we import standard modules from those we\'ve
+with GHC. We've already written the `SimpleJSON` module, and filled our
+`Prettify` module with skeletal definitions. Notice that there's no
+difference in the way we import standard modules from those we've
 written ourselves.
 
 With each `import` directive, we explicitly list each of the names we
-want to bring into our module\'s namespace. This is not required: if we
+want to bring into our module's namespace. This is not required: if we
 omit the list of names, all of the names exported from a module will be
-available to us. However, it\'s generally a good idea to write an
+available to us. However, it's generally a good idea to write an
 explicit import list.
 
--   An explicit list makes it clear which names we\'re importing from
+-   An explicit list makes it clear which names we're importing from
     where. This will make it easier for a reader to look up
     documentation if they encounter an unfamiliar function.
 -   Occasionally, a library maintainer will remove or rename a function.
     If a function disappears from a third party module that we use, any
-    resulting compilation error is likely to happen long after we\'ve
+    resulting compilation error is likely to happen long after we've
     written the module. The explicit list of imported names can act as a
     reminder to ourselves of where we had been importing the missing
     name from, which will help us to pinpoint the problem more quickly.
 -   It can also occur that someone will add a name to a module that is
-    identical to a name already in our own code. If we don\'t use an
-    explicit import list, we\'ll end up with the same name in our module
+    identical to a name already in our own code. If we don't use an
+    explicit import list, we'll end up with the same name in our module
     twice. If we use that name, GHC will report an error due to the
     ambiguity. An explicit list lets us avoid the possibility of
     accidentally importing an unexpected new name.
 
 This idea of using explicit imports is a guideline that usually makes
-sense, not a hard-and-fast rule. Occasionally, we\'ll need so many names
+sense, not a hard-and-fast rule. Occasionally, we'll need so many names
 from a module that listing each one becomes messy. In other cases, a
 module might be so widely used that a moderately experienced Haskell
 programmer will probably know which names come from that module.
@@ -1053,9 +1053,9 @@ double d = text (show d)
 ::::
 
 The `Line` constructor represents a line break. The `line` function
-creates *hard* line breaks, which always appear in the pretty printer\'s
-output. Sometimes we\'ll want a *soft* line break, which is only used if
-a line is too wide to fit in a window or page. We\'ll introduce a
+creates *hard* line breaks, which always appear in the pretty printer's
+output. Sometimes we'll want a *soft* line break, which is only used if
+a line is too wide to fit in a window or page. We'll introduce a
 `softline` function shortly.
 
 :::: captioned-content
@@ -1115,7 +1115,7 @@ as we will see in a number of places throughout this book.
 
 Our `hcat` and `fsep` functions concatenate a list of `Doc` values into
 one. In [the section called
-\"Exercises\"](4-functional-programming.org::*Exercises) could define
+"Exercises"](4-functional-programming.org::*Exercises) could define
 concatenation for lists using `foldr`.
 
 :::: captioned-content
@@ -1167,7 +1167,7 @@ softline = group line
 
 These take a little explaining. The `softline` function should insert a
 newline if the current line has become too wide, or a space otherwise.
-How can we do this if our `Doc` type doesn\'t contain any information
+How can we do this if our `Doc` type doesn't contain any information
 about rendering? Our answer is that every time we encounter a soft
 newline, we maintain *two* alternative representations of the document,
 using the `Union` constructor.
@@ -1202,19 +1202,19 @@ flatten other          = other
 
 Notice that we always call `flatten` on the left element of a `Union`:
 the left of each `Union` is always the same width (in characters) as, or
-wider than, the right. We\'ll be making use of this property in our
+wider than, the right. We'll be making use of this property in our
 rendering functions below.
 
 ### Compact rendering
 
 We frequently need to use a representation for a piece of data that
-contains as few characters as possible. For example, if we\'re sending
-JSON data over a network connection, there\'s no sense in laying it out
-nicely: the software on the far end won\'t care whether the data is
+contains as few characters as possible. For example, if we're sending
+JSON data over a network connection, there's no sense in laying it out
+nicely: the software on the far end won't care whether the data is
 pretty or not, and the added white space needed to make the layout look
 good would add a lot of overhead.
 
-For these cases, and because it\'s a simple piece of code to start with,
+For these cases, and because it's a simple piece of code to start with,
 we provide a bare-bones compact rendering function.
 
 :::: captioned-content
@@ -1242,7 +1242,7 @@ The `compact` function wraps its argument in a list, and applies the
 argument as a stack of items to process, where the first element of the
 list is the top of the stack.
 
-The `transform` function\'s `(d:ds)` pattern breaks the stack into its
+The `transform` function's `(d:ds)` pattern breaks the stack into its
 head, `d`, and the remainder, `ds`. In our `case` expression, the first
 several branches recurse on `ds`, consuming one item from the stack for
 each recursive application. The last two branches add items in front of
@@ -1263,7 +1263,7 @@ ghci> putStrLn (compact value)
 }
 ```
 
-To better understand how the code works, let\'s look at a simpler
+To better understand how the code works, let's look at a simpler
 example in more detail.
 
 ``` screen
@@ -1280,7 +1280,7 @@ When we apply `compact`, it turns its argument into a list and applies
     `(d:ds)` pattern. Thus `d` is the value `Concat (Char 'f')
      (Text "oo")`, and `ds` is the empty list, `[]`.
 
-    Since `d`\'s constructor is `Concat`, the `Concat` pattern matches
+    Since `d`'s constructor is `Concat`, the `Concat` pattern matches
     in the `case` expression. On the right hand side, we add `Char 'f'`
     and `Text "oo"` to the stack, and apply `transform` recursively.
 
@@ -1311,10 +1311,10 @@ When we apply `compact`, it turns its argument into a list and applies
 
 While our `compact` function is useful for machine-to-machine
 communication, its result is not always easy for a human to follow:
-there\'s very little information on each line. To generate more readable
-output, we\'ll write another function, `pretty`. Compared to `compact`,
+there's very little information on each line. To generate more readable
+output, we'll write another function, `pretty`. Compared to `compact`,
 `pretty` takes one extra argument: the maximum width of a line, in
-columns. (We\'re assuming that our typeface is of fixed width.)
+columns. (We're assuming that our typeface is of fixed width.)
 
 :::: captioned-content
 ::: caption
@@ -1332,7 +1332,7 @@ To be more precise, this `Int` parameter controls the behaviour of
 beginning a new line. Elsewhere, we must strictly follow the directives
 set out by the person using our pretty printing functions.
 
-Here\'s the core of our implementation
+Here's the core of our implementation
 
 :::: captioned-content
 ::: caption
@@ -1365,7 +1365,7 @@ values to process.
 In the simple cases, `best` updates the `col` variable in
 straightforward ways as it consumes the input. Even the `Concat` case is
 obvious: we push the two concatenated components onto our stack/list,
-and don\'t touch `col`.
+and don't touch `col`.
 
 The interesting case involves the `Union` constructor. Recall that we
 applied `flatten` to the left element, and did nothing to the right.
@@ -1393,7 +1393,7 @@ w `fits` (c:cs)    = (w - 1) `fits` cs
 
 ### Following the pretty printer
 
-In order to understand how this code works, let\'s first consider a
+In order to understand how this code works, let's first consider a
 simple `Doc` value.
 
 ``` screen
@@ -1401,14 +1401,14 @@ ghci> empty </> char 'a'
 Concat (Union (Char ' ') Line) (Char 'a')
 ```
 
-We\'ll apply `pretty 2` on this value. When we first apply `best`, the
+We'll apply `pretty 2` on this value. When we first apply `best`, the
 value of `col` is zero. It matches the `Concat` case, pushes the values
 `Union (Char ' ') Line` and `Char 'a'` onto the stack, and applies
 itself recursively. In the recursive application, it matches on
 `Union (Char ' ') Line`.
 
-At this point, we\'re going to ignore Haskell\'s usual order of
-evaluation. This keeps our explanation of what\'s going on simple,
+At this point, we're going to ignore Haskell's usual order of
+evaluation. This keeps our explanation of what's going on simple,
 without changing the end result. We now have two subexpressions,
 `best 0 [Char ' ', Char 'a']` and `best 0 [Line, Char 'a']`. The first
 evaluates to `" a"`, and the second to `"\na"`. We then substitute these
@@ -1495,10 +1495,10 @@ possibly several executable programs.
 To do anything with a package, Cabal needs a description of it. This is
 contained in a text file whose name ends with the suffix `.cabal`. This
 file belongs in the top-level directory of your project. It has a simple
-format, which we\'ll describe below.
+format, which we'll describe below.
 
 A Cabal package must have a name. Usually, the name of the package
-matches the name of the `.cabal` file. We\'ll call our package
+matches the name of the `.cabal` file. We'll call our package
 `mypretty`, so our file is `mypretty.cabal`. Often, the directory that
 contains a `.cabal` file will have the same name as the package, e.g.
 `mypretty`.
@@ -1529,17 +1529,17 @@ maintainer:  nobody@realworldhaskell.org
 ```
 
 As the `description` field indicates, a field can span multiple lines,
-provided they\'re indented.
+provided they're indented.
 
 Also included in the global properties is license information. Most
 Haskell packages are licensed under the BSD license, which Cabal calls
-`BSD3`[^2]. (Obviously, you\'re free to choose whatever license you
+`BSD3`[^2]. (Obviously, you're free to choose whatever license you
 think is appropriate.) The optional `license-file` field lets us specify
-the name of a file that contains the exact text of our package\'s
+the name of a file that contains the exact text of our package's
 licensing terms.
 
 The features supported by successive versions of Cabal evolve over time,
-so it\'s wise to indicate what versions of Cabal we expect to be
+so it's wise to indicate what versions of Cabal we expect to be
 compatible with. The features we are describing are supported by
 versions 1.2 and higher of Cabal.
 
@@ -1568,7 +1568,7 @@ The `build-depends` field contains a comma-separated list of packages
 that our library requires to build. For each package, we can optionally
 specify the range of versions with which this library is known to work.
 The `base` package contains many of the core Haskell modules, such as
-the Prelude, so it\'s effectively always required.
+the Prelude, so it's effectively always required.
 
 :::: tip
 ::: title
@@ -1577,9 +1577,9 @@ Tip
 
 Figuring out build dependencies
 
-We don\'t have to guess or do any research to establish which packages
+We don't have to guess or do any research to establish which packages
 we depend on. If we try to build our package without a `build-depends`
-field, compilation will fail with a useful error message. Here\'s an
+field, compilation will fail with a useful error message. Here's an
 example where we commented out the dependency on the `base` package.
 
 ``` screen
@@ -1599,7 +1599,7 @@ every package we need has a practical benefit: a command line tool named
 package and all of the packages it depends on.
 ::::
 
-### GHC\'s package manager
+### GHC's package manager
 
 GHC includes a simple package manager that tracks which packages are
 installed, and what the versions of those packages are. A command line
@@ -1611,16 +1611,16 @@ which are only visible to the current user. The per-user database lets
 us avoid the need for administrative privileges to install packages.
 
 The `ghc-pkg` command provides subcommands to address different tasks.
-Most of the time, we\'ll only need two of them. The `ghc-pkg
+Most of the time, we'll only need two of them. The `ghc-pkg
 list` command lets us see what packages are installed. When we want to
-uninstall a package, `ghc-pkg unregister` tells GHC that we won\'t be
+uninstall a package, `ghc-pkg unregister` tells GHC that we won't be
 using a particular package any longer. (We will have to manually delete
 the installed files ourselves.)
 
 ### Setting up, building, and installing
 
 In addition to a `.cabal` file, a package must contain a *setup* file.
-This allows Cabal\'s build process to be heavily customised, if a
+This allows Cabal's build process to be heavily customised, if a
 package needs it. The simplest setup file looks like this.
 
 :::: captioned-content
@@ -1664,9 +1664,9 @@ Following the `configure` step, we build the package.
 $ runghc Setup build
 ```
 
-If this succeeds, we can install the package. We don\'t need to indicate
+If this succeeds, we can install the package. We don't need to indicate
 where to install to: Cabal will use the settings we provided in the
-`configure` step. It will install to our own directory and update GHC\'s
+`configure` step. It will install to our own directory and update GHC's
 per-user package database.
 
 ``` screen
@@ -1682,7 +1682,7 @@ functions. We recommend using it, rather than writing your own.
 
 The design of the `HughesPJ` pretty printer was introduced by John
 Hughes in \[[Hughes95](bibliography.org::Hughes95)\]. The library was
-subsequently improved by Simon Peyton Jones, hence the name. Hughes\'s
+subsequently improved by Simon Peyton Jones, hence the name. Hughes's
 paper is long, but well worth reading for his discussion of how to
 design a library in Haskell.
 
@@ -1695,8 +1695,8 @@ build, and install it in one step with `cabal install wl-pprint`.
 
 ## Footnotes
 
-[^1]: Memory aid: `-o` stands for \"output\" or \"object file\".
+[^1]: Memory aid: `-o` stands for "output" or "object file".
 
-[^2]: The \"3\" in `BSD3` refers to the number of clauses in the
+[^2]: The "3" in `BSD3` refers to the number of clauses in the
     license. An older version of the BSD license contained 4 clauses,
     but it is no longer used.

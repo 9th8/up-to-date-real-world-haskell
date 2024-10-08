@@ -1,5 +1,5 @@
 [Real World Haskell](http://book.realworldhaskell.org/) by Bryan
-O\'Sullivan, Don Stewart and John Goerzen is an old book (2008) that
+O'Sullivan, Don Stewart and John Goerzen is an old book (2008) that
 approach teaching Haskell by building small programs. Sadly the language
 and libraries have changed enough to make several of the examples
 useless so I am making them working again. After I finish I pretend to

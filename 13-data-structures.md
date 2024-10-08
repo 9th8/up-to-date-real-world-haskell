@@ -15,7 +15,7 @@ provided by `Data.Map` module. Association lists are handy because they
 are simple. They are standard Haskell lists, so all the familiar list
 functions work with association lists. However, for large data sets,
 `Map` will have a considerable performance advantage over association
-lists. We\'ll use both in this chapter.
+lists. We'll use both in this chapter.
 
 An association list is just a normal list containing (key, value)
 tuples. The type of a list of mappings from UID to username might be
@@ -25,7 +25,7 @@ key and the value.
 We can build association lists just we do any other list. Haskell comes
 with one built-in function called `Data.List.lookup` to look up data in
 an association list. Its type is `Eq a => a -> [(a, b)] -> Maybe b`. Can
-you guess how it works from that type? Let\'s take a look in `ghci`.
+you guess how it works from that type? Let's take a look in `ghci`.
 
 ``` screen
 ghci> al = [(1, "one"), (2, "two"), (3, "three"), (4, "four")]
@@ -35,7 +35,7 @@ ghci> lookup 5 al
 Nothing
 ```
 
-The `lookup` function is really simple. Here\'s one way we could write
+The `lookup` function is really simple. Here's one way we could write
 it:
 
 :::: captioned-content
@@ -54,11 +54,11 @@ myLookup key ((thiskey,thisval):rest) =
 ::::
 
 This function returns `Nothing` if passed the empty list. Otherwise, it
-compares the key with the key we\'re looking for. If a match is found,
+compares the key with the key we're looking for. If a match is found,
 the corresponding value is returned. Otherwise, it searches the rest of
 the list.
 
-Let\'s take a look at a more complex example of association lists. On
+Let's take a look at a more complex example of association lists. On
 Unix/Linux machines, there is a file called `/etc/passwd` that stores
 usernames, UIDs, home directories, and various other data. We will write
 a program that parses such a file, creates an association list, and lets
@@ -128,7 +128,7 @@ split delim str =
 ```
 ::::
 
-Let\'s look at this program. The heart of it is `findByUID`, which is a
+Let's look at this program. The heart of it is `findByUID`, which is a
 simple function that parses the input one line at a time, then calls
 `lookup` over the result. The remaining program is concerned with
 parsing the input. The input file looks like this:
@@ -166,7 +166,7 @@ their counterparts in imperative languages.
 Some functions in the `Data.Map` module have the same names as those in
 the prelude. Therefore, we will import it with
 `import qualified Data.Map as Map` and use `Map.name` to refer to names
-in that module. Let\'s start our tour of `Data.Map` by taking a look at
+in that module. Let's start our tour of `Data.Map` by taking a look at
 some ways to build a map.
 
 :::: captioned-content
@@ -204,7 +204,7 @@ Functions like `Map.insert` work in the usual Haskell way: they return a
 copy of the input data, with the requested change applied. This is quite
 handy with maps. It means that you can use `foldl` to build up a map as
 in the `mapFold` example. Or, you can chain together calls to
-`Map.insert` as in the `mapManual` example. Let\'s use `ghci` to verify
+`Map.insert` as in the `mapManual` example. Let's use `ghci` to verify
 that all of these maps are as expected:
 
 ``` screen
@@ -230,13 +230,13 @@ module provides functions for adding and removing data from maps. It
 also lets us filter them, modify them, fold over them, and convert to
 and from association lists. The library documentation for this module is
 good, so instead of going into detail on each function, we will present
-an example that ties together many of the concepts we\'ve discussed in
+an example that ties together many of the concepts we've discussed in
 this chapter.
 
 ## Functions Are Data, Too
 
-Part of Haskell\'s power is the ease with which it lets us create and
-manipulate functions. Let\'s take a look at a record that stores a
+Part of Haskell's power is the ease with which it lets us create and
+manipulate functions. Let's take a look at a record that stores a
 function as one of its fields:
 
 :::: captioned-content
@@ -269,12 +269,12 @@ always0 = FuncRec {name = "always0", colorCalc = \_ -> (purple, 0)}
 ```
 ::::
 
-Notice the type of the `colorCalc` field: it\'s a function. It takes an
+Notice the type of the `colorCalc` field: it's a function. It takes an
 `Int` and returns a tuple of `(CustomColor, Int)`. We create two
 `FuncRec` records: `plus5` and `always0`. Notice that the `colorCalc`
 for both of them will always return the color purple. `FuncRec` itself
 has no field to store the color in, yet that value somehow becomes part
-of the function itself. This is called a *closure*. Let\'s play with
+of the function itself. This is called a *closure*. Let's play with
 this a bit:
 
 ``` screen
@@ -297,7 +297,7 @@ ghci> (colorCalc always0) 7
 
 That worked well enough, but you might wonder how to do something more
 advanced, such as making a piece of data available in multiple places. A
-type construction function can be helpful. Here\'s an example:
+type construction function can be helpful. Here's an example:
 
 :::: captioned-content
 ::: caption
@@ -324,7 +324,7 @@ always0 = mkFuncRec "always0" (\_ -> 0)
 Here we have a function called `mkFuncRec` that takes a `String` and
 another function as parameters, and returns a new `FuncRec` record.
 Notice how both parameters to `mkFuncRec` are used in multiple places.
-Let\'s try it out:
+Let's try it out:
 
 ``` screen
 ghci> :l funcrecs2.hs
@@ -346,14 +346,14 @@ ghci> (namedCalc plus5a) 5
 ```
 
 Notice the creation of `plus5a`. We changed the `name` field, but not
-the `namedCalc` field. That\'s why `name` has the new name, but
+the `namedCalc` field. That's why `name` has the new name, but
 `namedCalc` still returns the name that was passed to `mkFuncRec`; it
-doesn\'t change unless we explicitly change it.
+doesn't change unless we explicitly change it.
 
 ## Extended Example: /etc/passwd
 
 In order to illustrate the usage of a number of different data
-structures together, we\'ve prepared an extended example. This example
+structures together, we've prepared an extended example. This example
 parses and stores entries from files in the format of a typical
 `/etc/passwd` file.
 
@@ -481,12 +481,12 @@ mainMenu maps@(uidmap, usermap) = do
     displayFile =
         putStr . unlines . map (show . snd) . Map.toList $ uidmap
     optionText =
-          "\npasswdmap options:\n\
-           \\n\
-           \1   Look up a user name\n\
-           \2   Look up a UID\n\
-           \3   Display entire file\n\
-           \4   Quit\n\n\
+          "\npasswdmap options:\n
+           \\n
+           \1   Look up a user name\n
+           \2   Look up a UID\n
+           \3   Display entire file\n
+           \4   Quit\n\n
            \Your selection: "
 ```
 ::::
@@ -504,21 +504,21 @@ parses that format.
 
 ## Extended example: Numeric Types
 
-We\'ve told you how powerful and expressive Haskell\'s type system is.
-We\'ve shown you a lot of ways to use that power. Here\'s a chance to
+We've told you how powerful and expressive Haskell's type system is.
+We've shown you a lot of ways to use that power. Here's a chance to
 really see that in action.
 
-Back in [the section called \"Numeric
-Types\"](6-using-typeclasses.org::*Numeric Types) type classes that come
-with Haskell. Let\'s see what we can do by defining new types and
+Back in [the section called "Numeric
+Types"](6-using-typeclasses.org::*Numeric Types) type classes that come
+with Haskell. Let's see what we can do by defining new types and
 utilizing the numeric type classes to integrate them with basic
 mathematics in Haskell.
 
-Let\'s start by thinking through what we\'d like to see out of `ghci`
+Let's start by thinking through what we'd like to see out of `ghci`
 when we interact with our new types. To start with, it might be nice to
 render numeric expressions as strings, making sure to indicate proper
 precedence. Perhaps we could create a function called `prettyShow` to do
-that. We\'ll show you how to write it in a bit, but first we\'ll look at
+that. We'll show you how to write it in a bit, but first we'll look at
 how we might use it.
 
 ``` screen
@@ -533,7 +533,7 @@ ghci> prettyShow $ 5 * 1 + 3
 "(5*1)+3"
 ```
 
-That looks nice, but it wasn\'t all that smart. We could easily simplify
+That looks nice, but it wasn't all that smart. We could easily simplify
 out the `1 *` part of the expression. How about a function to do some
 very basic simplification?
 
@@ -563,7 +563,7 @@ ghci> prettyShow $ 5 + (Symbol "x") * 3
 "5+(x*3)"
 ```
 
-It\'s often important to track units of measure when working with
+It's often important to track units of measure when working with
 numbers. For instance, when you see the number 5, does it mean 5 meters,
 5 feet, or 5 bytes? Of course, if you divide 5 meters by 2 seconds, the
 system ought to be able to figure out the appropriate units. Moreover,
@@ -607,7 +607,7 @@ ghci> rpnShow (test + 5)
 ```
 
 Since we have units, we should be able to handle some basic trigonometry
-as well. Many of these operations operate on angles. Let\'s make sure
+as well. Many of these operations operate on angles. Let's make sure
 that we can handle both degrees and radians.
 
 ``` screen
@@ -635,13 +635,13 @@ ghci> (units (Symbol "x") "m") * sin (units 90 "deg")
 x*sin(((2.0*pi)*90.0)/360.0)_m
 ```
 
-Everything you\'ve just seen is possible with Haskell types and classes.
-In fact, you\'ve been reading a real `ghci` session demonstrating
-`num.hs`, which you\'ll see shortly.
+Everything you've just seen is possible with Haskell types and classes.
+In fact, you've been reading a real `ghci` session demonstrating
+`num.hs`, which you'll see shortly.
 
 ### First Steps
 
-Let\'s think about how we would accomplish everything shown above. To
+Let's think about how we would accomplish everything shown above. To
 start with, we might use `ghci` to check the type of `(+)`, which is
 `Num a => a -> a -> a`. If we want to make possible some custom behavior
 for the plus operator, then we will have to define a new type and make
@@ -651,7 +651,7 @@ To store that, we will need to store the operation itself, its left
 side, and its right side. The left and right sides could themselves be
 expressions.
 
-We can therefore think of an expression as a sort of tree. Let\'s start
+We can therefore think of an expression as a sort of tree. Let's start
 with some simple types.
 
 :::: captioned-content
@@ -693,7 +693,7 @@ used for the `a`. So a full type may be something like
 A `SymbolicManip` type can be a plain number, or it can be some
 arithmetic operation. The type for the `Arith` constructor is recursive,
 which is perfectly legal in Haskell. `Arith` creates a `SymbolicManip`
-out of an `Op` and two other `SymbolicManip` items. Let\'s look at an
+out of an `Op` and two other `SymbolicManip` items. Let's look at an
 example:
 
 ``` screen
@@ -715,9 +715,9 @@ Arith Plus (Arith Mul (Number 5) (Number 10)) (Number 2)
 ```
 
 You can see that we already have a very basic representation of
-expressions working. Notice how Haskell \"converted\" `5 * 10 + 2` into
+expressions working. Notice how Haskell "converted" `5 * 10 + 2` into
 a `SymbolicManip`, and even handled order of evaluation properly. This
-wasn\'t really a true conversion; `SymbolicManip` is a first-class
+wasn't really a true conversion; `SymbolicManip` is a first-class
 number now. Integer numeric literals are internally treated as being
 wrapped in `fromInteger` anyway, so `5` is just as valid as a
 `SymbolicManip Int` as it as an `Int`.
@@ -731,7 +731,7 @@ this tree in a more accessible fashion.
 ### Completed Code
 
 Here is the completed `num.hs`, which was used with the `ghci` examples
-at the beginning of this chapter. Let\'s look at this code one piece at
+at the beginning of this chapter. Let's look at this code one piece at
 a time.
 
 :::: captioned-content
@@ -792,7 +792,7 @@ instance Num a => Num (SymbolicManip a) where
 ::::
 
 This is pretty straightforward and also similar to our earlier code.
-Note that earlier we weren\'t able to properly support `abs`, but now
+Note that earlier we weren't able to properly support `abs`, but now
 with the `UnaryArith` constructor, we can. Next we define some more
 instances.
 
@@ -831,7 +831,7 @@ instance (Floating a) => Floating (SymbolicManip a) where
 ::::
 
 This section of code defines some fairly straightforward instances of
-`Fractional` and `Floating`. Now let\'s work on converting our
+`Fractional` and `Floating`. Now let's work on converting our
 expressions to strings for display.
 
 :::: captioned-content
@@ -888,7 +888,7 @@ unary operators as well. `op2str` simply converts an `Op` to a `String`.
 In `simpleParen`, we have a quite conservative algorithm that adds
 parenthesis to keep precedence clear in the result. Finally, we make
 `SymbolicManip` an instance of `Show` and use `prettyShow` to accomplish
-that. Now let\'s implement an algorithm that converts an expression to s
+that. Now let's implement an algorithm that converts an expression to s
 string in RPN format.
 
 :::: captioned-content
@@ -914,8 +914,8 @@ rpnShow i =
 
 Fans of RPN will note how much simpler this algorithm is compared to the
 algorithm to render with conventional notation. In particular, we
-didn\'t have to worry about where to add parenthesis, because RPN can,
-by definition, only be evaluated one way. Next, let\'s see how we might
+didn't have to worry about where to add parenthesis, because RPN can,
+by definition, only be evaluated one way. Next, let's see how we might
 implement a function to do some rudimentary simplification on
 expressions.
 
@@ -954,8 +954,8 @@ simplify the result. We have little to do with unary operators, so we
 just simplify the expression they act upon.
 
 From here on, we will add support for units of measure to our
-established library. This will let us represent quantities such as \"5
-meters\". We start, as before, by defining a type.
+established library. This will let us represent quantities such as "5
+meters". We start, as before, by defining a type.
 
 :::: captioned-content
 ::: caption
@@ -1003,7 +1003,7 @@ Now it may become clear why we use a `SymbolicManip` instead of a
 multiplication occur, the unit of measure also changes. For instance, if
 we multiply 5 meters by 2 meters, we obtain 10 square meters. We force
 the units for addition to match, and implement subtraction in terms of
-addition. Let\'s look at more type class instances for `Units`.
+addition. Let's look at more type class instances for `Units`.
 
 :::: captioned-content
 ::: caption
@@ -1059,8 +1059,8 @@ instance (Floating a, Eq a) => Floating (Units a) where
 ```
 ::::
 
-We didn\'t supply implementations for every function, but quite a few
-have been defined. Now let\'s define a few utility functions for working
+We didn't supply implementations for every function, but quite a few
+have been defined. Now let's define a few utility functions for working
 with units.
 
 :::: captioned-content
@@ -1085,7 +1085,7 @@ rad2deg x = 360 * x / (2 * pi)
 ::::
 
 First, we have `units`, which makes it easy to craft simple expressions.
-It\'s faster to say `units 5 "m"` than `Units 5 (Symbol "m")`. We also
+It's faster to say `units 5 "m"` than `Units 5 (Symbol "m")`. We also
 have a corresponding `dropUnits`, which discards the unit of measure and
 returns the embedded bare `Num`. Finally, we define some functions for
 use by our earlier instances to convert between degrees and radians.
@@ -1126,13 +1126,13 @@ of measure. We implement several show-like functions which render the
 
 There is one other point that this example drives home. Every
 language---even those with objects and overloading---has some parts of
-the language that are special in some way. In Haskell, the \"special\"
+the language that are special in some way. In Haskell, the "special"
 bits are extremely small. We have just developed a new representation
 for something as fundamental as a number, and it has been really quite
 easy. Our new type is a first-class type, and the compiler knows what
 functions to use with it at compile time. Haskell takes code reuse and
 interchangability to the extreme. It is easy to make code generic and
-work on things of many different types. It\'s also easy to make up new
+work on things of many different types. It's also easy to make up new
 types and make them automatically be first-class features of the system.
 
 Remember our `ghci` examples at the beginning of the chapter? All of
@@ -1146,7 +1146,7 @@ out for yourself and see how they work.
 ## Taking advantage of functions as data
 
 In an imperative language, appending two lists is cheap and easy.
-Here\'s a simple C structure in which we maintain a pointer to the head
+Here's a simple C structure in which we maintain a pointer to the head
 and tail of a list.
 
 ``` {.c org-language="C"}
@@ -1160,8 +1160,8 @@ modify the last node of the existing list to point to its `head` node,
 then update its `tail` pointer to point to its `tail` node.
 
 Obviously, this approach is off limits to us in Haskell if we want to
-stay pure. Since pure data is immutable, we can\'t go around modifying
-lists in place. Haskell\'s `(++)` operator appends two lists by creating
+stay pure. Since pure data is immutable, we can't go around modifying
+lists in place. Haskell's `(++)` operator appends two lists by creating
 a new one.
 
 :::: captioned-content
@@ -1190,7 +1190,7 @@ list, and each repeated append makes the initial list longer, we end up
 in an unhappy situation: the cost of all of the repeated appends is
 proportional to the *square* of the length of the final list.
 
-To understand this, let\'s dig in a little. The `(++)` operator is right
+To understand this, let's dig in a little. The `(++)` operator is right
 associative.
 
 ``` screen
@@ -1205,7 +1205,7 @@ This means that a Haskell implementation will evaluate the expression
 keeps the left operand as short as possible.
 
 When we repeatedly append onto the end of a list, we defeat this
-associativity. Let\'s say we start with the list `"a"` and append `"b"`,
+associativity. Let's say we start with the list `"a"` and append `"b"`,
 and save the result as our new list. If we later append `"c"` onto this
 new list, our left operand is now `"ab"`. In this scheme, every time we
 append, our left operand gets longer.
@@ -1215,7 +1215,7 @@ the cost of *their* repeated appends only depends on the number of them
 that they perform. They have linear performance; ours is quadratic.
 
 When something as common as repeated appending of lists imposes such a
-performance penalty, it\'s time to look at the problem from another
+performance penalty, it's time to look at the problem from another
 angle.
 
 The expression `("a"++)` is a section, a partially applied function.
@@ -1227,7 +1227,7 @@ ghci> :type ("a" ++)
 ```
 
 Since this is a function, we can use the `(.)` operator to compose it
-with another section, let\'s say `("b"++)`.
+with another section, let's say `("b"++)`.
 
 ``` screen
 ghci> :type ("a" ++) . ("b" ++)
@@ -1235,7 +1235,7 @@ ghci> :type ("a" ++) . ("b" ++)
 ```
 
 Our new function has the same type. What happens if we stop composing
-functions, and instead provide a `String` to the function we\'ve
+functions, and instead provide a `String` to the function we've
 created?
 
 ``` screen
@@ -1244,10 +1244,10 @@ ghci> f []
 "ab"
 ```
 
-We\'ve appended the strings! We\'re using these partially applied
+We've appended the strings! We're using these partially applied
 functions to store data, which we can retrieve by providing an empty
 list. Each partial application of `(++)` and `(.)` *represents* an
-append, but it doesn\'t actually *perform* the append.
+append, but it doesn't actually *perform* the append.
 
 There are two very interesting things about this approach. The first is
 that the cost of a partial application is constant, so the cost of many
@@ -1257,20 +1257,20 @@ applications, application proceeds from right to left. This keeps the
 left operand of `(++)` small, and so the overall cost of all of these
 appends is linear, not quadratic.
 
-By choosing an unfamiliar data representation, we\'ve avoided a nasty
+By choosing an unfamiliar data representation, we've avoided a nasty
 performance quagmire, while gaining a new perspective on the usefulness
 of treating functions as data. By the way, this is an old trick, and
-it\'s usually called a *difference list*.
+it's usually called a *difference list*.
 
-We\'re not yet finished, though. As appealing as difference lists are in
-theory, ours won\'t be very pleasant in practice if we leave all the
+We're not yet finished, though. As appealing as difference lists are in
+theory, ours won't be very pleasant in practice if we leave all the
 plumbing of `(++)`, `(.)`, and partial application exposed. We need to
 turn this mess into something pleasant to work with.
 
 ### Turning difference lists into a proper library
 
 Our first step is to use a `newtype` declaration to hide the underlying
-type from our users. We\'ll create a new type, and call it `DList`. Like
+type from our users. We'll create a new type, and call it `DList`. Like
 a regular list, it will be a parameterised type.
 
 :::: captioned-content
@@ -1288,7 +1288,7 @@ newtype DList a = DL {
 The `unDL` function is our deconstructor, which removes the `DL`
 constructor. When we go back and decide what we want to export from our
 module, we will omit our data constructor and deconstruction function,
-so the `DList` type will be completely opaque to our users. They\'ll
+so the `DList` type will be completely opaque to our users. They'll
 only be able to work with the type using the other functions we export.
 
 :::: captioned-content
@@ -1302,14 +1302,14 @@ append xs ys = DL (unDL xs . unDL ys)
 ```
 ::::
 
-Our `append` function may seem a little complicated, but it\'s just
+Our `append` function may seem a little complicated, but it's just
 performing some book-keeping around the same use of the `(.)` operator
 that we demonstrated earlier. To compose our functions, we must first
 unwrap them from their `DL` constructor, hence the uses of `unDL`. We
 then re-wrap the resulting function with the `DL` constructor so that it
 will have the right type.
 
-Here\'s another way of writing the same function, in which we perform
+Here's another way of writing the same function, in which we perform
 the unwrapping of `xs` and `ys` via pattern matching.
 
 :::: captioned-content
@@ -1323,7 +1323,7 @@ append' (DL xs) (DL ys) = DL (xs . ys)
 ```
 ::::
 
-Our `DList` type won\'t be much use if we can\'t convert back and forth
+Our `DList` type won't be much use if we can't convert back and forth
 between the `DList` representation and a regular list.
 
 :::: captioned-content
@@ -1341,7 +1341,7 @@ toList (DL xs) = xs []
 ::::
 
 Once again, compared to the original versions of these functions that we
-wrote, all we\'re doing is a little book-keeping to hide the plumbing.
+wrote, all we're doing is a little book-keeping to hide the plumbing.
 
 If we want to make `DList` useful as a substitute for regular lists, we
 need to provide some more of the common list operations.
@@ -1429,17 +1429,17 @@ module DList
 ### Lists, difference lists, and monoids
 
 In abstract algebra, there exists a simple abstract structure called a
-*monoid*. Many mathematical objects are monoids, because the \"bar to
-entry\" is very low. In order to be considered a monoid, an object must
+*monoid*. Many mathematical objects are monoids, because the "bar to
+entry" is very low. In order to be considered a monoid, an object must
 have two properties.
 
--   An associative binary operator. Let\'s call it `(*)`: the expression
+-   An associative binary operator. Let's call it `(*)`: the expression
     `a * (b * c)` must give the same result as `(a * b) * c`.
 
 -   An identity value. If we call this `e`, it must obey two rules:
     `a * e == a` and `e * a == a`.
 
-The rules for monoids don\'t say what the binary operator must do,
+The rules for monoids don't say what the binary operator must do,
 merely that such an operator must exist. Because of this, lots of
 mathematical objects are monoids. If we take addition as the binary
 operator and zero as the identity value, integers form a monoid. With
@@ -1511,7 +1511,7 @@ instance Monoid (DList a) where
 
 A semigroup is a mathematical object with and associative binary
 operator, i. e. every monoid is also a semigroup (but not al semigroups
-are monoids) and that\'s what GHC 8.4 is forcing us to express.
+are monoids) and that's what GHC 8.4 is forcing us to express.
 
 :::: tip
 ::: title
@@ -1525,7 +1525,7 @@ compatible
 code](https://prime.haskell.org/wiki/Libraries/Proposals/SemigroupMonoid#Writingcompatiblecode).
 ::::
 
-Let\'s try our the methods of the `Monoid` type class in `ghci`.
+Let's try our the methods of the `Monoid` type class in `ghci`.
 
 ``` screen
 ghci> "foo" `mappend` "bar"
@@ -1544,7 +1544,7 @@ Tip
 Tip
 
 Although from a mathematical perspective, integers can be monoids in two
-different ways, we can\'t write two differing `Monoid` instances for
+different ways, we can't write two differing `Monoid` instances for
 `Int` in Haskell: the compiler would complain about duplicate instances.
 
 In those rare cases where we really need several `Monoid` instances for
@@ -1581,7 +1581,7 @@ instance Monoid MInt where
 ```
 ::::
 
-We\'ll then get different behaviour depending on the type we use.
+We'll then get different behaviour depending on the type we use.
 
 ``` screen
 ghci> 2 `mappend` 5 :: MInt
@@ -1592,8 +1592,8 @@ A {unA = 7}
 ::::::
 
 We will have more to say about difference lists and their monoidal
-nature in [the section called \"The writer monad and
-lists\"](16-programming-with-monads.org::*The writer monad and lists)
+nature in [the section called "The writer monad and
+lists"](16-programming-with-monads.org::*The writer monad and lists)
 
 :::: tip
 ::: title
@@ -1603,14 +1603,14 @@ Tip
 Tip
 
 As with the rules for functors, Haskell cannot check the rules for
-monoids on our behalf. If we\'re defining a `Monoid` instance, we can
+monoids on our behalf. If we're defining a `Monoid` instance, we can
 easily write QuickCheck properties to give us high statistical
 confidence that our code is following the monoid rules.
 ::::
 
 # General purpose sequences
 
-Both Haskell\'s built-in list type and the `DList` type that we defined
+Both Haskell's built-in list type and the `DList` type that we defined
 above have poor performance characteristics under some circumstances.
 The `Data.Sequence` module defines a `Seq` container type that gives
 good performance for a wider variety of operations.
@@ -1678,7 +1678,7 @@ fromList [1,2]
 ```
 
 A useful way to remember the `(<|)` and `(|>)` functions is that the
-\"arrow\" points to the element we\'re adding to the `Seq`. The element
+"arrow" points to the element we're adding to the `Seq`. The element
 will be added on the side to which the arrow points: `(<|)` adds on the
 left, `(|>)` on the right.
 

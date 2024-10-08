@@ -5,15 +5,15 @@
 Haskell is a deep language, and we think that learning it is a hugely
 rewarding experience. We will focus on three elements as we explain why.
 The first is *novelty*: we invite you to think about programming from a
-different and valuable perspective. The second is *power*: we\'ll show
+different and valuable perspective. The second is *power*: we'll show
 you how to create software that is short, fast, and safe. Lastly, we
 offer you a lot of *fun*: the pleasure of applying beautiful programming
 techniques to solve real problems.
 
 ### Novelty
 
-Haskell is most likely quite different from any language you\'ve ever
-used before. Compared to the usual set of concepts in a programmer\'s
+Haskell is most likely quite different from any language you've ever
+used before. Compared to the usual set of concepts in a programmer's
 mental toolbox, functional programming offers us a profoundly different
 way to think about software.
 
@@ -22,7 +22,7 @@ on functions that take immutable values as input and produce new values
 as output. Given the same inputs, these functions always return the same
 results. This is a core idea behind functional programming.
 
-Along with not modifying data, our Haskell functions usually don\'t talk
+Along with not modifying data, our Haskell functions usually don't talk
 to the external world; we call these functions *pure*. We make a strong
 distinction between pure code and the parts of our programs that read or
 write files, communicate over network connections, or make robot arms
@@ -40,7 +40,7 @@ around: it profoundly affects how we write programs.
 
 ### Power
 
-Throughout this book, we will show you how Haskell\'s alternatives to
+Throughout this book, we will show you how Haskell's alternatives to
 the features of traditional languages are powerful, flexible, and lead
 to reliable code. Haskell is positively crammed full of cutting edge
 ideas about how to create great software.
@@ -60,7 +60,7 @@ exotic hardware. Since there is much less of this impure code than we
 would find in a traditional language, we gain much more assurance that
 our software is solid.
 
-Lazy evaluation has some spooky effects. Let\'s say we want to find the
+Lazy evaluation has some spooky effects. Let's say we want to find the
 *k* least-valued elements of an unsorted list. In a traditional
 language, the obvious approach would be to sort the list and take the
 first *k* elements, but this is expensive. For efficiency, we would
@@ -89,7 +89,7 @@ It can take a while to develop an intuitive feel for when lazy
 evaluation is important, but when we exploit it, the resulting code is
 often clean, brief, and efficient.
 
-As the above example shows, an important aspect of Haskell\'s power lies
+As the above example shows, an important aspect of Haskell's power lies
 in the compactness of the code we write. Compared to working in popular
 traditional languages, when we develop in Haskell we often write much
 less code, in substantially less time, and with fewer bugs.
@@ -106,20 +106,20 @@ functional programming techniques will require plenty of thought and
 practice.
 
 Harking back to our own days of getting started with Haskell, the good
-news is that the fun begins early: it\'s simply an entertaining
+news is that the fun begins early: it's simply an entertaining
 challenge to dig into a new language, in which so many commonplace ideas
 are different or missing, and to figure out how to write simple
 programs.
 
 For us, the initial pleasure lasted as our experience grew and our
-understanding deepened. In other languages, it\'s difficult to see any
+understanding deepened. In other languages, it's difficult to see any
 connection between science and the nuts-and-bolts of programming. In
 Haskell, we have imported some ideas from abstract mathematics and put
 them to work. Even better, we find that not only are these ideas easy to
 pick up, they have a practical payoff in helping us to write more
 compact, reusable code.
 
-Furthermore, we won\'t be putting any \"brick walls\" in your way: there
+Furthermore, we won't be putting any "brick walls" in your way: there
 are no especially difficult or gruesome techniques in this book that you
 must master in order to be able to program effectively.
 
@@ -136,14 +136,14 @@ try, once we fix those compilation errors.
 We started this project because a growing number of people are using
 Haskell to solve everyday problems. Because Haskell has its roots in
 academia, few of the Haskell books that currently exist focus on the
-problems and techniques of everyday programming that we\'re interested
+problems and techniques of everyday programming that we're interested
 in.
 
 With this book, we want to show you how to use functional programming
 and Haskell to solve realistic problems. This is a hands-on book: every
 chapter contains dozens of code samples, and many contain complete
 applications. Here are a few examples of the libraries, techniques and
-tools that we\'ll show you how to develop.
+tools that we'll show you how to develop.
 
 -   Create an application that downloads podcast episodes from the
     Internet, and stores its history in an SQL database.
@@ -151,7 +151,7 @@ tools that we\'ll show you how to develop.
     that ought to be true, then let the QuickCheck library generate test
     cases automatically.
 -   Take a grainy phone camera snapshot of a barcode, and turn it into
-    an identifier that you can use to query a library or bookseller\'s
+    an identifier that you can use to query a library or bookseller's
     web site.
 -   Write code that thrives on the web. Exchange data with servers and
     clients written in other languages using JSON notation. Develop a
@@ -160,24 +160,24 @@ tools that we\'ll show you how to develop.
 ### A little bit about you
 
 What will you need to know before reading this book? We expect that you
-already know how to program, but if you\'ve never used a functional
-language, that\'s fine.
+already know how to program, but if you've never used a functional
+language, that's fine.
 
 No matter what your level of experience is, we have tried to anticipate
 your needs: we go out of our way to explain new and potentially tricky
 ideas in depth, usually with examples and images to drive our points
 home.
 
-As a new Haskell programmer, you\'ll inevitably start out writing quite
+As a new Haskell programmer, you'll inevitably start out writing quite
 a bit of code by hand for which you could have used a library function
-or programming technique, had you just known of its existence. We\'ve
+or programming technique, had you just known of its existence. We've
 packed this book with information to help you to come up to speed as
 quickly as possible.
 
 Of course, there will always be a few bumps along the road. If you start
 out anticipating an occasional surprise or difficulty along with the fun
 stuff, you will have the best experience. Any rough patches you might
-hit won\'t last long.
+hit won't last long.
 
 As you become a more seasoned Haskell programmer, the way that you write
 code will change. Indeed, over the course of this book, the way that we
@@ -207,21 +207,21 @@ flexible and powerful than traditional languages. Types make a major
 contribution to the brevity, clarity, and efficiency of Haskell
 programs.
 
-Although powerful, Haskell\'s type system is often also unobtrusive. If
+Although powerful, Haskell's type system is often also unobtrusive. If
 we omit explicit type information, a Haskell compiler will automatically
 infer the type of an expression or function. Compared to traditional
 static languages, to which we must spoon-feed large amounts of type
-information, the combination of power and inference in Haskell\'s type
+information, the combination of power and inference in Haskell's type
 system significantly reduces the clutter and redundancy of our code.
 
-Several of Haskell\'s other features combine to further increase the
+Several of Haskell's other features combine to further increase the
 amount of work we can fit into a screenful of text. This brings
 improvements in development time and agility: we can create reliable
 code quickly, and easily refactor it in response to changing
 requirements.
 
 Sometimes, Haskell programs may run more slowly than similar programs
-written in C or C++. For most of the code we write, Haskell\'s large
+written in C or C++. For most of the code we write, Haskell's large
 advantages in productivity and reliability outweigh any small
 performance disadvantage.
 
@@ -238,7 +238,7 @@ Over the past decade, dynamically typed, interpreted languages have
 become increasingly popular. They offer substantial benefits in
 developer productivity. Although this often comes at the cost of a huge
 performance hit, for many programming tasks productivity trumps
-performance, or performance isn\'t a significant factor in any case.
+performance, or performance isn't a significant factor in any case.
 
 Brevity is one area in which Haskell and dynamically typed languages
 perform similarly: in each case, we write much less code to solve a
@@ -248,7 +248,7 @@ same size in dynamically typed languages and Haskell.
 When we consider runtime performance, Haskell almost always has a huge
 advantage. Code compiled by the Glasgow Haskell Compiler (GHC) is
 typically between 20 and 60 times faster than code run through a dynamic
-language\'s interpreter. GHC also provides an interpreter, so you can
+language's interpreter. GHC also provides an interpreter, so you can
 run scripts without compiling them.
 
 Another big difference between dynamically typed languages and Haskell
@@ -260,11 +260,11 @@ offers the same advantage.
 Beyond this surface similarity, the differences run deep. In a
 dynamically typed language, we can create constructs that are difficult
 to express in a statically typed language. However, the same is true in
-reverse: with a type system as powerful as Haskell\'s, we can structure
+reverse: with a type system as powerful as Haskell's, we can structure
 a program in a way that would be unmanageable or infeasible in a
 dynamically typed language.
 
-It\'s important to recognise that each of these approaches involves
+It's important to recognise that each of these approaches involves
 tradeoffs. Very briefly put, the Haskell perspective emphasises safety,
 while the dynamically typed outlook favours flexibility. If someone had
 already discovered one way of thinking about types that was always best,
@@ -335,7 +335,7 @@ few of the common programming needs that these libraries address.
 -   Automated testing
 -   Sound and graphics
 
-The Hackage package database is the Haskell community\'s collection of
+The Hackage package database is the Haskell community's collection of
 open source libraries and applications. Most libraries published on
 Hackage are licensed under liberal terms that permit both commercial and
 open source use. Some of the areas covered by open source libraries
@@ -347,7 +347,7 @@ include the following.
 -   Desktop GUIs, including cross-platform toolkits
 -   Support for Unicode and other text encodings
 
-## A brief sketch of Haskell\'s history
+## A brief sketch of Haskell's history
 
 The development of Haskell is rooted in mathematics and computer science
 research.
@@ -386,7 +386,7 @@ committee to design a common language. After three years of work, the
 committee published the Haskell 1.0 specification in 1990. It named the
 language after Haskell Curry, an influential logician.
 
-Many people are rightfully suspicious of \"design by committee\", but
+Many people are rightfully suspicious of "design by committee", but
 the work of the Haskell committee is a beautiful example of the best
 work a committee can do. They produced an elegant, considered language
 design, and succeeded in unifying the fractured efforts of their
@@ -408,7 +408,7 @@ Still others used it as a teaching language.
 
 While these basic explorations of the 1990s proceeded, Haskell remained
 firmly an academic affair. The informal slogan of those inside the
-community was to \"avoid success at all costs\". Few outsiders had heard
+community was to "avoid success at all costs". Few outsiders had heard
 of the language at all. Indeed, functional programming as a field was
 quite obscure.
 
@@ -422,7 +422,7 @@ As these newer languages began to seep into wider use, they spread some
 crucial ideas. The first was that programmers are not merely capable of
 working in expressive languages; in fact, they flourish. The second was
 in part a byproduct of the rapid growth in raw computing power of that
-era: it\'s often smart to sacrifice some execution performance in
+era: it's often smart to sacrifice some execution performance in
 exchange for a big increase in programmer productivity. Finally, several
 of these languages borrowed from functional programming.
 
@@ -434,7 +434,7 @@ push the boundaries of performance and expressiveness.
 
 ## Helpful resources
 
-As you work with Haskell, you\'re sure to have questions and want more
+As you work with Haskell, you're sure to have questions and want more
 information about things. Here are some Internet resources where you can
 look up information and interact with other Haskell programmers.
 
@@ -449,7 +449,7 @@ look up information and interact with other Haskell programmers.
     Report](http://haskell.org/onlinereport/haskell2010/) describes the
     Haskell 2010 language standard.
 -   Various extensions to the language have become commonplace since the
-    Haskell 2010 Report was released. The [GHC Users\'s
+    Haskell 2010 Report was released. The [GHC Users's
     Guide](http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html)
     contains detailed documentation on the extensions supported by GHC,
     as well as some GHC-specific features.
@@ -460,11 +460,11 @@ look up information and interact with other Haskell programmers.
 
 ### Applications and libraries
 
-If you\'re looking for a Haskell library to use for a particular task,
+If you're looking for a Haskell library to use for a particular task,
 or an application written in Haskell, check out the following resources.
 
 -   The Haskell community maintains a central repository of open source
-    Haskell libraries and applications. It\'s called
+    Haskell libraries and applications. It's called
     [Hackage](http://hackage.haskell.org/), and it lets you search for
     software to download, or browse its collection by category.
 -   The [Haskell
@@ -500,7 +500,7 @@ about, and simply do some social networking with your peers.
     Report](https://wiki.haskell.org/Haskell_Communities_and_Activities_Report)
     collects information about people that use Haskell, and what they
     are doing with it. It has been running for years, so it provides a
-    good way to peer into Haskell\'s past.
+    good way to peer into Haskell's past.
 
 ## Acknowledgments
 
@@ -511,7 +511,7 @@ people of the Haskell community are unique in their combination of
 friendliness and intellectual depth.
 
 We wish to thank our editor, Mike Loukides, and the production team at
-O\'Reilly for all of their advice and assistance.
+O'Reilly for all of their advice and assistance.
 
 ### Bryan
 
@@ -543,12 +543,12 @@ too, and is always eager to have me take a break from the computer and
 help him make some fun typing noises on a 50-year-old Underwood
 typewriter.
 
-Most importantly, I wouldn\'t have ever been involved in this project
+Most importantly, I wouldn't have ever been involved in this project
 without the love, support, and encouragement from my wife, Terah.
 
 ### Don
 
-Before all else, I\'d like to thank my amazing co-conspirators, John and
+Before all else, I'd like to thank my amazing co-conspirators, John and
 Bryan, for encouragment, advice and motivation.
 
 My colleagues at Galois, Inc., who daily wield Haskell in the real
@@ -661,7 +661,7 @@ Jake Poznanski, Jakub Kotowski, Jakub Labath, James Cunningham, James
 Smith, Jamie Brandon, Jan Sabbe, Jared Roberts, Jason Dusek, Jason F,
 Jason Kikel, Jason Mobarak, Jason Morton, Jason Rogers, Jeff Balogh,
 Jeff Caldwell, Jeff Petkau, Jeffrey Bolden, Jeremy Crosbie, Jeremy
-Fitzhardinge, Jeremy O\'Donoghue, Jeroen Pulles, Jim Apple, Jim Crayne,
+Fitzhardinge, Jeremy O'Donoghue, Jeroen Pulles, Jim Apple, Jim Crayne,
 Jim Snow, Joan Jiménez, Joe Fredette, Joe Healy, Joel Lathrop, Joeri
 Samson, Johannes Laire, John Cowan, John Doe, John Hamilton, John
 Hornbeck, John Lien, John Stracke, Jonathan Guitton, Joseph Bruce,

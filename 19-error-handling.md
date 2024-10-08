@@ -2,21 +2,21 @@
 
 Error handling is one of the most important---and overlooked---topics
 for programmers, regardless of the language used. In Haskell, you will
-find two major types of error handling employed: \"pure\" error handling
+find two major types of error handling employed: "pure" error handling
 and exceptions.
 
-When we speak of \"pure\" error handling, we are referring to algorithms
+When we speak of "pure" error handling, we are referring to algorithms
 that do not require anything from the `IO` monad. We can often implement
-error handling for them by simply using Haskell\'s expressive data type
+error handling for them by simply using Haskell's expressive data type
 system to our advantage. Haskell also has an exception system. Due to
 the complexities of lazy evaluation, exceptions in Haskell can be thrown
-anywhere, but only caught within the `IO` monad. In this chapter, we\'ll
+anywhere, but only caught within the `IO` monad. In this chapter, we'll
 consider both.
 
 ## Error Handling with Data Types
 
-Let\'s begin our discussion of error handling with a very simple
-function. Let\'s say that we wish to perform division on a series of
+Let's begin our discussion of error handling with a very simple
+function. Let's say that we wish to perform division on a series of
 numbers. We have a constant numerator, but wish to vary the denominator.
 We might come up with a function like this:
 
@@ -43,13 +43,13 @@ ghci> divBy 50 [1,2,0,8,10]
 [50,25,*** Exception: divide by zero
 ```
 
-Isn\'t that interesting? `ghci` started displaying the output, then
-stopped with an exception when it got to the zero. That\'s lazy
+Isn't that interesting? `ghci` started displaying the output, then
+stopped with an exception when it got to the zero. That's lazy
 evaluation at work---it calculated results as needed.
 
 As we will see later in this chapter, in the absence of an explicit
-exception handler, this exception will crash the program. That\'s
-obviously not desirable, so let\'s consider better ways we could
+exception handler, this exception will crash the program. That's
+obviously not desirable, so let's consider better ways we could
 indicate an error in this pure function.
 
 ### Use of `Maybe`
@@ -57,7 +57,7 @@ indicate an error in this pure function.
 One immediately-recognizable easy way to indicate failure is to use
 `Maybe`.[^2] Instead of just returning a list and throwing an exception
 on failure, we can return `Nothing` if the input list contained a zero
-anywhere, or `Just` with the results otherwise. Here\'s an
+anywhere, or `Just` with the results otherwise. Here's an
 implementation of such an algorithm:
 
 ``` example
@@ -70,7 +70,7 @@ divBy numerator (denom:xs) =
       Just results -> Just ((numerator `div` denom) : results)
 ```
 
-If you try it out in `ghci`, you\'ll see that it works:
+If you try it out in `ghci`, you'll see that it works:
 
 ``` screen
 ghci> divBy 50 [1,2,5,8,10]
@@ -109,7 +109,7 @@ simplicity, but wanted to point out that it exists.
     The use of `Maybe` was convenient, but has come at a cost. `divBy`
     can no longer handle infinite lists as input. Since the result is
     `Maybe [a]`, the entire input list must be examined before we can be
-    sure that we won\'t be returning `Nothing` due to a zero somewhere
+    sure that we won't be returning `Nothing` due to a zero somewhere
     in it. You can verify this is the case by attempting one of our
     earlier examples:
 
@@ -118,20 +118,20 @@ simplicity, but wanted to point out that it exists.
     *** Exception: stack overflow
     ```
 
-    Note that you don\'t start seeing partial output here; you get *no*
+    Note that you don't start seeing partial output here; you get *no*
     output. Notice that at each step in `divBy` (except for the case of
     an empty input list or a zero at the start of the list), the results
     from every subsequent element must be known before the results from
-    the current element can be known. Thus this algorithm can\'t work on
+    the current element can be known. Thus this algorithm can't work on
     infinite lists, and it is also not very space-efficient for large
     finite lists.
 
     Having said all that, `Maybe` is often a fine choice. In this
-    particular case, we don\'t know whether there will be a problem
+    particular case, we don't know whether there will be a problem
     until we get into evaluating the entire input. Sometimes we know of
     a problem up front, for instance, that `tail []` in `ghci` produces
     an exception. We could easily write an infinite-capable `tail` that
-    doesn\'t have this problem:
+    doesn't have this problem:
 
     ``` example
     safeTail :: [a] -> Maybe [a]
@@ -142,7 +142,7 @@ simplicity, but wanted to point out that it exists.
     This simply returns `Nothing` if given an empty input list, or
     `Just` with the result for anything else. Since we only have to make
     sure the list is non-empty before knowing whether or not we have an
-    error, using `Maybe` here doesn\'t reduce our laziness. We can test
+    error, using `Maybe` here doesn't reduce our laziness. We can test
     this out in `ghci` and see how it compares with regular `tail`:
 
     ``` screen
@@ -157,7 +157,7 @@ simplicity, but wanted to point out that it exists.
     ```
 
     Here, we can see our `safeTail` performed as expected. But what
-    about infinite lists? We don\'t want to print out an infinite number
+    about infinite lists? We don't want to print out an infinite number
     of results, so we can test with `take 5 (tail [1..])` and a similar
     construction with `safeTail`:
 
@@ -178,7 +178,7 @@ simplicity, but wanted to point out that it exists.
     `Nothing` in that situation. We were able to achieve error handling
     at no expense to laziness.
 
-    But how do we apply this to our `divBy` example? Let\'s consider the
+    But how do we apply this to our `divBy` example? Let's consider the
     situation there: failure is a property of an individual bad input,
     not of the input list itself. How about making failure a property of
     an individual output element, rather than the output list itself?
@@ -186,7 +186,7 @@ simplicity, but wanted to point out that it exists.
     instead we will have `a -> [a] -> [Maybe a]`. This will have the
     benefit of preserving laziness, plus the caller will be able to
     determine exactly where in the list the problem was---or even just
-    filter out the problem results if desired. Here\'s an
+    filter out the problem results if desired. Here's an
     implementation:
 
     ``` example
@@ -197,7 +197,7 @@ simplicity, but wanted to point out that it exists.
               worker x = Just (numerator `div` x)
     ```
 
-    Take a look at this function. We\'re back to using `map`, which is a
+    Take a look at this function. We're back to using `map`, which is a
     good thing for both laziness and simplicity. We can try it out in
     `ghci` and see that it works for finite and infinite lists just
     fine:
@@ -219,13 +219,13 @@ simplicity, but wanted to point out that it exists.
 
 2.  Usage of the `Maybe` Monad
 
-    Back in [the section called \"Use of
-    Maybe\"](19-error-handling.org::*Use of Maybe) program named
-    `divby2.hs`. This example didn\'t preserve laziness, but returned a
+    Back in [the section called "Use of
+    Maybe"](19-error-handling.org::*Use of Maybe) program named
+    `divby2.hs`. This example didn't preserve laziness, but returned a
     value of type `Maybe [a]`. The exact same algorithm could be
     expressed using a monadic style. For more information and important
     background on monads, please refer to [Chapter 14,
-    *Monads*](15-monads.org). Here\'s our new monadic-style algorithm:
+    *Monads*](15-monads.org). Here's our new monadic-style algorithm:
 
     ``` example
     divBy :: Integral a => a -> [a] -> Maybe [a]
@@ -251,9 +251,9 @@ simplicity, but wanted to point out that it exists.
     *** Exception: stack overflow
     ```
 
-    The code we wrote actually isn\'t specific to the `Maybe` monad. By
+    The code we wrote actually isn't specific to the `Maybe` monad. By
     simply changing the type, we can make it work for *any* monad.
-    Let\'s try it:
+    Let's try it:
 
     ``` example
     divBy :: Integral a => a -> [a] -> Maybe [a]
@@ -272,7 +272,7 @@ simplicity, but wanted to point out that it exists.
     type that `ghci` infers if no type would be given. We also defined a
     convenience function `divBy` with a more specific type.
 
-    Let\'s try this out in `ghci`.
+    Let's try this out in `ghci`.
 
     ``` screen
     ghci> :l divby5.hs
@@ -289,9 +289,9 @@ simplicity, but wanted to point out that it exists.
     ```
 
     The first two examples both produce the same output we see before.
-    Since `divByGeneric` doesn\'t have a specific return type, we must
+    Since `divByGeneric` doesn't have a specific return type, we must
     either give one or let the interpreter infer one from the
-    environment. If we don\'t give a specific return type, `ghci` infers
+    environment. If we don't give a specific return type, `ghci` infers
     the `IO` monad. You can see that in the third and fourth examples.
     The `IO` monad converts `fail` into an exception, as you can see
     with the fourth example.
@@ -316,7 +316,7 @@ simplicity, but wanted to point out that it exists.
 
 The `Either` type is similar to the `Maybe` type, with one key
 difference: it can carry attached data both for an error and a success
-(\"the `Right` answer\").[^3] Although the language imposes no
+("the `Right` answer").[^3] Although the language imposes no
 restrictions, by convention, a function returning an `Either` uses a
 `Left` return value to indicate an error, and `Right` to indicate
 success. If it helps you remember, you can think of getting the `Right`
@@ -333,9 +333,9 @@ divBy numerator (denom:xs) =
       Right results -> Right ((numerator `div` denom) : results)
 ```
 
-This code is almost identical to the `Maybe` code; we\'ve substituted
+This code is almost identical to the `Maybe` code; we've substituted
 `Right` for every `Just`. `Left` compares to `Nothing`, but now it can
-carry a message. Let\'s check it out in `ghci`:
+carry a message. Let's check it out in `ghci`:
 
 ``` screen
 ghci> divBy 50 [1,2,5,8,10]
@@ -347,10 +347,10 @@ Left "divBy: division by 0"
 1.  Custom Data Types for Errors
 
     While a `String` indicating the cause of an error may be useful to
-    humans down the road, it\'s often helpful to define a custom error
+    humans down the road, it's often helpful to define a custom error
     type that we can use to programmatically decide on a course of
-    action based upon exactly what the problem was. For instance, let\'s
-    say that for some reason, besides 0, we also don\'t want to divide
+    action based upon exactly what the problem was. For instance, let's
+    say that for some reason, besides 0, we also don't want to divide
     by 10 or 20. We could define a custom error type like so:
 
     ``` example
@@ -372,7 +372,7 @@ Left "divBy: division by 0"
     Now, in the event of an error, the `Left` data could be inspected to
     find the exact cause. Or, it could simply be printed out with
     `show`, which will generate a reasonable idea of the problem as
-    well. Here\'s this function in action:
+    well. Here's this function in action:
 
     ``` screen
     ghci> divBy 50 [1,2,5,8]
@@ -397,15 +397,15 @@ Left "divBy: division by 0"
 
 2.  Monadic Use of `Either`
 
-    Back in [the section called \"Usage of the Maybe
-    Monad\"](19-error-handling.org::*Usage of the Maybe Monad) how to
+    Back in [the section called "Usage of the Maybe
+    Monad"](19-error-handling.org::*Usage of the Maybe Monad) how to
     use `Maybe` in a monad. `Either` can be used in a monad too, but can
     be slightly more complicated. The reason is that `fail` is
     hard-coded to accept only a `String` as the failure code, so we have
     to have a way to map such a string into whatever type we used for
     `Left`. As you saw earlier, `Control.Monad.Error` provides built-in
     support for `Either String a`, which involves no mapping for the
-    argument to `fail`. Here\'s how we can set up our example to work
+    argument to `fail`. Here's how we can set up our example to work
     with `Either` in the monadic style:
 
     ``` example
@@ -449,7 +449,7 @@ Left "divBy: division by 0"
 Exception handling is found in many programming languages, including
 Haskell. It can be useful because, when a problem occurs, it can provide
 an easy way of handling it, even if it occurred several layers down
-through a chain of function calls. With exceptions, it\'s not necessary
+through a chain of function calls. With exceptions, it's not necessary
 to check the return value of every function call to check for errors,
 and take care to produce a return value that reflects the error, as C
 programmers must do. In Haskell, thanks to monads and the `Either` and
@@ -459,7 +459,7 @@ without the need to use exceptions and exception handling.
 Some problems---especially those involving I/O---call for working with
 exceptions. In Haskell, exceptions may be thrown from any location in
 the program. However, due to the unspecified evaluation order, they can
-only be caught in the `IO` monad. Haskell exception handling doesn\'t
+only be caught in the `IO` monad. Haskell exception handling doesn't
 involve special syntax as it does in Python or Java. Rather, the
 mechanisms to catch and handle exceptions are---surprise---functions.
 
@@ -468,11 +468,11 @@ mechanisms to catch and handle exceptions are---surprise---functions.
 In the `Control.Exception` module, various functions and types relating
 to exceptions are defined. There is an `Exception` type defined there;
 all exceptions are of type `Exception`. There are also functions for
-catching and handling exceptions. Let\'s start by looking at `try`,
+catching and handling exceptions. Let's start by looking at `try`,
 which has type `IO a -> IO (Either Exception a)`. This wraps an `IO`
 action with exception handling. If an exception was thrown, it will
 return a `Left` value with the exception; otherwise, a `Right` value
-with the original result. Let\'s try this out in `ghci`. We\'ll first
+with the original result. Let's try this out in `ghci`. We'll first
 trigger an unhandled exception, and then try to catch it.
 
 ``` screen
@@ -490,17 +490,17 @@ ghci> try (print y)
 Right ()
 ```
 
-Notice that no exception was thrown by the `let` statements. That\'s to
-be expected due to lazy evaluation; the division by zero won\'t be
+Notice that no exception was thrown by the `let` statements. That's to
+be expected due to lazy evaluation; the division by zero won't be
 attempted until it is demanded by the attempt to print out `x`. Also,
 notice that there were two lines of output from `try (print y)`. The
 first line was produced by `print`, which displayed the digit 5 on the
 terminal. The second was produced by `ghci`, which is showing you that
-`print y` returned `()` and didn\'t throw an exception.
+`print y` returned `()` and didn't throw an exception.
 
 ### Laziness and Exception Handling
 
-Now that you know how `try` works, let\'s try another experiment. Let\'s
+Now that you know how `try` works, let's try another experiment. Let's
 say we want to catch the result of `try` for future evaluation, so we
 can handle the result of division. Perhaps we would do it like this:
 
@@ -509,7 +509,7 @@ ghci> result <- try (return x)
 Right *** Exception: divide by zero
 ```
 
-What happened here? Let\'s try to piece it together, and illustrate with
+What happened here? Let's try to piece it together, and illustrate with
 another attempt:
 
 ``` screen
@@ -526,18 +526,18 @@ Specifically, it lies with `return`, which does not force the evaluation
 of its argument; it only wraps it up. So, the result of
 `try (return undefined)` would be `Right undefined`. Now, `ghci` wants
 to display this result on the terminal. It gets as far as printing out
-`"Right "`, but you can\'t print out `undefined` (or the result of
-division by zero). So when you see the exception message, it\'s coming
+`"Right "`, but you can't print out `undefined` (or the result of
+division by zero). So when you see the exception message, it's coming
 from `ghci`, not your program.
 
-This is a key point. Let\'s think about why our earlier example worked
-and this one didn\'t. Earlier, we put `print x` inside `try`. Printing
+This is a key point. Let's think about why our earlier example worked
+and this one didn't. Earlier, we put `print x` inside `try`. Printing
 the value of something, of course, requires it to be evaluated, so the
 exception was detected at the right place. But simply using `return`
 does not force evaluation. To solve this problem, the
 `Control.Exception` module defines the `evaluate` function. It behaves
 just like `return`, but forces its argument to be evaluated immediately.
-Let\'s try it:
+Let's try it:
 
 ``` screen
 ghci> let z = undefined
@@ -547,7 +547,7 @@ ghci> result <- try (evaluate x)
 Left divide by zero
 ```
 
-There, that\'s what was expected. This worked for both `undefined` and
+There, that's what was expected. This worked for both `undefined` and
 our division by zero example.
 
 :::: tip
@@ -566,10 +566,10 @@ function.
 
 Often, you may wish to perform one action if a piece of code completes
 without an exception, and a different action otherwise. For situations
-like this, there\'s a function called `handle`. This function has type
+like this, there's a function called `handle`. This function has type
 `(Exception -> IO a) -> IO a -> IO a`. That is, it takes two parameters:
 the first is a function to call in the event there is an exception while
-performing the second. Here\'s one way we could use it:
+performing the second. Here's one way we could use it:
 
 ``` screen
 ghci> :m Control.Exception
@@ -582,7 +582,7 @@ ghci> handle (\_ -> putStrLn "Error calculating result") (print y)
 ```
 
 This way, we can print out a nice message if there is an error in the
-calculations. It\'s nicer than having the program crash with a division
+calculations. It's nicer than having the program crash with a division
 by zero error, for sure.
 
 ### Selective Handling of Exceptions
@@ -593,9 +593,9 @@ exception other than a division by zero exception. For instance, there
 may have been an error displaying the output, or some other exception
 could have been thrown by the pure code.
 
-There\'s a function `handleJust` for these situations. It lets you
+There's a function `handleJust` for these situations. It lets you
 specify a test to see whether you are interested in a given exception.
-Let\'s take a look:
+Let's take a look:
 
 ``` example
 #+CAPTION: hj1.hs
@@ -612,7 +612,7 @@ safePrint :: Integer -> IO ()
 safePrint x = handleJust catchIt handler (print x)
 ```
 
-`catchIt` defines a function that decides whether or not we\'re
+`catchIt` defines a function that decides whether or not we're
 interested in a given exception. It returns `Just` if so, and `Nothing`
 if not. Also, the value attached to `Just` will be passed to our
 handler. We can now use `safePrint` nicely:
@@ -691,19 +691,19 @@ error message about an ambiguous reference to a function. You can import
 one or the other module `qualified`, or hide the symbols from one module
 or the other.
 
-Note that `Prelude` exports `System.IO.Error`\'s version of `catch`,
+Note that `Prelude` exports `System.IO.Error`'s version of `catch`,
 *not* the version provided by `Control.Exception`. Remember that the
 former can only catch I/O errors, while the latter can catch all
 exceptions. In other words, the `catch` in `Control.Exception` is almost
 always the one you will want, but it is *not* the one you will get by
 default. #+END~WARNING~
 
-Let\'s take a look at one approach to using exceptions in the I/O system
-to our benefit. Back in [the section called \"Working With Files and
-Handles\"](7-io.org::*Working With Files and Handles) program that used
+Let's take a look at one approach to using exceptions in the I/O system
+to our benefit. Back in [the section called "Working With Files and
+Handles"](7-io.org::*Working With Files and Handles) program that used
 an imperative style to read lines from a file one by one. Although we
-subsequently demonstrated more compact, \"Haskelly\" ways to solve that
-problem, let\'s revisit that example here. In the `mainloop` function,
+subsequently demonstrated more compact, "Haskelly" ways to solve that
+problem, let's revisit that example here. In the `mainloop` function,
 we had to explicitly test if we were at the end of the input file before
 each attempt to read a line from it. Instead, we could check if the
 attempt to read a line resulted in an `EOF` error, like so:
@@ -750,16 +750,16 @@ Thus far, we have talked in detail about handling exceptions. There is
 another piece to the puzzle: throwing exceptions[^4]. In the examples we
 have visited so far in this chapter, the Haskell system throws
 exceptions for you. However, it is possible to throw any exception
-yourself. We\'ll show you how.
+yourself. We'll show you how.
 
-You\'ll notice that most of these functions appear to return a value of
+You'll notice that most of these functions appear to return a value of
 type `a` or `IO a`. This means that the function can appear to return a
 value of any type. In fact, because these functions throw exceptions,
-they never \"return\" anything in the normal sense. These return values
+they never "return" anything in the normal sense. These return values
 let you use these functions in various contexts where various different
 types are expected.
 
-Let\'s start our tour of ways to throw exceptions with the functions in
+Let's start our tour of ways to throw exceptions with the functions in
 `Control.Exception`. The most generic function is `throw`, which has
 type `Exception -> a`. This function can throw any `Exception`, and can
 do so in a pure context. There is a companion function `throwIO` with
@@ -786,7 +786,7 @@ errors from SQL databases back to applications. Errors from database
 engines often have three components: an integer that represents an error
 code, a state, and a human-readable error message. We will build up our
 own implementation of the HDBC `SqlError` type here in this chapter.
-Let\'s start with the data structure representing the error itself:
+Let's start with the data structure representing the error itself:
 
 ``` example
 {-# LANGUAGE DeriveDataTypeable #-}
@@ -800,12 +800,12 @@ data SqlError = SqlError {seState :: String,
                 deriving (Eq, Show, Read, Typeable)
 ```
 
-By deriving the `Typeable` type class, we\'ve made this type available
+By deriving the `Typeable` type class, we've made this type available
 for dynamically typed programming. In order for GHC to automatically
 generate a `Typeable` instance, we had to enable the
 `DeriveDataTypeable` language extension[^5].
 
-Now, let\'s define a `catchSql` and a `handleSql` that can be used to
+Now, let's define a `catchSql` and a `handleSql` that can be used to
 catch an exception that is an `SqlError`. Note that the regular `catch`
 and `handle` functions cannot catch our `SqlError`, because it is not a
 type of `Exception`.
@@ -832,10 +832,10 @@ exceptions.
 Normally, when an exception is thrown, but not caught anywhere, the
 program will crash and will display the exception to standard error.
 With a dynamic exception, however, the system will not know how to
-display this, so you will simply see an unhelpful \"unknown exception\"
+display this, so you will simply see an unhelpful "unknown exception"
 message. We can provide a utility so that application writers can simply
 say `main = handleSqlError $ do ...`, and have confidence that any
-exceptions thrown (in that thread) will be displayed. Here\'s how to
+exceptions thrown (in that thread) will be displayed. Here's how to
 write `handleSqlError`:
 
 ``` example
@@ -849,8 +849,8 @@ handleSqlError action =
     where handler e = fail ("SQL error: " ++ show e)
 ```
 
-Finally, let\'s give you an example of how to throw an `SqlError` as an
-exception. Here\'s a function that will do just that:
+Finally, let's give you an example of how to throw an `SqlError` as an
+exception. Here's a function that will do just that:
 
 ``` example
 throwSqlError :: String -> Int -> String -> a
@@ -877,7 +877,7 @@ This completes our dynamic exception support. That was a lot of code,
 and you may not have needed that much, but we wanted to give you an
 example of the dynamic exception itself and the utilities that often go
 with it. In fact, these examples reflect almost exactly what is present
-in the HDBC library. Let\'s play with these in `ghci` for a bit:
+in the HDBC library. Let's play with these in `ghci` for a bit:
 
 ``` screen
 ghci> :l dynexc.hs
@@ -891,10 +891,10 @@ ghci> handleSqlError $ fail "other error"
 *** Exception: user error (other error)
 ```
 
-From this, you can see that `ghci` doesn\'t know how to display an SQL
+From this, you can see that `ghci` doesn't know how to display an SQL
 error by itself. However, you can also see that our `handleSqlError`
 function helped out with that, but also passed through other errors
-unmodified. Let\'s finally try out a custom handler:
+unmodified. Let's finally try out a custom handler:
 
 ``` screen
 ghci> handleSql (fail . seErrorMsg) (throwSqlErrorIO "state" 5 "my error")
@@ -913,13 +913,13 @@ You can see that it worked as intended.
 ## Error handling in monads
 
 Because we must catch exceptions in the `IO` monad, if we try to use
-them inside a monad, or in a stack of monad transformers, we\'ll get
+them inside a monad, or in a stack of monad transformers, we'll get
 bounced out to the `IO` monad. This is almost never what we would
 actually like.
 
-We defined a `MaybeT` transformer in [the section called \"Understanding
+We defined a `MaybeT` transformer in [the section called "Understanding
 monad transformers by building
-one\"](18-monad-transformers.org::*Understanding monad transformers by building one)
+one"](18-monad-transformers.org::*Understanding monad transformers by building one)
 but it is more useful as an aid to understanding than a programming
 tool. Fortunately, a dedicated---and more useful---monad transformer
 already exists: `ErrorT`, which is defined in the `Control.Monad.Error`
@@ -975,7 +975,7 @@ class Error a where
     strMsg :: String -> a
 ```
 
-The `strMsg` function is used by `ErrorT`\'s implementation of `fail`.
+The `strMsg` function is used by `ErrorT`'s implementation of `fail`.
 It throws `strMsg` as an exception, passing it the string argument it
 received. As for `noMsg`, it is used to provide an `mzero`
 implementation for the `MonadPlus` type class.
@@ -994,7 +994,7 @@ runErrorT :: ErrorT e m a -> m (Either e a)
 
 ### A tiny parsing framework
 
-To illustrate the use of `ErrorT`, let\'s develop the bare bones of a
+To illustrate the use of `ErrorT`, let's develop the bare bones of a
 parsing library similar to Parsec.
 
 ``` example
@@ -1014,7 +1014,7 @@ instance Error ParseError where
     strMsg = Chatty
 ```
 
-For our parser\'s state, we will create a very small monad transformer
+For our parser's state, we will create a very small monad transformer
 stack. A `State` monad carries around the `ByteString` to parse, and
 stacked on top is `ErrorT` to provide error handling.
 
@@ -1028,7 +1028,7 @@ As usual, we have wrapped our monad stack in a `newtype`. This costs us
 nothing in performance, but adds type safety. We have deliberately
 avoided deriving an instance of `MonadState
 B.ByteString`. This means that users of the `Parser` monad will not be
-able to use `get` or `put` to query or modify the parser\'s state. As a
+able to use `get` or `put` to query or modify the parser's state. As a
 result, we force ourselves to do some manual lifting to get at the
 `State` monad in our stack. This is, however, very easy to do.
 
@@ -1095,18 +1095,18 @@ Right (Just '9',"a")
 
 ## Footnotes
 
-[^1]: We\'re using integral division here, so `50 / 8` shows as `6`
-    instead of `6.25`. We\'re not using floating-point arithmetic in
+[^1]: We're using integral division here, so `50 / 8` shows as `6`
+    instead of `6.25`. We're not using floating-point arithmetic in
     this example because division by zero with a `Double` produces the
     special value `Infinity` rather than an error.
 
-[^2]: For an introduction to `Maybe`, refer to [the section called \"A
+[^2]: For an introduction to `Maybe`, refer to [the section called "A
     more controlled
-    approach\"](3-defining-types-streamlining-functions.org::*A more controlled approach)
+    approach"](3-defining-types-streamlining-functions.org::*A more controlled approach)
 
 [^3]: For more information on `Either`, refer to [the section called
-    \"Handling errors through API
-    design\"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Handling errors through API design)
+    "Handling errors through API
+    design"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Handling errors through API design)
 
 [^4]: In some other languages, throwing an exception is referred to as
     *raising* it.

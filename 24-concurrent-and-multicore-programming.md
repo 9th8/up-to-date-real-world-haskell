@@ -77,7 +77,7 @@ the second time.
 ### Hiding latency
 
 Suppose we have a large file to compress and write to disk, but we want
-to handle a user\'s input quickly enough that they will perceive our
+to handle a user's input quickly enough that they will perceive our
 program as responding immediately. If we use `forkIO` to write the file
 out in a separate thread, we can do both simultaneously.
 
@@ -111,7 +111,7 @@ main = do
 ```
 ::::
 
-Because we\'re using lazy `ByteString` I/O here, all we really do in the
+Because we're using lazy `ByteString` I/O here, all we really do in the
 main thread is open the file. The actual reading occurs on demand in the
 other thread.
 
@@ -124,7 +124,7 @@ The simplest way to share information between two threads is to let them
 both use a variable. In our file compression example, the `main` thread
 shares both the name of a file and its contents with the other thread.
 Because Haskell data is immutable by default, this poses no risks:
-neither thread can modify the other\'s view of the file\'s name or
+neither thread can modify the other's view of the file's name or
 contents.
 
 We often need to have threads actively communicate with each other. For
@@ -168,7 +168,7 @@ communicate = do
 ::::
 
 The `newEmptyMVar` function has a descriptive name. To create an `MVar`
-that starts out non-empty, we\'d use `newMVar`.
+that starts out non-empty, we'd use `newMVar`.
 
 ``` screen
 ghci> :t newEmptyMVar
@@ -177,7 +177,7 @@ ghci> :t newMVar
 newMVar :: a -> IO (MVar a)
 ```
 
-Let\'s run our example in `ghci`.
+Let's run our example in `ghci`.
 
 ``` screen
 ghci> :load MVarExample
@@ -188,7 +188,7 @@ sending
 rece
 ```
 
-If you\'re coming from a background of concurrent programming in a
+If you're coming from a background of concurrent programming in a
 traditional language, you can think of an `MVar` as being useful for two
 familiar purposes.
 
@@ -200,14 +200,14 @@ familiar purposes.
 
 ## The main thread and waiting for other threads
 
-GHC\'s runtime system treats the program\'s original thread of control
+GHC's runtime system treats the program's original thread of control
 differently from other threads. When this thread finishes executing, the
 runtime system considers the program as a whole to have completed. If
 any other threads are executing at the time, they are terminated.
 
 As a result, when we have long-running threads that must not be killed,
 we must make special arrangements to ensure that the main thread
-doesn\'t complete until the others do. Let\'s develop a small library
+doesn't complete until the others do. Let's develop a small library
 that makes this easy to do.
 
 :::: captioned-content
@@ -244,7 +244,7 @@ waitAll :: ThreadManager -> IO ()
 
 We keep our `ThreadManager` type abstract using the usual recipe: we
 wrap it in a `newtype`, and prevent clients from creating values of this
-type. Among our module\'s exports, we list the type constructor and the
+type. Among our module's exports, we list the type constructor and the
 `IO` action that constructs a manager, but we do not export the data
 constructor.
 
@@ -267,7 +267,7 @@ module NiceFork
 ::::
 
 For the implementation of `ThreadManager`, we maintain a map from thread
-`ID` to thread state. We\'ll refer to this as the *thread map*.
+`ID` to thread state. We'll refer to this as the *thread map*.
 
 :::: captioned-content
 ::: caption
@@ -284,7 +284,7 @@ newManager = Mgr `fmap` newMVar M.empty
 ::::
 
 We have two levels of `MVar` use here. We keep the `Map` in an `MVar`.
-This lets us \"modify\" the map by replacing it with a new version. We
+This lets us "modify" the map by replacing it with a new version. We
 also ensure that any thread that uses the Map will see a consistent view
 of it.
 
@@ -315,7 +315,7 @@ forkManaged (Mgr mgr) body =
 ### Safely modifying an `MVar`
 
 The `modifyMVar` function that we used in `forkManaged` above is very
-useful: it\'s a safe combination of `takeMVar` and `putMVar`.
+useful: it's a safe combination of `takeMVar` and `putMVar`.
 
 ``` screen
 ghci> :t modifyMVar
@@ -340,7 +340,7 @@ When we use `modifyMVar` instead of manually managing an `MVar` with
     call to `putMVar` that *should* occur not actually happening, again
     leading to deadlock.
 
-Because of these nice safety properties, it\'s wise to use `modifyMVar`
+Because of these nice safety properties, it's wise to use `modifyMVar`
 whenever possible.
 
 ### Safe resource management: a good idea, and easy besides
@@ -357,10 +357,10 @@ it can be caught by application code.
 
 Safety aside, this approach has another benefit: it can make our code
 shorter and easier to follow. As we can see from looking at
-`forkManaged` above, Haskell\'s lightweight syntax for anonymous
+`forkManaged` above, Haskell's lightweight syntax for anonymous
 functions makes this style of coding visually unobtrusive.
 
-Here\'s the definition of `modifyMVar`, so that you can see a specific
+Here's the definition of `modifyMVar`, so that you can see a specific
 form of this pattern.
 
 :::: captioned-content
@@ -385,7 +385,7 @@ modifyMVar m io =
 ::::
 
 You should easily be able to adapt this to your particular needs,
-whether you\'re working with network connections, database handles, or
+whether you're working with network connections, database handles, or
 data managed by a C library.
 
 ### Finding the status of a thread
@@ -444,8 +444,8 @@ waitFor (Mgr mgr) tid = do
 ```
 ::::
 
-It first extracts the `MVar` that holds the thread\'s state, if it
-exists. The `Map` type\'s `updateLookupWithKey` function is useful: it
+It first extracts the `MVar` that holds the thread's state, if it
+exists. The `Map` type's `updateLookupWithKey` function is useful: it
 combines looking up a key with modifying or removing the value.
 
 ``` screen
@@ -455,10 +455,10 @@ updateLookupWithKey :: (Ord k) =>
                        (k -> a -> Maybe a) -> k -> Map k a -> (Maybe a, Map k a)
 ```
 
-In this case, we want to always remove the `MVar` holding the thread\'s
+In this case, we want to always remove the `MVar` holding the thread's
 state if it is present, so that our thread manager will no longer be
 managing the thread. If there was a value to extract, we take the
-thread\'s exit status from the `MVar` and return it.
+thread's exit status from the `MVar` and return it.
 
 Our final useful function simply waits for all currently managed threads
 to complete, and ignores their exit statuses.
@@ -477,7 +477,7 @@ waitAll (Mgr mgr) = modifyMVar mgr elems >>= mapM_ takeMVar
 ### Writing tighter code
 
 Our definition of `waitFor` above is a little unsatisfactory, because
-we\'re performing more or less the same case analysis in two places:
+we're performing more or less the same case analysis in two places:
 inside the function called by `modifyMVar`, and again on its return
 value.
 
@@ -493,7 +493,7 @@ join :: (Monad m) => m (m a) -> m a
 
 The trick here is to see that we can get rid of the second `case`
 expression by having the first one return the `IO` action that we should
-perform once we return from `modifyMVar`. We\'ll use `join` to execute
+perform once we return from `modifyMVar`. We'll use `join` to execute
 the action.
 
 :::: captioned-content
@@ -550,13 +550,13 @@ The `writeChan` function never blocks: it writes a new value into a
 
 Like most Haskell container types, both `MVar` and `Chan` are
 non-strict: neither evaluates its contents. We mention this not because
-it\'s a problem, but because it\'s a common blind spot: people tend to
-assume that these types are strict, perhaps because they\'re used in the
+it's a problem, but because it's a common blind spot: people tend to
+assume that these types are strict, perhaps because they're used in the
 `IO` monad.
 
 As for other container types, the upshot of a mistaken guess about the
 strictness of an `MVar` or `Chan` type is often a space or performance
-leak. Here\'s a plausible scenario to consider.
+leak. Here's a plausible scenario to consider.
 
 We fork off a thread to perform some expensive computation on another
 core.
@@ -598,7 +598,7 @@ When we take the result from the `MVar` in the parent thread and attempt
 to do something with it, our thread starts computing furiously, because
 we never forced the computation to actually occur in the other thread!
 
-As usual, the solution is straightforward, once we know there\'s a
+As usual, the solution is straightforward, once we know there's a
 potential for a problem: we add strictness to the forked thread, to
 ensure that the computation occurs there. This strictness is best added
 in one place, to avoid the possibility that we might forget to add it.
@@ -629,7 +629,7 @@ modifyMVar_strict m io = block $ do
 Tip
 :::
 
-It\'s always worth checking Hackage
+It's always worth checking Hackage
 
 In the Hackage package database, you will find a library,
 `strict-concurrency`, that provides strict versions of the `MVar` and
@@ -638,8 +638,8 @@ In the Hackage package database, you will find a library,
 
 The `!` pattern above is simple to use, but it is not always sufficient
 to ensure that our data is evaluated. For a more complete approach, see
-[the section called \"Separating algorithm from
-evaluation\"](24-concurrent-and-multicore-programming.org::*Separating algorithm from evaluation)
+[the section called "Separating algorithm from
+evaluation"](24-concurrent-and-multicore-programming.org::*Separating algorithm from evaluation)
 below.
 
 ### Chan is unbounded
@@ -665,8 +665,8 @@ In a *deadlock* situation, two or more threads get stuck forever in a
 clash over access to shared resources. One classic way to make a
 multithreaded program deadlock is to forget the order in which we must
 acquire locks. This kind of bug is so common, it has a name: *lock order
-inversion*. While Haskell doesn\'t provide locks, the `MVar` type is
-prone to the order inversion problem. Here\'s a simple example.
+inversion*. While Haskell doesn't provide locks, the `MVar` type is
+prone to the order inversion problem. Here's a simple example.
 
 :::: captioned-content
 ::: caption
@@ -714,7 +714,7 @@ them tough to even reproduce, never mind isolate and fix.
 ### Starvation
 
 Concurrent software is also prone to *starvation*, in which one thread
-\"hogs\" a shared resource, preventing another from using it. It\'s easy
+"hogs" a shared resource, preventing another from using it. It's easy
 to imagine how this might occur: one thread calls `modifyMVar` with a
 body that executes for 100 milliseconds, while another calls
 `modifyMVar` on the same `MVar` with a body that executes for 1
@@ -726,8 +726,8 @@ a starvation problem. If we put a thunk into an `MVar` that will be
 expensive to evaluate, and take it out of the `MVar` in a thread that
 otherwise looks like it *ought* to be cheap, that thread could suddenly
 become computationally expensive if it has to evaluate the thunk. This
-makes the advice we gave in [the section called \"MVar and Chan are
-non-strict\"](24-concurrent-and-multicore-programming.org::*MVar and Chan are non-strict)
+makes the advice we gave in [the section called "MVar and Chan are
+non-strict"](24-concurrent-and-multicore-programming.org::*MVar and Chan are non-strict)
 
 ### Is there any hope?
 
@@ -746,7 +746,7 @@ memory*](28-software-transactional-memory.org).
     `BoundedChan` at once.
 3.  If this limit is hit, a call to your `writeBoundedChan` function
     must block until a reader uses `readBoundedChan` to consume a value.
-4.  Although we\'ve already mentioned the existence of the
+4.  Although we've already mentioned the existence of the
     strict-concurrency package in the Hackage repository, try developing
     your own, as a wrapper around the built-in `MVar` type. Following
     classic Haskell practice, make your library type safe, so that users
@@ -759,10 +759,10 @@ write explicitly concurrent code. To use multiple cores, we must
 explicitly choose to do so. We make this choice at *link time*, when we
 are generating an executable program.
 
--   The \"non-threaded\" runtime library runs all Haskell threads in a
+-   The "non-threaded" runtime library runs all Haskell threads in a
     single operating system thread. This runtime is highly efficient for
     creating threads and passing data around in `MVars`.
--   The \"threaded\" runtime library uses multiple operating system
+-   The "threaded" runtime library uses multiple operating system
     threads to run Haskell threads. It has somewhat more overhead for
     creating threads and using `MVars`.
 
@@ -777,17 +777,17 @@ the runtime how many cores to use.
 
 ### Runtime options
 
-We can pass options to GHC\'s runtime system on the command line of our
+We can pass options to GHC's runtime system on the command line of our
 program. Before handing control to our code, the runtime scans the
-program\'s arguments for the special command line option `+RTS`. It
+program's arguments for the special command line option `+RTS`. It
 interprets everything that follows, until the special option `-RTS`, as
 an option for the runtime system, not our program. It hides all of these
-options from our code. When we use the `System.Environment` module\'s
+options from our code. When we use the `System.Environment` module's
 `getArgs` function to obtain our command line arguments, we will not
 find any runtime options in the list.
 
 The threaded runtime accepts an option `-N`[^2]. This takes one
-argument, which specifies the number of cores that GHC\'s runtime system
+argument, which specifies the number of cores that GHC's runtime system
 should use. The option parser is picky: there must be no spaces between
 `-N` and the number that follows it. The option `-N4` is acceptable, but
 `-N 4` is not.
@@ -869,7 +869,7 @@ to develop a parallel program. This forces us to contend with the
 familiar problems of deadlocks, race conditions, starvation, and sheer
 complexity.
 
-While we could certainly use Haskell\'s concurrency features to develop
+While we could certainly use Haskell's concurrency features to develop
 parallel code, there is a much simpler approach available to us. We can
 take a normal Haskell function, apply a few simple transformations to
 it, and have it evaluated in parallel.
@@ -878,7 +878,7 @@ it, and have it evaluated in parallel.
 
 The familiar `seq` function evaluates an expression to what we call
 *head normal form* (abbreviated HNF). It stops once it reaches the
-outermost constructor (the \"head\"). This is distinct from *normal
+outermost constructor (the "head"). This is distinct from *normal
 form* (NF), in which an expression is completely evaluated.
 
 You will also hear Haskell programmers refer to *weak* head normal form
@@ -908,7 +908,7 @@ sort _ = []
 This function is inspired by the well-known Quicksort algorithm, and it
 is a classic among Haskell programmers: it is often presented as a
 one-liner early in a Haskell tutorial, to tease the reader with an
-example of Haskell\'s expressiveness. Here, we\'ve split the code over a
+example of Haskell's expressiveness. Here, we've split the code over a
 few lines, to make it easier to compare the serial and parallel
 versions.
 
@@ -1026,11 +1026,11 @@ force xs = go xs `pseq` ()
 ```
 ::::
 
-Notice that we don\'t care what\'s in the list; we walk down its spine
+Notice that we don't care what's in the list; we walk down its spine
 to the end, then use `pseq` once. There is clearly no magic involved
-here: we are just using our usual understanding of Haskell\'s evaluation
+here: we are just using our usual understanding of Haskell's evaluation
 model. And because we will be using `force` on the left hand side of
-`par` or `pseq`, we don\'t need to return a meaningful value.
+`par` or `pseq`, we don't need to return a meaningful value.
 
 Of course, in many cases we will need to force the evaluation of
 individual elements of the list, too. Below, we will discuss a type
@@ -1039,15 +1039,15 @@ class-based solution to this problem.
 ### What promises does par make?
 
 The `par` function does not actually promise to evaluate an expression
-in parallel with another. Instead, it undertakes to do so if it \"makes
-sense\". This wishy-washy non-promise is actually more useful than a
+in parallel with another. Instead, it undertakes to do so if it "makes
+sense". This wishy-washy non-promise is actually more useful than a
 guarantee to always evaluate an expression in parallel. It gives the
 runtime system the freedom to act intelligently when it encounters a use
 of `par`.
 
 For instance, the runtime could decide that an expression is too cheap
 to be worth evaluating in parallel. Or it might notice that all cores
-are currently busy, so that \"sparking\" a new parallel evaluation will
+are currently busy, so that "sparking" a new parallel evaluation will
 lead to there being more runnable threads than there are cores available
 to execute them.
 
@@ -1058,7 +1058,7 @@ down by threads contending for busy cores.
 
 ### Running our code, and measuring performance
 
-To try our code out, let\'s save `sort`, `parSort`, and `parSort2` to a
+To try our code out, let's save `sort`, `parSort`, and `parSort2` to a
 module named `Sorting.hs`. We create a small driver program that we can
 use to time the performance of one of those sorting function.
 
@@ -1110,7 +1110,7 @@ something of a minefield. Here are some potential problems that we
 specifically work to avoid in our driver program.
 
 -   *Measuring several things, when we think we are looking at just
-    one.* Haskell\'s default pseudorandom number generator (PRNG) is
+    one.* Haskell's default pseudorandom number generator (PRNG) is
     slow, and the `randoms` function generates random numbers on demand.
 
     Before we record our starting time, we force every element of the
@@ -1133,7 +1133,7 @@ specifically work to avoid in our driver program.
     random number depends on the value of the preceding random number in
     the list, but we have scattered the list elements randomly among our
     processor cores. If we did not evaluate the list elements prior to
-    sorting, we would suffer a terrible \"ping pong\" effect: not only
+    sorting, we would suffer a terrible "ping pong" effect: not only
     would evaluation bounce from one core to another, performance would
     suffer.
 
@@ -1147,7 +1147,7 @@ specifically work to avoid in our driver program.
     `putStrLn` demanding the length of the list in order to print it,
     the sort would not occur at all.
 
-When we build the program, we enable optimization and GHC\'s threaded
+When we build the program, we enable optimization and GHC's threaded
 runtime.
 
 ``` screen
@@ -1157,7 +1157,7 @@ $ ghc -threaded -O2 --make SortMain
 Linking SortMain ...
 ```
 
-When we run the program, we must tell GHC\'s runtime how many cores to
+When we run the program, we must tell GHC's runtime how many cores to
 use. Initially, we try the original `sort`, to establish a performance
 baseline.
 
@@ -1310,7 +1310,7 @@ using 6.8.2, we suggest upgrading to at least 6.8.3.
 ## Parallel strategies and `MapReduce`
 
 Within the programming community, one of the most famous software
-systems to credit functional programming for inspiration is Google\'s
+systems to credit functional programming for inspiration is Google's
 MapReduce infrastructure for parallel processing of bulk data.
 
 We can easily construct a greatly simplified, but still useful, Haskell
@@ -1333,14 +1333,14 @@ effort, we will resist the temptation to dive in. If we think about
 solving a *class* of problems instead of a single one, we may end up
 with more widely applicable code.
 
-When we develop a parallel program, we are always faced with a few \"bad
-penny\" problems, which turn up no matter what the underlying
+When we develop a parallel program, we are always faced with a few "bad
+penny" problems, which turn up no matter what the underlying
 programming language is.
 
 -   Our algorithm quickly becomes obscured by the details of
     partitioning and communication. This makes it difficult to
     understand code, which in turn makes modifying it risky.
--   Choosing a \"grain size\"---the smallest unit of work parceled out
+-   Choosing a "grain size"---the smallest unit of work parceled out
     to a core---can be difficult. If the grain size is too small, cores
     spend so much of their time on book-keeping that a parallel program
     can easily become slower than a serial counterpart. If the grain
@@ -1371,7 +1371,7 @@ parallelMap _ _      = []
 ::::
 
 The type `b` might be a list, or some other type for which evaluation to
-WHNF doesn\'t do a useful amount of work. We\'d prefer not to have to
+WHNF doesn't do a useful amount of work. We'd prefer not to have to
 write a special `parallelMap` for lists, and for every other type that
 needs special handling.
 
@@ -1494,8 +1494,8 @@ Tip
 Remembering those names
 
 If the names of these functions and types are not sticking in your head,
-look at them as acronyms. The name `rwhnf` expands to \"reduce to weak
-head normal form\"; NFData becomes \"normal form data\"; and so on.
+look at them as acronyms. The name `rwhnf` expands to "reduce to weak
+head normal form"; NFData becomes "normal form data"; and so on.
 ::::
 
 For the basic types, such as `Int`, weak head normal form and normal
@@ -1595,7 +1595,7 @@ We can quickly suggest a type for a `mapReduce` function by considering
 what it must do. We need a *map* component, to which we will give the
 usual type `a -> b`. And we need a *reduce*; this term is a synonym for
 *fold*. Rather than commit ourselves to using a specific kind of fold,
-we\'ll use a more general type, `[b] -> c`. This type lets us use a left
+we'll use a more general type, `[b] -> c`. This type lets us use a left
 or right fold, so we can choose the one that suits our data and
 processing needs.
 
@@ -1631,7 +1631,7 @@ simpleMapReduce mapFunc reduceFunc = reduceFunc . map mapFunc
 
 Our definition of `simpleMapReduce` is too simple to really be
 interesting. To make it useful, we want to be able to specify that some
-of the work should occur in parallel. We\'ll achieve this using
+of the work should occur in parallel. We'll achieve this using
 strategies, passing in a strategy for the map phase and one for the
 reduction phase.
 
@@ -1746,11 +1746,11 @@ to ensure that we can stream these chunks safely.
 
     On top of these well-known risks, we cannot use a single file handle
     to supply data to multiple threads. A file handle has a single
-    \"seek pointer\" that tracks the position from which it should be
+    "seek pointer" that tracks the position from which it should be
     reading, but when we want to read multiple chunks, each needs to
     consume data from a different position in the file.
 
-    With these ideas in mind, let\'s fill out the lazy I/O picture.
+    With these ideas in mind, let's fill out the lazy I/O picture.
 
     :::: captioned-content
     ::: caption
@@ -1781,7 +1781,7 @@ to ensure that we can stream these chunks safely.
     `rnf` to force all of our processing to complete before we return
     from `withChunks`. We can then close our file handles explicitly, as
     they should no longer be read from. If you must use lazy I/O in a
-    program, it is often best to \"firewall\" it like this, so that it
+    program, it is often best to "firewall" it like this, so that it
     cannot cause problems in unexpected parts of your code.
 
     :::: tip
@@ -1792,8 +1792,8 @@ to ensure that we can stream these chunks safely.
     Processing chunks via a fold
 
     We can adapt the fold-with-early-termination technique from [the
-    section called \"Another way of looking at
-    traversal\"](9-a-library-for-searching-the-file-system.org::*Another way of looking at traversal)
+    section called "Another way of looking at
+    traversal"](9-a-library-for-searching-the-file-system.org::*Another way of looking at traversal)
     stream-based file processing. While this requires more work than the
     lazy I/O approach, it nicely avoids the above problems.
     ::::
@@ -1803,7 +1803,7 @@ to ensure that we can stream these chunks safely.
 Since a server log file is line-oriented, we need an efficient way to
 break a file into large chunks, while making sure that each chunk ends
 on a line boundary. Since a chunk might be tens of megabytes in size, we
-don\'t want to scan all of the data in a chunk to determine where its
+don't want to scan all of the data in a chunk to determine where its
 final boundary should be.
 
 Our approach works whether we choose a fixed chunk size or a fixed
@@ -1881,7 +1881,7 @@ main = do
 ::::
 
 If we compile this program with `ghc -O2 --make -threaded`, it should
-perform well after an initial run to \"warm\" the filesystem cache. On a
+perform well after an initial run to "warm" the filesystem cache. On a
 dual core laptop, processing a log file 248 megabytes (1.1 million
 lines) in size, this program runs in 0.576 seconds using a single core,
 and 0.361 with two (using `+RTS -N2`).
@@ -1889,7 +1889,7 @@ and 0.361 with two (using `+RTS -N2`).
 ### Finding the most popular URLs
 
 In this example, we count the number of times each URL is accessed. This
-example comes from \[[Google08](bibliography.org::Google08)\], Google\'s
+example comes from \[[Google08](bibliography.org::Google08)\], Google's
 original paper discussing MapReduce. In the *map* phase, for each chunk,
 we create a `Map` from URL to the number of times it was accessed. In
 the *reduce* phase, we union-merge these maps into one.
@@ -1922,7 +1922,7 @@ countURLs = mapReduce rwhnf (foldl' augment M.empty . L.lines)
               Just (_:url:_) -> M.insertWith' (+) url 1 map
               _ -> map
         strict  = S.concat . L.toChunks
-        pattern = S.pack "\"(?:GET|POST|HEAD) ([^ ]+) HTTP/"
+        pattern = S.pack ""(?:GET|POST|HEAD) ([^ ]+) HTTP/"
 ```
 ::::
 
@@ -1938,13 +1938,13 @@ containing 1.1 million entries.
 ### Conclusions
 
 Given a problem that fits its model well, the MapReduce programming
-model lets us write \"casual\" parallel programs in Haskell with good
+model lets us write "casual" parallel programs in Haskell with good
 performance, and minimal additional effort. We can easily extend the
 idea to use other data sources, such as collections of files, or data
 sourced over the network.
 
 In many cases, the performance bottleneck will be streaming data at a
-rate high enough to keep up with a core\'s processing capacity. For
+rate high enough to keep up with a core's processing capacity. For
 instance, if we try to use either of the above sample programs on a file
 that is not cached in memory or streamed from a high-bandwidth storage
 array, we will spend most of our time waiting for disk I/O, gaining no

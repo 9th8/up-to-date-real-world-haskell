@@ -1,9 +1,9 @@
 # Chapter 10: Code case study: parsing a binary data format
 
-In this chapter, we\'ll discuss a common task: parsing a binary file. We
+In this chapter, we'll discuss a common task: parsing a binary file. We
 will use this task for two purposes. Our first is indeed to talk a
 little about parsing, but our main goal is to talk about program
-organisation, refactoring, and \"boilerplate removal\". We will
+organisation, refactoring, and "boilerplate removal". We will
 demonstrate how you can tidy up repetitious code, and set the stage for
 our discussion of monads in [Chapter 14, Monads](15-monads.org).
 
@@ -16,14 +16,14 @@ compressed.
 
 ## Greyscale files
 
-The name of netpbm\'s greyscale file format is PGM (\"portable grey
-map\"). It is actually not one format, but two; the \"plain\" (or
-\"P2\") format is encoded as ASCII, while the more common \"raw\"
-(\"P5\") format is mostly binary.
+The name of netpbm's greyscale file format is PGM ("portable grey
+map"). It is actually not one format, but two; the "plain" (or
+"P2") format is encoded as ASCII, while the more common "raw"
+("P5") format is mostly binary.
 
 A file of either format starts with a header, which in turn begins with
-a \"magic\" string describing the format. For a plain file, the string
-is `P2`, and for raw, it\'s `P5`. The magic string is followed by white
+a "magic" string describing the format. For a plain file, the string
+is `P2`, and for raw, it's `P5`. The magic string is followed by white
 space, then by three numbers: the width, height, and maximum grey value
 of the image. These numbers are represented as ASCII decimal numbers,
 separated by white space.
@@ -38,15 +38,15 @@ with its own header. A plain file contains only one image.
 
 ## Parsing a raw PGM file
 
-For our first try at a parsing function, we\'ll only worry about raw PGM
-files. We\'ll write our PGM parser as a *pure* function. It\'s not
+For our first try at a parsing function, we'll only worry about raw PGM
+files. We'll write our PGM parser as a *pure* function. It's not
 responsible for obtaining the data to parse, just for the actual
 parsing. This is a common approach in Haskell programs. By separating
 the reading of the data from what we subsequently do with it, we gain
 flexibility in where we take the data from.
 
-We\'ll use the `ByteString` type to store our greymap data, because
-it\'s compact. Since the header of a PGM file is ASCII text, but its
+We'll use the `ByteString` type to store our greymap data, because
+it's compact. Since the header of a PGM file is ASCII text, but its
 body is binary, we import both the text and binary-oriented `ByteString`
 modules.
 
@@ -62,10 +62,10 @@ import Data.Char (isSpace)
 ```
 ::::
 
-For our purposes, it doesn\'t matter whether we use a lazy or strict
-`ByteString`, so we\'ve somewhat arbitrarily chosen the lazy kind.
+For our purposes, it doesn't matter whether we use a lazy or strict
+`ByteString`, so we've somewhat arbitrarily chosen the lazy kind.
 
-We\'ll use a straightforward data type to represent PGM images.
+We'll use a straightforward data type to represent PGM images.
 
 :::: captioned-content
 ::: caption
@@ -85,9 +85,9 @@ data Greymap = Greymap {
 Normally, a Haskell `Show` instance should produce a string
 representation that we can read back by calling `read`. However, for a
 bitmap graphics file, this would potentially produce huge text strings,
-for example if we were to `show` a photo. For this reason, we\'re not
+for example if we were to `show` a photo. For this reason, we're not
 going to let the compiler automatically derive a `Show` instance for us:
-we\'ll write our own, and intentionally simplify it.
+we'll write our own, and intentionally simplify it.
 
 :::: captioned-content
 ::: caption
@@ -102,10 +102,10 @@ instance Show Greymap where
 ::::
 
 Because our `Show` instance intentionally avoids printing the bitmap
-data, there\'s no point in writing a `Read` instance, as we can\'t
+data, there's no point in writing a `Read` instance, as we can't
 reconstruct a valid Greymap from the result of `show`.
 
-Here\'s an obvious type for our parsing function.
+Here's an obvious type for our parsing function.
 
 :::: captioned-content
 ::: caption
@@ -122,9 +122,9 @@ a single parsed `Greymap`, along with the string that remains after
 parsing. That residual string will be available for future parses.
 
 Our parsing function has to consume a little bit of its input at a time.
-First, we need to assure ourselves that we\'re really looking at a raw
+First, we need to assure ourselves that we're really looking at a raw
 PGM file; then we need to parse the numbers from the remainder of the
-header; then we consume the bitmap data. Here\'s an obvious way to
+header; then we consume the bitmap data. Here's an obvious way to
 express this, which we will use as a base for later improvements.
 
 :::: captioned-content
@@ -208,18 +208,18 @@ getBytes n str = let count           = fromIntegral n
 
 While our `parseP5` function works, the style in which we wrote it is
 somehow not pleasing. Our code marches steadily to the right of the
-screen, and it\'s clear that a slightly more complicated function would
+screen, and it's clear that a slightly more complicated function would
 soon run out of visual real estate. We repeat a pattern of constructing
 and then deconstructing `Maybe` values, only continuing if a particular
 value matches `Just`. All of the similar `case` expressions act as
-\"boilerplate code\", busywork that obscures what we\'re really trying
+"boilerplate code", busywork that obscures what we're really trying
 to do. In short, this function is begging for some abstraction and
 refactoring.
 
 If we step back a little, we can see two patterns. First is that many of
 the functions that we apply have similar types. Each takes a
 `ByteString` as its last argument, and returns `Maybe` something else.
-Secondly, every step in the \"ladder\" of our `parseP5` function
+Secondly, every step in the "ladder" of our `parseP5` function
 deconstructs a `Maybe` value, and either fails or passes the unwrapped
 result to a function.
 
@@ -241,7 +241,7 @@ The `(>>?)` function acts very simply: it takes a value as its left
 argument, and a function as its right. If the value is not `Nothing`, it
 applies the function to whatever is wrapped in the `Just` constructor.
 We have defined our function as an operator so that we can use it to
-chain functions together. Finally, we haven\'t provided a fixity
+chain functions together. Finally, we haven't provided a fixity
 declaration for `(>>?)`, so it defaults to `infixl 9` (left associative,
 strongest operator precedence). In other words, `a >>? b >>? c` will be
 evaluated from left to right, as `(a >>? b) >>? c)`.
@@ -279,23 +279,23 @@ is a function that returns a `Maybe` value. Each left-and-right-sides
 expression is thus of type `Maybe`, suitable for passing to the
 following `(>>?)` expression.
 
-The other change that we\'ve made to improve readability is add a
-`skipSpace` function. With these changes, we\'ve halved the number of
+The other change that we've made to improve readability is add a
+`skipSpace` function. With these changes, we've halved the number of
 lines of code compared to our original parsing function. By removing the
-boilerplate `case` expressions, we\'ve made the code easier to follow.
+boilerplate `case` expressions, we've made the code easier to follow.
 
 While we warned against overuse of anonymous functions in [the section
-called \"Anonymous (lambda)
-functions\"](4-functional-programming.org::*Anonymous (lambda) functions)
+called "Anonymous (lambda)
+functions"](4-functional-programming.org::*Anonymous (lambda) functions)
 in our chain of functions here. Because these functions are so small, we
-wouldn\'t improve readability by giving them names.
+wouldn't improve readability by giving them names.
 
 ## Implicit state
 
-We\'re not yet out of the woods. Our code explicitly passes pairs
+We're not yet out of the woods. Our code explicitly passes pairs
 around, using one element for an intermediate part of the parsed result
 and the other for the current residual `ByteString`. If we want to
-extend the code, for example to track the number of bytes we\'ve
+extend the code, for example to track the number of bytes we've
 consumed so that we can report the location of a parse failure, we
 already have eight different spots that we will need to modify, just to
 pass a three-tuple around.
@@ -307,7 +307,7 @@ pairs straight into our code. As pleasant and helpful as pattern
 matching is, it can lead us in some undesirable directions if we do not
 use it carefully.
 
-Let\'s do something to address the inflexibility of our new code. First,
+Let's do something to address the inflexibility of our new code. First,
 we will change the type of state that our parser uses.
 
 :::: captioned-content
@@ -396,7 +396,7 @@ matching.
 
 ### The identity parser
 
-Let\'s try to define a simple parser, the *identity* parser. All it does
+Let's try to define a simple parser, the *identity* parser. All it does
 is turn whatever it is passed into the result of the parse. In this way,
 it somewhat resembles the `id` function.
 
@@ -419,7 +419,7 @@ to parse something?
 The first thing we must do is peel off the `Parse` wrapper so that we
 can get at the function inside. We do so using the `runParse` function.
 We also need to construct a `ParseState`, then run our parsing function
-on that parse state. Finally, we\'d like to separate the result of the
+on that parse state. Finally, we'd like to separate the result of the
 parse from the final `ParseState`.
 
 :::: captioned-content
@@ -437,7 +437,7 @@ parse parser initState
 ::::
 
 Because neither the `identity` parser nor the `parse` function examines
-the parse state, we don\'t even need to create an input string in order
+the parse state, we don't even need to create an input string in order
 to try our code.
 
 ``` screen
@@ -452,7 +452,7 @@ ghci> parse (identity "foo") undefined
 Right "foo"
 ```
 
-A parser that doesn\'t even inspect its input might not seem
+A parser that doesn't even inspect its input might not seem
 interesting, but we will shortly see that in fact it is useful.
 Meanwhile, we have gained confidence that our types are correct and that
 we understand the basic workings of our code.
@@ -491,8 +491,8 @@ them using commas.
 
 ### A more interesting parser
 
-Let\'s focus now on writing a parser that does something meaningful.
-We\'re not going to get too ambitious yet: all we want to do is parse a
+Let's focus now on writing a parser that does something meaningful.
+We're not going to get too ambitious yet: all we want to do is parse a
 single byte.
 
 :::: captioned-content
@@ -540,22 +540,22 @@ Tip
 
 Hanging lambdas
 
-The definition of `parseByte` has a visual style that we haven\'t
+The definition of `parseByte` has a visual style that we haven't
 discussed before. It contains anonymous functions in which the
-parameters and `->` sit at the end of a line, with the function\'s body
+parameters and `->` sit at the end of a line, with the function's body
 following on the next line.
 
-This style of laying out an anonymous function doesn\'t have an official
-name, so let\'s call it a \"hanging lambda\". Its main use is to make
+This style of laying out an anonymous function doesn't have an official
+name, so let's call it a "hanging lambda". Its main use is to make
 room for more text in the body of the function. It also makes it more
-visually clear that there\'s a relationship between one function and the
+visually clear that there's a relationship between one function and the
 one that follows. Often, for instance, the result of the first function
 is being passed as a parameter to the second.
 ::::
 
 ### Obtaining and modifying the parse state
 
-Our `parseByte` function doesn\'t take the parse state as an argument.
+Our `parseByte` function doesn't take the parse state as an argument.
 Instead, it has to call `getState` to get a copy of the state, and
 `putState` to replace the current state with a new one.
 
@@ -583,13 +583,13 @@ current parsing state with a new one. This becomes the state that will
 be seen by the next function in the `(==>)` chain.
 
 These functions let us move explicit state handling into the bodies of
-only those functions that need it. Many functions don\'t need to know
-what the current state is, and so they\'ll never call `getState` or
+only those functions that need it. Many functions don't need to know
+what the current state is, and so they'll never call `getState` or
 `putState`. This lets us write more compact code than our earlier
 parser, which had to pass tuples around by hand. We will see the effect
 in some of the code that follows.
 
-We\'ve packaged up the details of the parsing state into the
+We've packaged up the details of the parsing state into the
 `ParseState` type, and we work with it using accessors instead of
 pattern matching. Now that the parsing state is passed around
 implicitly, we gain a further benefit. If we want to add more
@@ -603,7 +603,7 @@ modular: the only code we affect is code that needs the new information.
 
 We carefully defined our `Parse` type to accommodate the possibility of
 failure. The `(==>)` combinator checks for a parse failure and stops
-parsing if it runs into a failure. But we haven\'t yet introduced the
+parsing if it runs into a failure. But we haven't yet introduced the
 `bail` function, which we use to report a parse error.
 
 :::: captioned-content
@@ -626,7 +626,7 @@ to percolate back through the chain of prior callers.
 ### Chaining parsers together
 
 The `(==>)` function serves a similar purpose to our earlier `(>>?)`
-function: it is \"glue\" that lets us chain functions together.
+function: it is "glue" that lets us chain functions together.
 
 :::: captioned-content
 ::: caption
@@ -650,7 +650,7 @@ that the `Parse` type represents really a function inside a wrapper.
 Since `(==>)` lets us chain two `Parse` values to produce a third, it
 must return a function, in a wrapper.
 
-The function doesn\'t really \"do\" much: it just creates a *closure* to
+The function doesn't really "do" much: it just creates a *closure* to
 remember the values of `firstParser` and `secondParser`.
 
 :::: tip
@@ -674,14 +674,14 @@ At that point, it will be applied with a `ParseState`. It will apply
 will fail too. Otherwise, it will pass the result of the parse and the
 new `ParseState` to `secondParser`.
 
-This is really quite fancy and subtle stuff: we\'re effectively passing
+This is really quite fancy and subtle stuff: we're effectively passing
 the `ParseState` down the chain of `Parse` values in a hidden argument.
-(We\'ll be revisiting this kind of code in a few chapters, so don\'t
+(We'll be revisiting this kind of code in a few chapters, so don't
 fret if that description seemed dense.)
 
 ## Introducing functors
 
-We\'re by now thoroughly familiar with the `map` function, which applies
+We're by now thoroughly familiar with the `map` function, which applies
 a function to every element of a list, returning a list of possibly a
 different type.
 
@@ -771,8 +771,8 @@ class Functor f where
 ::::
 
 We can think of `fmap` as a kind of *lifting* function, as we introduced
-in [the section called \"Avoiding boilerplate with
-lifting\"](9-a-library-for-searching-the-file-system.org::*Avoiding boilerplate with lifting)
+in [the section called "Avoiding boilerplate with
+lifting"](9-a-library-for-searching-the-file-system.org::*Avoiding boilerplate with lifting)
 function over ordinary values `a -> b` and lifts it to become a function
 over a type whose constructor takes one type parameter `f a -> f b`,
 where `f` is the type.
@@ -831,7 +831,7 @@ instance Functor Maybe where
 
 The instance for `Maybe` makes it particularly clear what an `fmap`
 implementation needs to do. The implementation must have a sensible
-behaviour for each of a type\'s constructors. If a value is wrapped in
+behaviour for each of a type's constructors. If a value is wrapped in
 `Just`, for example, the `fmap` implementation calls the function on the
 unwrapped value, then rewraps it in `Just`.
 
@@ -839,12 +839,12 @@ The definition of `Functor` imposes a few obvious restrictions on what
 we can do with `fmap`. For example, we can only make instances of
 `Functor` from types that have exactly one type parameter.
 
-We can\'t write an `fmap` implementation for `Either a b` or `(a, b)`,
-for example, because these have two type parameters. We also can\'t
+We can't write an `fmap` implementation for `Either a b` or `(a, b)`,
+for example, because these have two type parameters. We also can't
 write one for `Bool` or `Int`, as they have no type parameters.
 
-In addition, we can\'t place any constraints on our type definition.
-What does this mean? To illustrate, let\'s first look at a normal `data`
+In addition, we can't place any constraints on our type definition.
+What does this mean? To illustrate, let's first look at a normal `data`
 definition and its `Functor` instance.
 
 :::: captioned-content
@@ -896,9 +896,9 @@ Failed, no modules loaded.
 
 Adding a constraint to a type definition is essentially never a good
 idea. It has the effect of forcing you to add type constraints to
-*every* function that will operate on values of that type. Let\'s say
+*every* function that will operate on values of that type. Let's say
 that we need a stack data structure that we want to be able to query to
-see whether its elements obey some ordering. Here\'s a naive definition
+see whether its elements obey some ordering. Here's a naive definition
 of the data type.
 
 :::: captioned-content
@@ -915,7 +915,7 @@ data (Ord a) => OrdStack a = Bottom
 
 If we want to write a function that checks the stack to see whether it
 is increasing (i.e. every element is bigger than the element below it),
-we\'ll obviously need an `Ord` constraint to perform the pairwise
+we'll obviously need an `Ord` constraint to perform the pairwise
 comparisons.
 
 :::: captioned-content
@@ -933,7 +933,7 @@ isIncreasing _  = True
 ::::
 
 However, because we wrote the type constraint on the type definition,
-that constraint ends up infecting places where it isn\'t needed: we need
+that constraint ends up infecting places where it isn't needed: we need
 to add the `Ord` constraint to `push`, which does not care about the
 ordering of elements on the stack.
 
@@ -955,13 +955,13 @@ This is why our attempt to write a `Functor` instance for `Bar` failed
 earlier: it would have required an `Eq` constraint to somehow get
 retroactively added to the signature of `fmap`.
 
-Now that we\'ve tentatively established that putting a type constraint
-on a type definition is a misfeature of Haskell, what\'s a more sensible
+Now that we've tentatively established that putting a type constraint
+on a type definition is a misfeature of Haskell, what's a more sensible
 alternative? The answer is simply to omit type constraints from type
 definitions, and instead place them on the functions that need them.
 
 In this example, we can drop the `Ord` constraints from `OrdStack` and
-`push`. It needs to stay on `isIncreasing`, which otherwise couldn\'t
+`push`. It needs to stay on `isIncreasing`, which otherwise couldn't
 call `(<)`. We now have the constraints where they actually matter. This
 has the further benefit of making the type signatures better document
 the true requirements of each function.
@@ -969,12 +969,12 @@ the true requirements of each function.
 Several Haskell types follow this pattern. The `Map` type in the
 `Data.Map` module requires that its keys be ordered, but the type itself
 does not have such a constraint. The constraint is expressed on
-functions like `insert`, where it\'s actually needed, and not on `size`,
-where ordering isn\'t used.
+functions like `insert`, where it's actually needed, and not on `size`,
+where ordering isn't used.
 
 ### Infix use of `fmap`
 
-Quite often, you\'ll see `fmap` called as an operator.
+Quite often, you'll see `fmap` called as an operator.
 
 ``` screen
 ghci> (1+) `fmap` [1,2,3] ++ [4,5,6]
@@ -992,7 +992,7 @@ ghci> fmap (1+) ([1,2,3] ++ [4,5,6])
 [2,3,4,5,6,7]
 ```
 
-There\'s also a `(<$>)` operator that is an alias for `fmap`. The `$` in
+There's also a `(<$>)` operator that is an alias for `fmap`. The `$` in
 its name appeals to the similarity between applying a function to its
 arguments (using the `($)` operator) and lifting a function into a
 functor. We will see that this works well for parsing when we return to
@@ -1000,10 +1000,10 @@ the code that we have been writing.
 
 ### Thinking more about functors
 
-We\'ve made a few implicit assumptions about how functors ought to work.
-It\'s helpful to make these explicit and to think of them as rules to
+We've made a few implicit assumptions about how functors ought to work.
+It's helpful to make these explicit and to think of them as rules to
 follow, because this lets us treat functors as uniform, well-behaved
-objects. We have only two rules to remember, and they\'re simple.
+objects. We have only two rules to remember, and they're simple.
 
 Our first rule is that a functor must preserve *identity*. That is,
 applying `fmap id` to a value should give us back an identical value.
@@ -1035,12 +1035,12 @@ ghci> fmap odd Nothing
 Nothing
 ```
 
-If you\'re writing a `Functor` instance, it\'s useful to keep these
-rules in mind, and indeed to test them, because the compiler can\'t
-check the rules we\'ve listed above. On the other hand, if you\'re
-simply *using* functors, the rules are \"natural\" enough that there\'s
+If you're writing a `Functor` instance, it's useful to keep these
+rules in mind, and indeed to test them, because the compiler can't
+check the rules we've listed above. On the other hand, if you're
+simply *using* functors, the rules are "natural" enough that there's
 no need to memorise them. They just formalize a few intuitive notions of
-\"do what I mean\". Here is a pseudocode representation of the expected
+"do what I mean". Here is a pseudocode representation of the expected
 behavior.
 
 :::: captioned-content
@@ -1058,7 +1058,7 @@ fmap (f . g) == fmap f . fmap g
 
 For the types we have surveyed so far, the behaviour we ought to expect
 of `fmap` has been obvious. This is a little less clear for `Parse`, due
-to its complexity. A reasonable guess is that the function we\'re
+to its complexity. A reasonable guess is that the function we're
 \~fmap\~ping should be applied to the current result of a parse, and
 leave the parse state untouched.
 
@@ -1074,10 +1074,10 @@ instance Functor Parse where
 ```
 ::::
 
-This definition is easy to read, so let\'s perform a few quick
-experiments to see if we\'re following our rules for functors.
+This definition is easy to read, so let's perform a few quick
+experiments to see if we're following our rules for functors.
 
-First, we\'ll check that identity is preserved. Let\'s try this first on
+First, we'll check that identity is preserved. Let's try this first on
 a parse that ought to fail: parsing a byte from an empty string
 (remember that `(<$>)` is `fmap`).
 
@@ -1104,7 +1104,7 @@ By inspecting the results above, we can also see that our functor
 instance is obeying our second rule, that of preserving shape. Failure
 is preserved as failure, and success as success.
 
-Finally, we\'ll ensure that composability is preserved.
+Finally, we'll ensure that composability is preserved.
 
 ``` screen
 ghci> parse ((chr . fromIntegral) <$> parseByte) input
@@ -1121,7 +1121,7 @@ be well behaved.
 All this talk of functors had a purpose: they often let us write tidy,
 expressive code. Recall the `parseByte` function that we introduced
 earlier. In recasting our PGM parser to use our new parser
-infrastructure, we\'ll often want to work with ASCII characters instead
+infrastructure, we'll often want to work with ASCII characters instead
 of `Word8` values.
 
 While we could write a `parseChar` function that has a similar structure
@@ -1146,10 +1146,10 @@ parseChar = w2c <$> parseByte
 ```
 ::::
 
-We can also use functors to write a compact \"peek\" function. This
-returns `Nothing` if we\'re at the end of the input string. Otherwise,
+We can also use functors to write a compact "peek" function. This
+returns `Nothing` if we're at the end of the input string. Otherwise,
 it returns the next character without consuming it (i.e. it inspects,
-but doesn\'t disturb, the current parsing state).
+but doesn't disturb, the current parsing state).
 
 :::: captioned-content
 ::: caption
@@ -1179,9 +1179,9 @@ peekChar = fmap w2c <$> peekByte
 Notice that `peekByte` and `peekChar` each make two calls to `fmap`, one
 of which is disguised as `(<$>)`. This is necessary because the type
 `Parse (Maybe a)` is a functor within a functor. We thus have to lift a
-function twice to \"get it into\" the inner functor.
+function twice to "get it into" the inner functor.
 
-Finally, we\'ll write another generic combinator, which is the `Parse`
+Finally, we'll write another generic combinator, which is the `Parse`
 analogue of the familiar `takeWhile`: it consumes its input while its
 predicate returns `True`.
 
@@ -1200,8 +1200,8 @@ parseWhile p = (fmap p <$> peekByte) ==> \mp ->
 ```
 ::::
 
-Once again, we\'re using functors in several places (doubled up, when
-necessary) to reduce the verbosity of our code. Here\'s a rewrite of the
+Once again, we're using functors in several places (doubled up, when
+necessary) to reduce the verbosity of our code. Here's a rewrite of the
 same function in a more direct style that does not use functors.
 
 :::: captioned-content
@@ -1297,8 +1297,8 @@ to the current parsing state. Most notably, where our old `parseP5`
 function explicitly passed two-tuples down the chain of dataflow, all of
 the state management in `parseRawPGM` is hidden from us.
 
-Of course, we can\'t completely avoid inspecting and modifying the
-parsing state. Here\'s a case in point, the last of the helper functions
+Of course, we can't completely avoid inspecting and modifying the
+parsing state. Here's a case in point, the last of the helper functions
 needed by `parseRawPGM`.
 
 :::: captioned-content
@@ -1342,10 +1342,10 @@ to use and offers high performance.
 
 ## Exercises
 
-1.  Write a parser for \"plain\" PGM files.
+1.  Write a parser for "plain" PGM files.
 
-2.  In our description of \"raw\" PGM files, we omitted a small detail.
-    If the \"maximum grey\" value in the header is less than 256, each
+2.  In our description of "raw" PGM files, we omitted a small detail.
+    If the "maximum grey" value in the header is less than 256, each
     pixel is represented by a single byte. However, it can range up to
     65535, in which case each pixel will be represented by two bytes, in
     big endian order (most significant byte first).

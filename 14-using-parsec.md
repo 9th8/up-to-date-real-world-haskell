@@ -1,9 +1,9 @@
 # Chapter 16. Using Parsec
 
 The task of parsing a file, or data of various types, is a common one
-for programmers. We already learned about Haskell\'s support for regular
-expressions back in [the section called \"Regular expressions in
-Haskell\"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Regular expressions in Haskell)
+for programmers. We already learned about Haskell's support for regular
+expressions back in [the section called "Regular expressions in
+Haskell"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Regular expressions in Haskell)
 expressions are nice for many tasks, but they rapidly become unwieldy,
 or cannot be used at all, when dealing with a complex data format. For
 instance, we cannot use regular expressions to parse source code from
@@ -15,7 +15,7 @@ provides some simple parsing functions, as well as functions to tie them
 all together. It should come as no surprise that this parser library for
 Haskell is built around the notion of functions.
 
-It\'s helpful to know where Parsec fits compared to the tools used for
+It's helpful to know where Parsec fits compared to the tools used for
 parsing in other languages. Parsing is sometimes divided into two
 stages: lexical analysis (the domain of tools like Flex) and parsing
 itself (performed by programs such as Bison). Parsec can perform both
@@ -31,11 +31,11 @@ Warning
 The book uses a deprecated API of Parsec and should be updated.
 ::::
 
-Let\'s jump right in by writing some code for parsing a CSV file. CSV
+Let's jump right in by writing some code for parsing a CSV file. CSV
 files are often used as a plain text representation of spreadsheets or
 databases. Each line is a record, and each field in the record is
 separated from the next by a comma. There are ways of dealing with
-fields that contain commas, but to start with, we won\'t worry about it.
+fields that contain commas, but to start with, we won't worry about it.
 
 This first example is much longer than it really needs to be. We will
 introduce more Parsec features in a little bit that will shrink the
@@ -94,10 +94,10 @@ parseCSV input = parse csvFile "(unknown)" input
 ```
 ::::
 
-Let\'s take a look at the code for this example. We didn\'t use many
+Let's take a look at the code for this example. We didn't use many
 shortcuts here, so remember that this will get shorter and simpler!
 
-We\'ve built it from the top down, so our first function is `csvFile`.
+We've built it from the top down, so our first function is `csvFile`.
 The type of this function is `GenParser Char st [[String]]`. This means
 that the type of the input is a sequence of characters, which is exactly
 what a Haskell string is, since `String` is the same as `[Char]`. It
@@ -105,9 +105,9 @@ also means that we will return a value of type `[[String]]`: a list of a
 list of strings. The `st` can be ignored for now.
 
 Parsec programmers often omit type declarations, since we write so many
-small functions. Haskell\'s type inference can figure it out. We\'ve
+small functions. Haskell's type inference can figure it out. We've
 listed the types for the first example here so you can get a better idea
-of what\'s going on. You can always use `:t` in `ghci` to inspect types
+of what's going on. You can always use `:t` in `ghci` to inspect types
 as well.
 
 The `csvFile` uses a `do` block. As this implies, Parsec is a monadic
@@ -131,10 +131,10 @@ a line start with the content of the first cell, then continue with the
 content of the remaining cells, if any. The result is simply the first
 cell and the remaining cells assembled into a list.
 
-Let\'s skip over `remainingCells` for a minute and look at
+Let's skip over `remainingCells` for a minute and look at
 `cellContent`. A cell contains any number of characters, but each
 character must not be a comma or end of line character. The `noneOf`
-function matches one item, so long as it isn\'t in the list of items
+function matches one item, so long as it isn't in the list of items
 that we pass. So, saying `many (noneOf ",\n")` defines a cell the way we
 want it.
 
@@ -147,12 +147,12 @@ So, in `remainingCells`, our task is to come up with all the cells after
 the first. Recall that `cellContent` uses `noneOf ",\n"`. So it will not
 consume the comma or end-of-line character from the input. If we see a
 comma after parsing a cell, it means that at least one more cell
-follows. Otherwise, we\'re done. So, our first choice in
+follows. Otherwise, we're done. So, our first choice in
 `remainingCells` is `char ','`. This parser simply matches the passed
 character in the input. If we found a comma, we want this function to
-return the remaining cells on the line. At this point, the \"remaining
-cells\" looks exactly like the start of the line, so we call `cells`
-recursively to parse them. If we didn\'t find a comma, we return the
+return the remaining cells on the line. At this point, the "remaining
+cells" looks exactly like the start of the line, so we call `cells`
+recursively to parse them. If we didn't find a comma, we return the
 empty list, signifying no remaining cells on the line.
 
 Finally, we must define what the end-of-line indicator is. We set it to
@@ -160,12 +160,12 @@ Finally, we must define what the end-of-line indicator is. We set it to
 
 At the very end of the program, we define a function `parseCSV` that
 takes a `String` and parses it as a CSV file. This function is just a
-shortcut that calls Parsec\'s `parse` function, filling in a few
+shortcut that calls Parsec's `parse` function, filling in a few
 parameters. `parse` returns `Either ParseError [[String]]` for the CSV
 file. If there was an error, the return value will be `Left` with the
 error; otherwise, it will be `Right` with the result.
 
-Now that we understand this code, let\'s play with it a bit and see what
+Now that we understand this code, let's play with it a bit and see what
 it does.
 
 ``` screen
@@ -176,7 +176,7 @@ ghci> parseCSV ""
 Right []
 ```
 
-That makes sense: parsing the empty string returns an empty list. Let\'s
+That makes sense: parsing the empty string returns an empty list. Let's
 try parsing a single cell.
 
 ``` screen
@@ -187,9 +187,9 @@ expecting "," or "\n"
 ```
 
 Look at that. Recall how we defined that each line must end with the
-end-of-line character, and we didn\'t give it. Parsec\'s error message
+end-of-line character, and we didn't give it. Parsec's error message
 helpfully indicated the line number and column number of the problem,
-and even told us what it was expecting! Let\'s give it an end-of-line
+and even told us what it was expecting! Let's give it an end-of-line
 character and continue experimenting.
 
 ``` screen
@@ -206,7 +206,7 @@ Right [["Hi",""],[""],["","Hello"]]
 ```
 
 You can see that `parseCSV` is doing exactly what we wanted it to do.
-It\'s even handling empty cells and empty lines properly.
+It's even handling empty cells and empty lines properly.
 
 ## The `sepBy` and `endBy` Combinators
 
@@ -218,12 +218,12 @@ The first tool is the `sepBy` function. This function takes two
 functions as arguments: the first function parses some sort of content,
 while the second function parses a separator. `sepBy` starts by trying
 to parse content, then separators, and alternates back and forth until
-it can\'t parse a separator. It returns a list of all the content that
+it can't parse a separator. It returns a list of all the content that
 it was able to parse.
 
-The second tool is `endBy`. It\'s similar to `sepBy`, but expects the
+The second tool is `endBy`. It's similar to `sepBy`, but expects the
 very last item to be followed by the separator. That is, it continues
-parsing until it can\'t parse any more content.
+parsing until it can't parse any more content.
 
 So, we can use `endBy` to parse lines, since every line must end with
 the end-of-line character. We can use `sepBy` to parse cells, since the
@@ -250,8 +250,8 @@ parseCSV input = parse csvFile "(unknown)" input
 
 This program behaves exactly the same as the first one. We can verify
 this by using `ghci` to re-run our examples from the earlier example.
-We\'ll get the same result from every one. Yet the program is much
-shorter and more readable. It won\'t be long before you can translate
+We'll get the same result from every one. Yet the program is much
+shorter and more readable. It won't be long before you can translate
 Parsec code like this into a file format definition in plain English. As
 you read over this code, you can see that:
 
@@ -277,7 +277,7 @@ adjust the `noneOf` pattern in `cell` to ignore `\r`.
 
 This must be done carefully. Recall that our earlier definition of `eol`
 was simply `char '\n'`. There is a parser called `string` that we can
-use to match the multi-character patterns. Let\'s start by thinking of
+use to match the multi-character patterns. Let's start by thinking of
 how we would add support for `\n\r`.
 
 Our first attempt might look like this:
@@ -296,7 +296,7 @@ eol = string "\n" <|> string "\n\r"
 ```
 ::::
 
-This isn\'t quite right. Recall that the `<|>` operator always tries the
+This isn't quite right. Recall that the `<|>` operator always tries the
 left alternative first. Looking for the single character `\n` will match
 both types of line endings, so it will look to the system that the
 following line begins with `\r`. Not what we want. Try it in `ghci`:
@@ -310,9 +310,9 @@ Right "\n"
 ```
 
 It may seem like the parser worked for both endings, but actually
-looking at it this way, we can\'t tell. If it left something un-parsed,
-we don\'t know, because we\'re not trying to consume anything else from
-the input. So let\'s look for the end-of-file after our end of line:
+looking at it this way, we can't tell. If it left something un-parsed,
+we don't know, because we're not trying to consume anything else from
+the input. So let's look for the end-of-file after our end of line:
 
 ``` screen
 ghci> parse (eol >> eof) "" "\n\r"
@@ -340,9 +340,9 @@ eol = string "\n\r" <|> string "\n"
 ```
 ::::
 
-This also isn\'t right. Recall that `<|>` only attempts the option on
+This also isn't right. Recall that `<|>` only attempts the option on
 the right if the option on the left consumed no input. But by the time
-we are able to see if there is a `\r` after the `\n`, we\'ve already
+we are able to see if there is a `\r` after the `\n`, we've already
 consumed the `\n`. This time, we fail on the other case in `ghci`:
 
 ``` screen
@@ -355,11 +355,11 @@ unexpected end of input
 expecting "\n\r"
 ```
 
-We\'ve stumbled upon the lookahead problem. It turns out that, when
-writing parsers, it\'s often very convenient to be able to \"look
-ahead\" at the data that\'s coming in. Parsec supports this, but before
-showing you how to use it, let\'s see how you would have to write this
-to get along without it. You\'d have to manually expand all the options
+We've stumbled upon the lookahead problem. It turns out that, when
+writing parsers, it's often very convenient to be able to "look
+ahead" at the data that's coming in. Parsec supports this, but before
+showing you how to use it, let's see how you would have to write this
+to get along without it. You'd have to manually expand all the options
 after the `\n` like this:
 
 :::: captioned-content
@@ -381,7 +381,7 @@ This function first looks for `\n`. If it is found, then it will look
 for `\r`, consuming it if possible. Since the return type of `char '\r'`
 is a `Char`, the alternative action is to simply return a `Char` without
 attempting to parse anything. Parsec has a function `option` that can
-also express this idiom as `option '\n' (char '\r')`. Let\'s test this
+also express this idiom as `option '\n' (char '\r')`. Let's test this
 with `ghci`.
 
 ``` screen
@@ -395,18 +395,18 @@ Right ()
 ```
 
 This time, we got the right result! But we could have done it easier
-with Parsec\'s lookahead support.
+with Parsec's lookahead support.
 
 ### Lookahead
 
 Parsec has a function called `try` that is used to express lookaheads.
 `try` takes one function, a parser. It applies that parser. If the
-parser doesn\'t succeed, `try` behaves as if it hadn\'t consumed any
+parser doesn't succeed, `try` behaves as if it hadn't consumed any
 input at all. So, when you use `try` on the left side of `<|>`, Parsec
 will try the option on the right even if the left side failed after
 consuming some input. `try` only has an effect if it is on the left of a
 `<|>`. Keep in mind, though, that many functions use `<|>` internally.
-Here\'s a way to add expanded end-of-line support to our CSV parser
+Here's a way to add expanded end-of-line support to our CSV parser
 using `try`:
 
 :::: captioned-content
@@ -434,7 +434,7 @@ parseCSV input = parse csvFile "(unknown)" input
 Here we put both of the two-character endings first, and run both tests
 under `try`. Both of them occur to the left of a `<|>`, so they will do
 the right thing. We could have put `string "\n"` within a `try`, but it
-wouldn\'t have altered any behavior since they look at only one
+wouldn't have altered any behavior since they look at only one
 character anyway. We can load this up and test the `eol` function in
 `ghci`.
 
@@ -471,7 +471,7 @@ as what was expected. As parsers get more complex, the list of what was
 expected can become cumbersome. Parsec provides a way for you to specify
 custom error messages in the event of parse failures.
 
-Let\'s look at what happens when our current CSV parser encounters an
+Let's look at what happens when our current CSV parser encounters an
 error:
 
 ``` screen
@@ -481,7 +481,7 @@ unexpected end of input
 expecting ",", "\n\r", "\r\n", "\n" or "\r"
 ```
 
-That\'s a pretty long, and technical, error message. We could make an
+That's a pretty long, and technical, error message. We could make an
 attempt to resolve this by using the monad `fail` function like so:
 
 :::: captioned-content
@@ -507,11 +507,11 @@ expecting ",", "\n\r", "\r\n", "\n" or "\r"
 Couldn't find EOL
 ```
 
-We added to the error result, but didn\'t really help clean up the
+We added to the error result, but didn't really help clean up the
 output. Parsec has an `<?>` operator that is designed for just these
 situations. It is similar to `<|>` in that it first tries the parser on
 its left. Instead of trying another parser in the event of a failure, it
-presents an error message. Here\'s how we\'d use it:
+presents an error message. Here's how we'd use it:
 
 :::: captioned-content
 ::: caption
@@ -524,7 +524,7 @@ csv6.hs
 ```
 ::::
 
-Now, when you generate an error, you\'ll get more helpful output:
+Now, when you generate an error, you'll get more helpful output:
 
 ``` screen
 ghci> :r
@@ -536,12 +536,12 @@ unexpected end of input
 expecting "," or end of line
 ```
 
-That\'s pretty helpful! The general rule of thumb is that you put a
-human description of what you\'re looking for to the right of `<?>`.
+That's pretty helpful! The general rule of thumb is that you put a
+human description of what you're looking for to the right of `<?>`.
 
 ## Extended Example: Full CSV Parser
 
-Our earlier CSV examples have had an important flaw: they weren\'t able
+Our earlier CSV examples have had an important flaw: they weren't able
 to handle cells that contain a comma. CSV generating programs typically
 put quotation marks around such data. But then you have another problem:
 what to do if a cell contains a quotation mark and a comma. In these
@@ -570,8 +570,8 @@ quotedCell =
        return content
 
 quotedChar =
-        noneOf "\""
-    <|> try (string "\"\"" >> return '"')
+        noneOf """
+    <|> try (string """" >> return '"')
 
 eol =   try (string "\n\r")
     <|> try (string "\r\n")
@@ -591,22 +591,22 @@ main =
 ```
 ::::
 
-That\'s a full-featured CSV parser in just 21 lines of code, plus an
+That's a full-featured CSV parser in just 21 lines of code, plus an
 additional 10 lines for the `parseCSV` and `main` utility functions.
 
-Let\'s look at the changes in this program from the previous versions.
-First, a cell may now be either a bare cell or a \"quoted\" cell. We
+Let's look at the changes in this program from the previous versions.
+First, a cell may now be either a bare cell or a "quoted" cell. We
 give the `quotedCell` option first, because we want to follow that path
 if the first character in a cell is the quote mark.
 
 The `quotedCell` begins and ends with a quote mark, and contains zero or
-more characters. These characters can\'t be copied directly, though,
+more characters. These characters can't be copied directly, though,
 because they may contain embedded, doubled-up, quote marks themselves.
 So we define a custom `quotedChar` to process them.
 
-When we\'re processing characters inside a quoted cell, we first say
-`noneOf "\""`. This will match and return any single character as long
-as it\'s not the quote mark. Otherwise, if it is the quote mark, we see
+When we're processing characters inside a quoted cell, we first say
+`noneOf """`. This will match and return any single character as long
+as it's not the quote mark. Otherwise, if it is the quote mark, we see
 if we have two of them in a row. If so, we return a single quote mark to
 go on our result string.
 
@@ -615,16 +615,16 @@ that I said that `try` only has an effect if it is on the left side of
 `<|>`. This `try` does occur on the left side of a `<|>`, but on the
 left of one that must be within the implementation of `many`.
 
-This `try` is important. Let\'s say we are parsing a quoted cell, and
+This `try` is important. Let's say we are parsing a quoted cell, and
 are getting towards the end of it. There will be another cell following.
 So we will expect to see a quote to end the current cell, followed by a
 comma. When we hit `quotedChar`, we will fail the `noneOf` test and
-proceed to the test that looks for two quotes in a row. We\'ll also fail
-that one because we\'ll have a quote, then a comma. If we hadn\'t used
-`try`, we\'d crash with an error at this point, saying that it was
+proceed to the test that looks for two quotes in a row. We'll also fail
+that one because we'll have a quote, then a comma. If we hadn't used
+`try`, we'd crash with an error at this point, saying that it was
 expecting the second quote, because the first quote was already
 consumed. Since we use `try`, this is properly recognized as not a
-character that\'s part of the cell, so it terminates the
+character that's part of the cell, so it terminates the
 `many quotedChar` expression as expected. Lookahead has once again
 proven very useful, and the fact that it is so easy to add makes it a
 remarkable tool in Parsec.
@@ -635,15 +635,15 @@ We can test this program with `ghci` over some quoted cells.
 ghci> :l csv7.hs
 [1 of 1] Compiling Main             ( csv9.hs, interpreted )
 Ok, one module loaded.
-ghci> parseCSV "\"This, is, one, big, cell\"\n"
+ghci> parseCSV ""This, is, one, big, cell"\n"
 Right [["This, is, one, big, cell"]]
-ghci> parseCSV "\"Cell without an end\n"
+ghci> parseCSV ""Cell without an end\n"
 Left "(unknown)" (line 2, column 1):
 unexpected end of input
-expecting "\"\"" or quote at end of cell
+expecting """" or quote at end of cell
 ```
 
-Let\'s run it over a real CSV file. Here\'s one generated by a
+Let's run it over a real CSV file. Here's one generated by a
 spreadsheet program:
 
 ``` example
@@ -660,16 +660,16 @@ Now, we can run this under our test program and watch:
 $ runhaskell csv7.hs < test.csv
 ["Product","Price"]
 ["O'Reilly Socks","10"]
-["Shirt with \"Haskell\" text","20"]
-["Shirt, \"O'Reilly\" version","20"]
+["Shirt with "Haskell" text","20"]
+["Shirt, "O'Reilly" version","20"]
 ["Haskell Caps","15"]
 ```
 
 ## Parsec and MonadPlus
 
-Parsec\'s `GenParser` monad is an instance of the `MonadPlus` type class
-that we introduced in [the section called \"Looking for
-alternatives\"](16-programming-with-monads.org::*Looking for alternatives)
+Parsec's `GenParser` monad is an instance of the `MonadPlus` type class
+that we introduced in [the section called "Looking for
+alternatives"](16-programming-with-monads.org::*Looking for alternatives)
 represents a parse failure, while `mplus` combines two alternative
 parses into one, using `(<|>)`.
 
@@ -682,9 +682,9 @@ instance MonadPlus (GenParser tok st) where
 ## Parsing an URL-encoded query string
 
 When we introduced `application/x-www-form-urlencoded` text in [the
-section called \"Golfing practice: association
-lists\"](16-programming-with-monads.org::*Golfing%20practice:%20association%20lists),
-we mentioned that we\'d write a parser for these strings. We can quickly
+section called "Golfing practice: association
+lists"](16-programming-with-monads.org::*Golfing%20practice:%20association%20lists),
+we mentioned that we'd write a parser for these strings. We can quickly
 and easily do this using Parsec.
 
 Each key-value pair is separated by the `&` character.
@@ -703,10 +703,10 @@ p_query = p_pair `sepBy` char '&'
 ```
 ::::
 
-Notice that in the type signature, we\'re using `Maybe` to represent a
+Notice that in the type signature, we're using `Maybe` to represent a
 value: the HTTP specification is unclear about whether a key *must* have
-an associated value, and we\'d like to be able to distinguish between
-\"no value\" and \"empty value\".
+an associated value, and we'd like to be able to distinguish between
+"no value" and "empty value".
 
 :::: captioned-content
 ::: caption
@@ -729,10 +729,10 @@ if its parser never succeeds, and will otherwise return a list of at
 least one element.
 
 The `optionMaybe` function modifies the behaviour of a parser. If the
-parser fails, `optionMaybe` doesn\'t fail: it returns `Nothing`.
-Otherwise, it wraps the parser\'s successful result with `Just`. This
-gives us the ability to distinguish between \"no value\" and \"empty
-value\", as we mentioned above.
+parser fails, `optionMaybe` doesn't fail: it returns `Nothing`.
+Otherwise, it wraps the parser's successful result with `Just`. This
+gives us the ability to distinguish between "no value" and "empty
+value", as we mentioned above.
 
 Individual characters can be encoded in one of several ways.
 
@@ -762,7 +762,7 @@ p_hex = do
 Some characters can be represented literally. Spaces are treated
 specially, using a `+` character. Other characters must be encoded as a
 `%` character followed by two hexadecimal digits. The `Numeric`
-module\'s `readHex` parses a hex string as a number.
+module's `readHex` parses a hex string as a number.
 
 ``` screen
 ghci> parseTest p_query "foo=bar&a%21=b+c"
@@ -775,13 +775,13 @@ back and taking another look at some of our building blocks.
 ## Supplanting regular expressions for casual parsing
 
 In many popular languages, people tend to put regular expressions to
-work for \"casual\" parsing. They\'re notoriously tricky for this
+work for "casual" parsing. They're notoriously tricky for this
 purpose: hard to write, difficult to debug, nearly incomprehensible
 after a few months of neglect, and provide no error messages on failure.
 
-If we can write compact Parsec parsers, we\'ll gain in readability,
-expressiveness, and error reporting. Our parsers won\'t be as short as
-regular expressions, but they\'ll be close enough to negate much of the
+If we can write compact Parsec parsers, we'll gain in readability,
+expressiveness, and error reporting. Our parsers won't be as short as
+regular expressions, but they'll be close enough to negate much of the
 temptation of regexps.
 
 ## Parsing without variables
@@ -821,9 +821,9 @@ p_pair_app1 =
 ::::
 
 This parser has exactly the same type and behaviour as `p_pair`, but
-it\'s one line long. Instead of writing our parser in a \"procedural\"
-style, we\'ve simply switched to a programming style that emphasises
-that we\'re *applying* parsers and *combining* their results.
+it's one line long. Instead of writing our parser in a "procedural"
+style, we've simply switched to a programming style that emphasises
+that we're *applying* parsers and *combining* their results.
 
 We can take this applicative style of writing a parser much further. In
 most cases, the extra compactness that we will gain will *not* come at
@@ -859,9 +859,9 @@ is by putting them to work.
 
 ## Applicative parsing by example
 
-We\'ll begin by rewriting our existing form parser from the bottom up,
+We'll begin by rewriting our existing form parser from the bottom up,
 beginning with `p_hex`, which parses a hexadecimal escape sequence.
-Here\'s the code in normal `do` notation style.
+Here's the code in normal `do` notation style.
 
 :::: captioned-content
 ::: caption
@@ -901,16 +901,16 @@ a_hex = hexify <$> (char '%' *> hexDigit) <*> hexDigit
 ::::
 
 Although the individual parsers are mostly untouched, the combinators
-that we\'re gluing them together with have changed. The familiar ones
+that we're gluing them together with have changed. The familiar ones
 are `(<$>)`, which we already know is a synonym for `fmap` and `(<*>)`
 which is plain old `fmap` lifted to applicative functors so it applies
 the parser on its left, then the parser on its right, and applies the
-function that\'s the result of the left parse to the value that\'s the
+function that's the result of the left parse to the value that's the
 result of the right.
 
 The unfamiliar combinator is `(*>)`, which applies its first argument,
 throws away its result, then applies the second and returns its result.
-In other words, it\'s similar to `(>>)`.
+In other words, it's similar to `(>>)`.
 
 :::: tip
 ::: title
@@ -919,9 +919,9 @@ Tip
 
 A handy tip about angle brackets
 
-Before we continue, here\'s a useful aid for remembering what all the
+Before we continue, here's a useful aid for remembering what all the
 angle brackets are for in the combinators from `Control.Applicative`: if
-there\'s an angle bracket pointing to some side, the result from that
+there's an angle bracket pointing to some side, the result from that
 side should be used.
 
 For example, `(*>)` returns the result on its right; `(<*>)` returns
@@ -929,7 +929,7 @@ results from both sides; and `(<*)`, which we have not yet seen, returns
 the result on its left.
 ::::
 
-Parsec\'s `hexDigit` parser parses a single hexadecimal digit.
+Parsec's `hexDigit` parser parses a single hexadecimal digit.
 
 ``` screen
 ghci> :type hexDigit
@@ -945,7 +945,7 @@ char '%' *> hexDigit :: (Stream s m Char) => ParsecT s u m Char
 ```
 
 The expression `hexify <$> (char '%' *> hexDigit)` is a parser that
-matches a \"%\" character followed by hex digit, and whose result is a
+matches a "%" character followed by hex digit, and whose result is a
 function.
 
 ``` screen
@@ -958,7 +958,7 @@ hexify <$> (char '%' *> hexDigit)
      ParsecT s u m (Char -> Char)
 ```
 
-Next, we\'ll consider the `p_char` parser.
+Next, we'll consider the `p_char` parser.
 
 :::: captioned-content
 ::: caption
@@ -1006,7 +1006,7 @@ p_pair_app1 =
 ```
 ::::
 
-All we\'ve changed is the combinator we use for lifting: the `liftA`
+All we've changed is the combinator we use for lifting: the `liftA`
 functions act in the same ways as their `liftM` cousins.
 
 :::: captioned-content
@@ -1023,7 +1023,7 @@ a_pair = liftA2 (,) (many1 a_char) (optionMaybe (char '=' *> many a_char))
 ## Parsing JSON data
 
 To give ourselves a better feel for parsing with applicative functors,
-and to explore a few more corners of Parsec, we\'ll write a JSON parser
+and to explore a few more corners of Parsec, we'll write a JSON parser
 that follows the definition in RFC 4627.
 
 At the top level, a JSON value must be either an object or an array.
@@ -1084,7 +1084,7 @@ p_array = JAry <$> p_series '[' p_value ']'
 
 Dealing with a JSON object is hardly more complicated, requiring just a
 little additional effort to produce a name/value pair for each of the
-object\'s fields.
+object's fields.
 
 :::: captioned-content
 ::: caption
@@ -1146,7 +1146,7 @@ p_value_choice = value <* spaces
 ::::
 
 This leads us to the two most interesting parsers, for numbers and
-strings. We\'ll deal with numbers first, since they\'re simpler.
+strings. We'll deal with numbers first, since they're simpler.
 
 :::: captioned-content
 ::: caption
@@ -1164,23 +1164,23 @@ p_number = do s <- getInput
 
 The only piece of functionality that applicative functors are missing,
 compared to monads, is the ability to bind a value to a variable, which
-we need here in order to be able to validate the value we\'re trying to
+we need here in order to be able to validate the value we're trying to
 decode.
 
-Our trick here is to take advantage of Haskell\'s standard number
+Our trick here is to take advantage of Haskell's standard number
 parsing library functions, which are defined in the `Numeric` module.
 The `readFloat` function reads an unsigned floating point number, and
 `readSigned` takes a parser for an unsigned number and turns it into a
 parser for possibly signed numbers.
 
 Since these functions know nothing about Parsec, we have to work with
-them specially. Parsec\'s `getInput` function gives us direct access to
-Parsec\'s unconsumed input stream. If `readSigned readFloat` succeeds,
+them specially. Parsec's `getInput` function gives us direct access to
+Parsec's unconsumed input stream. If `readSigned readFloat` succeeds,
 it returns both the parsed number and the rest of the unparsed input. We
 then use `setInput` to give this back to Parsec as its new unconsumed
 input stream.
 
-Parsing a string isn\'t difficult, merely detailed.
+Parsing a string isn't difficult, merely detailed.
 
 :::: captioned-content
 ::: caption
@@ -1189,9 +1189,9 @@ JSONParsec.hs
 
 ``` haskell
 p_string :: CharParser () String
-p_string = between (char '\"') (char '\"') (many jchar)
-    where jchar = char '\\' *> (p_escape <|> p_unicode)
-              <|> satisfy (`notElem` "\"\\")
+p_string = between (char '"') (char '"') (many jchar)
+    where jchar = char '\' *> (p_escape <|> p_unicode)
+              <|> satisfy (`notElem` ""\")
 ```
 ::::
 
@@ -1204,12 +1204,12 @@ JSONParsec.hs
 :::
 
 ``` haskell
-p_escape = choice (zipWith decode "bnfrt\\\"/" "\b\n\f\r\t\\\"/")
+p_escape = choice (zipWith decode "bnfrt\\"/" "\b\n\f\r\t\\"/")
     where decode c r = r <$ char c
 ```
 ::::
 
-Finally, JSON lets us encode a Unicode character in a string as \"`\u`\"
+Finally, JSON lets us encode a Unicode character in a string as "`\u`"
 followed by four hexadecimal digits.
 
 :::: captioned-content
@@ -1251,7 +1251,7 @@ import System.IO (Handle)
 ::::
 
 An HTTP request consists of a method, an identifier, a series of
-headers, and an optional body. For simplicity, we\'ll focus on just two
+headers, and an optional body. For simplicity, we'll focus on just two
 of the six method types specified by the HTTP 1.1 standard. A `POST`
 method has a body; a `GET` has none.
 
@@ -1273,8 +1273,8 @@ data HttpRequest = HttpRequest {
 ```
 ::::
 
-Because we\'re writing in an applicative style, our parser can be both
-brief and readable. Readable, that is, if you\'re becoming used to the
+Because we're writing in an applicative style, our parser can be both
+brief and readable. Readable, that is, if you're becoming used to the
 applicative parsing notation.
 
 :::: captioned-content
@@ -1295,7 +1295,7 @@ p_request = q "GET" Get (pure Nothing)
 ::::
 
 Briefly, the `q` helper function accepts a method name, the type
-constructor to apply to it, and a parser for a request\'s optional body.
+constructor to apply to it, and a parser for a request's optional body.
 The `url` helper does not attempt to validate a URL, because the HTTP
 specification does not specify what characters an URL contain. The
 function just consumes input until either the line ends or it reaches a
@@ -1398,4 +1398,4 @@ basic denial of service attacks.
 
 [^1]: For information on dealing with choices that may consume some
     input before failing, see [the section called
-    \"Lookahead\"](14-using-parsec.org::*Lookahead)
+    "Lookahead"](14-using-parsec.org::*Lookahead)

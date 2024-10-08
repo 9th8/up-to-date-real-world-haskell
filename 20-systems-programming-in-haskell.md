@@ -1,12 +1,12 @@
 # Chapter 20. Systems Programming in Haskell
 
-So far, we\'ve been talking mostly about high-level concepts. Haskell
+So far, we've been talking mostly about high-level concepts. Haskell
 can also be used for lower-level systems programming. It is quite
 possible to write programs that interface with the operating system at a
 low level using Haskell.
 
 In this chapter, we are going to attempt something ambitious: a
-Perl-like \"language\" that is valid Haskell, implemented in pure
+Perl-like "language" that is valid Haskell, implemented in pure
 Haskell, that makes shell scripting easy. We are going to implement
 piping, easy command invocation, and some simple tools to handle tasks
 that might otherwise be performed with `grep` or `sed`.
@@ -53,7 +53,7 @@ ExitSuccess
 Here, we run the equivalent of the shell command `ls -l /usr`.
 `rawSystem` does not parse arguments from a string or expand
 wildcards.[^1] Instead, it expects every argument to be contained in a
-list. If you don\'t want to pass any arguments, you can simply pass an
+list. If you don't want to pass any arguments, you can simply pass an
 empty list like this:
 
 ``` screen
@@ -74,7 +74,7 @@ is portable and works on any platform where GHC itself works.
 
 The [library reference for
 `System.Directory`](http://www.haskell.org/ghc/docs/latest/html/libraries/base/System-Directory.html)
-provides a comprehensive list of the functions available. Let\'s use
+provides a comprehensive list of the functions available. Let's use
 `ghci` to demonstrate a few of them. Most of these functions are
 straightforward equivalents to C library calls or shell commands.
 
@@ -126,8 +126,8 @@ matching*](8-efficient-file-processing-regular-expressions-and-file-name-matchin
 Is the `` filter (`notElem` [".", ".."]) `` part confusing? That could
 got also be written as `filter (\c -> not $ elem c [".", ".."])`. The
 backticks in this case effectively let us pass the second argument to
-`notElem`; see [the section called \"Infix
-functions\"](4-functional-programming.org::*Infix functions)
+`notElem`; see [the section called "Infix
+functions"](4-functional-programming.org::*Infix functions)
 ::::
 
 You can also query the system about the location of certain directories.
@@ -179,7 +179,7 @@ seconds prior to that date, while a positive number represents a count
 of seconds after it.
 
 `ClockTime` is convenient for computations. Since it tracks Coordinated
-Universal Time (UTC), it doesn\'t have to adjust for local timezones,
+Universal Time (UTC), it doesn't have to adjust for local timezones,
 daylight saving time, or other special cases in time handling. Every day
 is exactly (60 \* 60 \* 24) or 86,400 seconds[^2], which makes time
 interval calculations simple. You can, for instance, check the
@@ -205,7 +205,7 @@ for questions such as:
     presence of Daylight Saving Time (DST) into account?
 
 `CalendarTime` stores a time the way humans do: with a year, month, day,
-hour, minute, second, timezone, and DST information. It\'s easy to
+hour, minute, second, timezone, and DST information. It's easy to
 convert this into a conveniently-displayable string, or to answer
 questions about the local time.
 
@@ -227,9 +227,9 @@ local timezone, or to a `CalendarTime` representing UTC.
     `Integer` type, it can effectively represent a date range limited
     only by computational resources.
 
-    Let\'s look at some ways to use `ClockTime`. First, there is the
+    Let's look at some ways to use `ClockTime`. First, there is the
     `getClockTime` function that returns the current time according to
-    the system\'s clock.
+    the system's clock.
 
     ``` screen
     ghci> :module System.Time
@@ -239,10 +239,10 @@ local timezone, or to a `CalendarTime` representing UTC.
     Mon Aug 18 12
     ```
 
-    If you wait a second and run `getClockTime` again, you\'ll see it
+    If you wait a second and run `getClockTime` again, you'll see it
     returning an updated time. Notice that the output from this command
     was a nice-looking string, complete with day-of-week information.
-    That\'s due to the `Show` instance for `ClockTime`. Let\'s look at
+    That's due to the `Show` instance for `ClockTime`. Let's look at
     the `ClockTime` at a lower level:
 
     ``` screen
@@ -311,8 +311,8 @@ local timezone, or to a `CalendarTime` representing UTC.
         and `Show` type classes. In addition, `Month` and `Day` are
         declared as members of the `Enum` and `Bounded` type classes.
         For more information on these type classes, refer to [the
-        section called \"Important Built-In Type
-        Classes\"](6-using-typeclasses.org::*Important%20Built-In%20Type%20Classes)
+        section called "Important Built-In Type
+        Classes"](6-using-typeclasses.org::*Important%20Built-In%20Type%20Classes)
 
         You can generate `CalendarTime` values several ways. You could
         start by converting a `ClockTime` to a `CalendarTime` such as
@@ -334,7 +334,7 @@ local timezone, or to a `CalendarTime` representing UTC.
         ```
 
         We used `getClockTime` to obtain the current `ClockTime` from
-        the system\'s clock. Next, `toCalendarTime` converts the
+        the system's clock. Next, `toCalendarTime` converts the
         `ClockTime` to a `CalendarTime` representing the time in the
         local timezone. `toUTCTime` performs a similar conversion, but
         its result is in the UTC timezone instead of the local timezone.
@@ -345,7 +345,7 @@ local timezone, or to a `CalendarTime` representing UTC.
         `toUTCTime` will return the exact same result whenever it is
         passed the same source `ClockTime`.
 
-        It\'s easy to modify a `CalendarTime` value:
+        It's easy to modify a `CalendarTime` value:
 
         ``` screen
         ghci> nowCal {ctYear = 1960}
@@ -361,7 +361,7 @@ local timezone, or to a `CalendarTime` representing UTC.
         `toClockTime` to convert the unmodified value to a `ClockTime`,
         and then the modified value, so you can see the difference.
         Notice that the modified value shows a negative number of
-        seconds once converted to `ClockTime`. That\'s to be expected,
+        seconds once converted to `ClockTime`. That's to be expected,
         since a `ClockTime` is an offset from midnight on January 1,
         1970, UTC, and this value is in 1960.
 
@@ -375,10 +375,10 @@ local timezone, or to a `CalendarTime` representing UTC.
         1263558600
         ```
 
-        Note that even though January 15, 2010, isn\'t a Sunday---and
-        isn\'t day 0 in the year---the system was able to process this
+        Note that even though January 15, 2010, isn't a Sunday---and
+        isn't day 0 in the year---the system was able to process this
         just fine. In fact, if we convert the value to a `ClockTime` and
-        then back to a `CalendarTime`, you\'ll find those fields
+        then back to a `CalendarTime`, you'll find those fields
         properly filled in:
 
         ``` screen
@@ -409,7 +409,7 @@ local timezone, or to a `CalendarTime` representing UTC.
     by converting to a `CalendarTime` in UTC, applying the differences,
     and converting back to a `ClockTime`.
 
-    Let\'s see how it works:
+    Let's see how it works:
 
     ``` screen
     ghci> :module System.Time
@@ -512,9 +512,9 @@ toct et =
 Notice that call to `getFileStatus`. That call maps directly to the C
 function `stat()`. Its return value stores a vast assortment of
 information, including file type, permissions, owner, group, and the
-three time values we\'re interested in. `System.Posix.Files` provides
+three time values we're interested in. `System.Posix.Files` provides
 various functions, such as `accessTime`, that extract the information
-we\'re interested out of the opaque `FileStatus`{.verbatim} type
+we're interested out of the opaque `FileStatus`{.verbatim} type
 returned by `getFileStatus`.
 
 The functions such as `accessTime` return data in a POSIX-specific type
@@ -524,15 +524,15 @@ to set the `atime` and `mtime` for a file.[^3]
 
 ## Extended Example: Piping
 
-We\'ve just seen how to invoke external programs. Sometimes we need more
+We've just seen how to invoke external programs. Sometimes we need more
 control that that. Perhaps we need to obtain the output from those
 programs, provide input, or even chain together multiple external
 programs. Piping can help with all of these needs. Piping is often used
 in shell scripts. When you set up a pipe in the shell, you run multiple
 programs. The output of the first program is sent to the input of the
 second. Its output is sent to the third as input, and so on. The last
-program\'s output normally goes to the terminal, or it could go to a
-file. Here\'s an example session with the POSIX shell to illustrate
+program's output normally goes to the terminal, or it could go to a
+file. Here's an example session with the POSIX shell to illustrate
 piping:
 
 ``` screen
@@ -550,7 +550,7 @@ with `ls /etc`, which outputs a list of all files or directories in
 regular expression that will cause it to output only the lines that
 start with `'m'` and then contain `"ap"` somewhere in the line. Finally,
 the result of that is sent to `tr`. We gave `tr` options to convert
-everything to uppercase. The output of `tr` isn\'t set anywhere in
+everything to uppercase. The output of `tr` isn't set anywhere in
 particular, so it is displayed on the screen.
 
 In this situation, the shell handles setting up all the pipelines
@@ -571,7 +571,7 @@ POSIX defines a function that creates a pipe. This function returns two
 file descriptors (FDs), which are similar in concept to a Haskell
 `Handle`. One FD is the reading end of the pipe, and the other is the
 writing end. Anything that is written to the writing end can be read by
-the reading end. The data is \"shoved through a pipe\". In Haskell, you
+the reading end. The data is "shoved through a pipe". In Haskell, you
 call `createPipe` to access this interface.
 
 Having a pipe is the first step to being able to pipe data between
@@ -584,23 +584,23 @@ output, and standard error have the predefined FD numbers of 0, 1, and
 numbers, we effectively can cause programs to have their input or output
 redirected.
 
-There is another piece of the puzzle, however. We can\'t just use
+There is another piece of the puzzle, however. We can't just use
 `dupTo` before a call such as `rawSystem` because this would mess up the
 standard input or output of our main Haskell process. Moreover,
 `rawSystem` blocks until the invoked program executes, leaving us no way
 to start multiple processes running in parallel. To make this happen, we
 must use `forkProcess`. This is a very special function. It actually
 makes a copy of the currently-running program and you wind up with two
-copies of the program running at the same time. Haskell\'s `forkProcess`
+copies of the program running at the same time. Haskell's `forkProcess`
 function takes a function to execute in the new process (known as the
 child). We have that function call `dupTo`. After it has done that, it
 calls `executeFile` to actually invoke the command. This is also a
-special function: if all goes well, it *never returns*. That\'s because
+special function: if all goes well, it *never returns*. That's because
 `executeFile` replaces the running process with a different program.
 Eventually, the original Haskell process will call `getProcessStatus` to
 wait for the child processes to terminate and learn of their exit codes.
 
-Whenever you run a command on POSIX systems, whether you\'ve just typed
+Whenever you run a command on POSIX systems, whether you've just typed
 `ls` on the command line or used `rawSystem` in Haskell, under the hood,
 `forkProcess`, `executeFile`, and `getProcessStatus` (or their C
 equivalents) are always being used. To set up pipes, we are duplicating
@@ -610,11 +610,11 @@ steps involving piping and redirection along the way.
 There are a few other housekeeping things we must be careful about. When
 you call `forkProcess`, just about everything about your program is
 cloned.[^4] That includes the set of open file descriptors (handles).
-Programs detect when they\'re done receiving input from a pipe by
+Programs detect when they're done receiving input from a pipe by
 checking the end-of-file indicator. When the process at the writing end
 of a pipe closes the pipe, the process at the reading end will receive
 an end-of-file indication. However, if the writing file descriptor
-exists in more than one process, the end-of-file indicator won\'t be
+exists in more than one process, the end-of-file indicator won't be
 sent until all processes have closed that particular FD. Therefore, we
 must keep track of which FDs are opened so we can close them all in the
 child processes. We must also close the child ends of the pipes in the
@@ -792,7 +792,7 @@ runIO cmd =
 ```
 ::::
 
-Let\'s experiment with this in `ghci` a bit before looking at how it
+Let's experiment with this in `ghci` a bit before looking at how it
 works.
 
 ``` screen
@@ -824,21 +824,21 @@ ghci> runIO $ ("ls", ["/etc"]) -|- ("grep", ["m.*ap"]) -|- ("tr", ["a-z", "A-Z"]
 
 We start by running a simple command, `pwd`, which just prints the name
 of the current working directory. We pass `[]` for the list of
-arguments, because `pwd` doesn\'t need any arguments. Due to the type
-classes used, Haskell can\'t infer the type of `[]`, so we specifically
-mention that it\'s a `String`.
+arguments, because `pwd` doesn't need any arguments. Due to the type
+classes used, Haskell can't infer the type of `[]`, so we specifically
+mention that it's a `String`.
 
 Then we get into more complex commands. We run `ls`, sending it through
 `grep`. At the end, we set up a pipe to run the exact same command that
-we ran via a shell-built pipe at the start of this section. It\'s not
+we ran via a shell-built pipe at the start of this section. It's not
 yet as pleasant as it was in the shell, but then again our program is
 still relatively simple when compared to the shell.
 
-Let\'s look at the program. The very first line has a special
+Let's look at the program. The very first line has a special
 `OPTIONS_GHC` clause. This is the same as passing `-fglasgow-exts` to
 `ghc` or `ghci`. We are using a GHC extension that permits us to use a
 `(String, [String])` type as an instance of a type class.[^5] By putting
-it in the source file, we don\'t have to remember to specify it every
+it in the source file, we don't have to remember to specify it every
 time we use this module.
 
 After the `import` lines, we define a few types. First, we define
@@ -850,7 +850,7 @@ command, and the `CloseFDs` type represents the list of FDs that we must
 close upon forking a new child process.
 
 Next, we define a class named `CommandLike`. This class will be used to
-run \"things\", where a \"thing\" might be a standalone program, a pipe
+run "things", where a "thing" might be a standalone program, a pipe
 set up between two or more programs, or in the future, even pure Haskell
 functions. To be a member of this class, only one function --
 `invoke~—needs to be present for a given
@@ -860,28 +860,28 @@ may have a whole stack of commands on one or both sides of a given
 command.
 
 Our piping infrastructure is going to use strings as the way of sending
-data from one process to another. We can take advantage of Haskell\'s
+data from one process to another. We can take advantage of Haskell's
 support for lazy reading via `hGetContents` while reading data, and use
 `forkIO` to let writing occur in the background. This will work well,
 although not as fast as connecting the endpoints of two processes
 directly together.[^6] It makes implementation quite simple, however. We
 need only take care to do nothing that would require the entire `String`
-to be buffered, and let Haskell\'s laziness do the rest.
+to be buffered, and let Haskell's laziness do the rest.
 
 Next, we define an instance of `CommandLike` for `SysCommand`. We create
-two pipes: one to use for the new process\'s standard input, and the
+two pipes: one to use for the new process's standard input, and the
 other for its standard output. This creates four endpoints, and thus
 four file descriptors. We add the parent file descriptors to the list of
 those that must be closed in all children. These would be the write end
-of the child\'s standard input, and the read end of the child\'s
+of the child's standard input, and the read end of the child's
 standard output. Next, we fork the child process. In the parent, we can
-then close the file descriptors that correspond to the child. We can\'t
-do that before the fork, because then they wouldn\'t be available to the
+then close the file descriptors that correspond to the child. We can't
+do that before the fork, because then they wouldn't be available to the
 child. We obtain a handle for the `stdinwrite` file descriptor, and
 start a thread via `forkIO` to write the input data to it. We then
 define `waitfunc`, which is the action that the caller will invoke when
 it is ready to wait for the called process to terminate. Meanwhile, the
-child uses `dupTo`, closes the file descriptors it doesn\'t need, and
+child uses `dupTo`, closes the file descriptors it doesn't need, and
 executes the command.
 
 Next, we define some utility functions to manage the list of file
@@ -1243,7 +1243,7 @@ countLines = return . (++) "\n" . show . length . lines
 ```
 ::::
 
-Here\'s what has changed:
+Here's what has changed:
 
 -   A new `CommandLike` instance for `String` that uses the shell to
     evaluate and invoke the string.
@@ -1257,8 +1257,8 @@ Here\'s what has changed:
 -   A few utility functions providing Haskell implementations of
     familiar Unix shell commands.
 
-Let\'s try out the new shell features. First, let\'s make sure that the
-command we used in the previous example still works. Then, let\'s try it
+Let's try out the new shell features. First, let's make sure that the
+command we used in the previous example still works. Then, let's try it
 using a more shell-like syntax.
 
 ``` screen
@@ -1284,7 +1284,7 @@ ghci> runIO $ "ls /etc" -|- "grep 'm.*ap'" -|- "tr a-z A-Z"
 <interactive>
 ```
 
-That was a lot easier to type. Let\'s try substituting our native
+That was a lot easier to type. Let's try substituting our native
 Haskell implementation of `grep` and try out some other new features as
 well:
 
@@ -1373,7 +1373,7 @@ from <http://software.complete.org/hsh>.
     so you need not be concerned about leap seconds when performing
     routine calculations. The exact manner of handling leap seconds is
     system-dependent and complex, though usually it can be explained as
-    having a \"long second\". This nuance is generally only of interest
+    having a "long second". This nuance is generally only of interest
     when performing precise subsecond calculations.
 
 [^3]: It is not normally possible to set the `ctime` on POSIX systems.

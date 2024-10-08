@@ -31,7 +31,7 @@ If we are talking about a specific command, we will mention `ghc`,
 `ghci`, or `runghc` by name.
 ::::
 
-In this book, we assume that you\'re using at least version 8.2.2 of
+In this book, we assume that you're using at least version 8.2.2 of
 GHC, which was released in 2017. To obtain a copy of GHC visit [the GHC
 download page](http://www.haskell.org/downloads), and look for the list
 of binary packages and installers.
@@ -45,7 +45,7 @@ GHC at the GHC [distribution
 packages](http://www.haskell.org/ghc/distribution_packages.html) page.
 
 For more detailed information about how to install GHC on a variety of
-popular platforms, we\'ve provided some instructions in [Appendix A,
+popular platforms, we've provided some instructions in [Appendix A,
 *Installing GHC and Haskell
 libraries*](installing-ghc-and-haskell-libraries.html).
 
@@ -71,15 +71,15 @@ used to, say, the interactive Python interpreter.
 ::::
 
 On Unix-like systems, we run `ghci` as a command in a shell window. On
-Windows, it\'s available via the Start Menu. For example, if you
+Windows, it's available via the Start Menu. For example, if you
 installed using the GHC installer on Windows, you should go to
-\"Programs\", then \"GHC\"; you will then see `ghci` in the list. (See
+"Programs", then "GHC"; you will then see `ghci` in the list. (See
 [the section called
-\"Windows\"](installing-ghc-and-haskell-libraries.org::*Windows)
+"Windows"](installing-ghc-and-haskell-libraries.org::*Windows)
 screenshot.)
 
 When we run `ghci`, it displays a startup banner, followed by a
-`Prelude>` prompt. Here, we\'re showing version 8.2.2.
+`Prelude>` prompt. Here, we're showing version 8.2.2.
 
 ``` screen
 $ ghci
@@ -102,9 +102,9 @@ If you enter `:?` at the `ghci` prompt, it will print a long help
 message.
 ::::
 
-The `Prelude` module is sometimes referred to as \"the standard
-prelude\", because its contents are defined by the Haskell 2010
-standard. Usually, it\'s simply shortened to \"the prelude\".
+The `Prelude` module is sometimes referred to as "the standard
+prelude", because its contents are defined by the Haskell 2010
+standard. Usually, it's simply shortened to "the prelude".
 
 :::: note
 ::: title
@@ -117,10 +117,10 @@ The prompt displayed by `ghci` changes frequently depending on what
 modules we have loaded. It can often grow long enough to leave little
 visual room on a single line for our input.
 
-For brevity and consistency, we have replaced `ghci`\'s default prompts
+For brevity and consistency, we have replaced `ghci`'s default prompts
 throughout this book with the prompt string `ghci>`.
 
-If you want to do this yourself, use `ghci`\'s `:set prompt` directive,
+If you want to do this yourself, use `ghci`'s `:set prompt` directive,
 as follows.
 
 ``` screen
@@ -129,7 +129,7 @@ ghci>
 ```
 ::::
 
-The prelude is always implicitly available; we don\'t need to take any
+The prelude is always implicitly available; we don't need to take any
 actions to use the types, values, or functions it defines. To use
 definitions from other modules, we must load them into `ghci`, using the
 `:module` command.
@@ -189,19 +189,19 @@ ghci> 313 ^ 15
 ### An arithmetic quirk: writing negative numbers
 
 Haskell presents us with one peculiarity in how we must write numbers:
-it\'s often necessary to enclose a negative number in parentheses. This
+it's often necessary to enclose a negative number in parentheses. This
 affects us as soon as we move beyond the simplest expressions.
 
-We\'ll start by writing a negative number.
+We'll start by writing a negative number.
 
 ``` screen
 ghci> -3
 -3
 ```
 
-The `-` above is a unary operator. In other words, we didn\'t write the
-single number \"-3\"; we wrote the number \"3\", and applied the
-operator `-` to it. The `-` operator is Haskell\'s only unary operator,
+The `-` above is a unary operator. In other words, we didn't write the
+single number "-3"; we wrote the number "3", and applied the
+operator `-` to it. The `-` operator is Haskell's only unary operator,
 and we cannot mix it with infix operators.
 
 ``` screen
@@ -226,10 +226,10 @@ This avoids a parsing ambiguity. When we apply a function in Haskell, we
 write the name of the function, followed by its argument, for example
 `f 3`. If we did not need to wrap a negative number in parentheses, we
 would have two profoundly different ways to read `f-3`: it could be
-either \"apply the function `f` to the number `-3`\", or \"subtract the
-number `3` from the variable `f`\".
+either "apply the function `f` to the number `-3`", or "subtract the
+number `3` from the variable `f`".
 
-*Most* of the time, we can omit white space (\"blank\" characters such
+*Most* of the time, we can omit white space ("blank" characters such
 as space and tab) from expressions, and Haskell will parse them as we
 intended. But not always. Here is an expression that works:
 
@@ -253,7 +253,7 @@ ghci> 2*-3
 
 Here, the Haskell implementation is reading `*-` as a single operator.
 Haskell lets us define new operators (a subject that we will return to
-later), but we haven\'t defined `*-`. Once again, a few parentheses get
+later), but we haven't defined `*-`. Once again, a few parentheses get
 us and `ghci` looking at the expression in the same way.
 
 ``` screen
@@ -274,7 +274,7 @@ expressive power.
 The values of Boolean logic in Haskell are `True` and `False`. The
 capitalization of these names is important. The language uses
 C-influenced operators for working with Boolean values: `(&&)` is
-logical \"and\", and `(||)` is logical \"or\".
+logical "and", and `(||)` is logical "or".
 
 ``` screen
 ghci> True && False
@@ -305,11 +305,11 @@ possible change we could make that might fix the problem.
 
 Here is a more detailed breakdown of the error message.
 
--   \"`No instance for (Num Bool)`\" tells us that `ghci` is trying to
+-   "`No instance for (Num Bool)`" tells us that `ghci` is trying to
     treat the numeric value 1 as having a Bool type, but it cannot.
--   \"`` arising from the literal `1' ``\" indicates that it was our use
+-   "`` arising from the literal `1' ``" indicates that it was our use
     of the number `1` that caused the problem.
--   \"`` In the definition of `it' ``\" refers to a `ghci` short cut
+-   "`` In the definition of `it' ``" refers to a `ghci` short cut
     that we will revisit in a few pages.
 
 :::: tip
@@ -321,19 +321,19 @@ Remain fearless in the face of error messages
 
 We have an important point to make here, which we will repeat throughout
 the early sections of this book. If you run into problems or error
-messages that you do not yet understand, *don\'t panic*. Early on, all
+messages that you do not yet understand, *don't panic*. Early on, all
 you have to do is figure out enough to make progress on a problem. As
 you acquire experience, you will find it easier to understand parts of
 error messages that initially seem obscure.
 
 The numerous error messages have a purpose: they actually help us in
-writing correct code, by making us perform some amount of debugging \"up
-front\", before we ever run a program. If you are coming from a
+writing correct code, by making us perform some amount of debugging "up
+front", before we ever run a program. If you are coming from a
 background of working with more permissive languages, this way of
 working may come as something of a shock. Bear with us.
 ::::
 
-Most of Haskell\'s comparison operators are similar to those used in C
+Most of Haskell's comparison operators are similar to those used in C
 and the many languages it has influenced.
 
 ``` screen
@@ -345,7 +345,7 @@ ghci> 4 >= 3.99
 True
 ```
 
-One operator that differs from its C counterpart is \"is not equal to\".
+One operator that differs from its C counterpart is "is not equal to".
 In C, this is written as `!=`. In Haskell, we write `(/=)`, which
 resembles the ≠ notation used in mathematics.
 
@@ -400,9 +400,9 @@ class (Eq a, Show a) => Num a where
 infixl 7 *
 ```
 
-The information we seek is in the line \"`infixl 6 +`\", which indicates
+The information we seek is in the line "`infixl 6 +`", which indicates
 that the `(+)` operator has a precedence of 6. (We will explain the
-other output in a later chapter.) The \"`infixl 7 *`\" tells us that the
+other output in a later chapter.) The "`infixl 7 *`" tells us that the
 `(*)` operator has a precedence of 7. Since `(*)` has a higher
 precedence than `(+)`, we can now see why `1 + 4 * 4` is evaluated as
 `1 + (4 * 4)`, and not `(1 + 4) * 4`.
@@ -425,7 +425,7 @@ referred to as *fixity* rules.
 
 ### Undefined values, and introducing variables
 
-Haskell\'s prelude, the standard library we mentioned earlier, defines
+Haskell's prelude, the standard library we mentioned earlier, defines
 at least one well-known mathematical constant for us.
 
 ``` screen
@@ -434,7 +434,7 @@ ghci> pi
 ```
 
 But its coverage of mathematical constants is not comprehensive, as we
-can quickly see. Let us look for Euler\'s number, `e`.
+can quickly see. Let us look for Euler's number, `e`.
 
 ``` screen
 ghci> e
@@ -449,14 +449,14 @@ Oh well. We have to define it ourselves.
 Note
 :::
 
-Don\'t worry about the error message
+Don't worry about the error message
 
-If the above \"not in scope\" error message seems a little daunting, do
+If the above "not in scope" error message seems a little daunting, do
 not worry. All it means is that there is no variable defined with the
 name `e`.
 ::::
 
-Using `ghci`\'s `let` construct, we can make a temporary definition of
+Using `ghci`'s `let` construct, we can make a temporary definition of
 `e` ourselves.
 
 ``` screen
@@ -486,9 +486,9 @@ Warning
 This syntax is ghci-specific
 
 The syntax for `let` that `ghci` accepts is not the same as we would use
-at the \"top level\" of a normal Haskell program. We will see the normal
-syntax in [the section called \"Introducing local
-variables\"](3-defining-types-streamlining-functions.org::*Introducing local variables)
+at the "top level" of a normal Haskell program. We will see the normal
+syntax in [the section called "Introducing local
+variables"](3-defining-types-streamlining-functions.org::*Introducing local variables)
 ::::
 
 ### Dealing with precedence and associativity rules
@@ -508,7 +508,7 @@ rules numbers: it is simpler to add parentheses if you are unsure.
 ## Command line editing in ghci
 
 On most systems, `ghci` has some amount of command line editing ability.
-In case you are not familiar with command line editing, it\'s a huge
+In case you are not familiar with command line editing, it's a huge
 time saver. The basics are common to both Unix-like and Windows systems.
 Pressing the ↑ key on your keyboard recalls the last line of input you
 entered; pressing ↑ repeatedly cycles through earlier lines of input.
@@ -523,8 +523,8 @@ Tip
 
 Where to look for more information
 
-We\'ve barely scratched the surface of command line editing here. Since
-you can work more effectively if you\'re more familiar with the
+We've barely scratched the surface of command line editing here. Since
+you can work more effectively if you're more familiar with the
 capabilities of your command line editing system, you might find it
 useful to do some further reading. `ghci` uses the Haskeline library
 under the hood, which is
@@ -550,8 +550,8 @@ Note
 Commas are separators, not terminators
 
 Some languages permit the last element in a list to be followed by an
-optional trailing comma before a closing bracket, but Haskell doesn\'t
-allow this. If you leave in a trailing comma (e.g. `[1,2,]`), you\'ll
+optional trailing comma before a closing bracket, but Haskell doesn't
+allow this. If you leave in a trailing comma (e.g. `[1,2,]`), you'll
 get a parse error.
 ::::
 
@@ -577,9 +577,9 @@ ghci> [True, False, "testing"]
       In an equation for ‘it’: it = [True, False, "testing"]
 ```
 
-Once again, `ghci`\'s error message is verbose, but it\'s simply telling
+Once again, `ghci`'s error message is verbose, but it's simply telling
 us that there is no way to turn the string into a Boolean value, so the
-list expression isn\'t properly typed.
+list expression isn't properly typed.
 
 If we write a series of elements using *enumeration notation*, Haskell
 will fill in the contents of the list for us.
@@ -611,12 +611,12 @@ ghci> [10,9..1]
 ```
 
 In the latter case above, the list is quite sensibly missing the end
-point of the enumeration, because it isn\'t an element of the series we
+point of the enumeration, because it isn't an element of the series we
 defined.
 
-We can omit the end point of an enumeration. If a type doesn\'t have a
-natural \"upper bound\", this will produce values indefinitely. For
-example, if you type `[1..]` at the `ghci` prompt, you\'ll have to
+We can omit the end point of an enumeration. If a type doesn't have a
+natural "upper bound", this will produce values indefinitely. For
+example, if you type `[1..]` at the `ghci` prompt, you'll have to
 interrupt or kill `ghci` to stop it from printing an infinite succession
 of ever-larger numbers. If you are tempted to do this, type `Ctrl-C` to
 halt the enumeration. We will find later on that infinite lists are
@@ -629,7 +629,7 @@ Warning
 
 Beware enumerating floating point numbers
 
-Here\'s a non-intuitive bit of behaviour.
+Here's a non-intuitive bit of behaviour.
 
 ``` screen
 ghci> [1.0..1.8]
@@ -658,7 +658,7 @@ ghci> [] ++ [False,True] ++ [True]
 ```
 
 More basic is the `(:)` operator, which adds an element to the front of
-a list. This is pronounced \"cons\" (short for \"construct\").
+a list. This is pronounced "cons" (short for "construct").
 
 ``` screen
 ghci> 1 : [2,3]
@@ -674,7 +674,7 @@ must be a list.
 
 ## Strings and characters
 
-If you know a language like Perl or C, you\'ll find Haskell\'s notations
+If you know a language like Perl or C, you'll find Haskell's notations
 for strings familiar.
 
 A text string is surrounded by double quotes.
@@ -685,7 +685,7 @@ ghci> "This is a string."
 ```
 
 As in many languages, we can represent hard-to-see characters by
-\"escaping\" them. Haskell\'s escape characters and escaping rules
+"escaping" them. Haskell's escape characters and escaping rules
 follow the widely used conventions established by the C language. For
 example, `'\n'` denotes a newline character, and `'\t'` is a tab
 character. For complete details, see [Appendix B, *Characters, strings,
@@ -707,7 +707,7 @@ ghci> 'a'
 ```
 
 In fact, a text string is simply a list of individual characters.
-Here\'s a painful way to write a short string, which `ghci` gives back
+Here's a painful way to write a short string, which `ghci` gives back
 to us in a more familiar form.
 
 ``` screen
@@ -737,9 +737,9 @@ ghci> "foo" ++ "bar"
 
 ## First steps with types
 
-While we\'ve talked a little about types already, our interactions with
-`ghci` have so far been free of much type-related thinking. We haven\'t
-told `ghci` what types we\'ve been using, and it\'s mostly been willing
+While we've talked a little about types already, our interactions with
+`ghci` have so far been free of much type-related thinking. We haven't
+told `ghci` what types we've been using, and it's mostly been willing
 to accept our input.
 
 Haskell requires type names to start with an uppercase letter, and
@@ -747,7 +747,7 @@ variable names must start with a lowercase letter. Bear this in mind as
 you read on; it makes it much easier to follow the names.
 
 The first thing we can do to start exploring the world of types is to
-get `ghci` to tell us more about what it\'s doing. `ghci` has a command,
+get `ghci` to tell us more about what it's doing. `ghci` has a command,
 `:set`, that lets us change a few of its default behaviours. We can tell
 it to print more type information as follows.
 
@@ -763,15 +763,15 @@ it :: [Char]
 
 What the `+t` does is tell `ghci` to print the type of an expression
 after the expression. That cryptic `it` in the output can be very
-useful: it\'s actually the name of a special variable, in which `ghci`
-stores the result of the last expression we evaluated. (This isn\'t a
-Haskell language feature; it\'s specific to `ghci` alone.) Let\'s break
+useful: it's actually the name of a special variable, in which `ghci`
+stores the result of the last expression we evaluated. (This isn't a
+Haskell language feature; it's specific to `ghci` alone.) Let's break
 down the meaning of the last line of `ghci` output.
 
--   It\'s telling us about the special variable `it`.
--   We can read text of the form `x :: y` as meaning \"the expression
-    `x` has the type `y`\".
--   Here, the expression \"it\" has the type `[Char]`. (The name
+-   It's telling us about the special variable `it`.
+-   We can read text of the form `x :: y` as meaning "the expression
+    `x` has the type `y`".
+-   Here, the expression "it" has the type `[Char]`. (The name
     `String` is often used instead of `[Char]`. It is simply a synonym
     for `[Char]`.)
 
@@ -780,7 +780,7 @@ down the meaning of the last line of `ghci` output.
 Tip
 :::
 
-The joy of \"it\"
+The joy of "it"
 
 That `it` variable is a handy `ghci` shortcut. It lets us use the result
 of the expression we just evaluated in a new expression.
@@ -794,7 +794,7 @@ ghci> it ++ "bar"
 it :: [Char]
 ```
 
-When evaluating an expression, `ghci` won\'t change the value of `it` if
+When evaluating an expression, `ghci` won't change the value of `it` if
 the evaluation fails. This lets you write potentially bogus expressions
 with something of a safety net.
 
@@ -820,12 +820,12 @@ it :: [Char]
 When we couple `it` with liberal use of the arrow keys to recall and
 edit the last expression we typed, we gain a decent way to experiment
 interactively: the cost of mistakes is very low. Take advantage of the
-opportunity to make cheap, plentiful mistakes when you\'re exploring the
+opportunity to make cheap, plentiful mistakes when you're exploring the
 language!
 ::::
 
-Here are a few more of Haskell\'s names for types, from expressions of
-the sort we\'ve already seen.
+Here are a few more of Haskell's names for types, from expressions of
+the sort we've already seen.
 
 ``` screen
 ghci> 7 ^ 80
@@ -833,10 +833,10 @@ ghci> 7 ^ 80
 it :: Integer
 ```
 
-Haskell\'s integer type is named `Integer`. The size of an `Integer`
-value is bounded only by your system\'s memory capacity.
+Haskell's integer type is named `Integer`. The size of an `Integer`
+value is bounded only by your system's memory capacity.
 
-Rational numbers don\'t look quite the same as integers. To construct a
+Rational numbers don't look quite the same as integers. To construct a
 rational number, we use the `(%)` operator. The numerator is on the
 left, the denominator on the right.
 
@@ -851,7 +851,7 @@ For convenience, `ghci` lets us abbreviate many commands, so we can
 write `:m` instead of `:module` to load a module.
 
 Notice *two* words on the right hand side of the `::` above. We can read
-this as a \"ratio of integer\". We might guess that a `Ratio` must have
+this as a "ratio of integer". We might guess that a `Ratio` must have
 values of type Integer as both numerator and denominator. Sure enough,
 if we try to construct a `Ratio` where the numerator and denominator are
 of different types, or of the same non-integral type, `ghci` complains.
@@ -912,7 +912,7 @@ it :: [Char]
 ```
 
 The `:type` command will print type information for any expression we
-give it (including `it`, as we see above). It won\'t actually evaluate
+give it (including `it`, as we see above). It won't actually evaluate
 the expression; it only checks its type and prints that.
 
 Why are the types reported for these two expressions different?
@@ -932,15 +932,15 @@ or a floating point value. When we force `ghci` to evaluate the
 expression `3 + 2`, it has to choose a type so that it can print the
 value, and it defaults to `Integer`. In the second case, we ask `ghci`
 to print the type of the expression without actually evaluating it, so
-it does not have to be so specific. It answers, in effect, \"its type is
-numeric\". We will see more of this style of type annotation in
+it does not have to be so specific. It answers, in effect, "its type is
+numeric". We will see more of this style of type annotation in
 [Chapter 6, Using Type Classes](6-using-typeclasses.org).
 
 ## A simple program
 
-Let\'s take a small leap ahead, and write a small program that counts
-the number of lines in its input. Don\'t expect to understand this yet;
-it\'s just fun to get our hands dirty. In a text editor, enter the
+Let's take a small leap ahead, and write a small program that counts
+the number of lines in its input. Don't expect to understand this yet;
+it's just fun to get our hands dirty. In a text editor, enter the
 following code into a file, and save it as `WC.hs`.
 
 :::: captioned-content
@@ -956,7 +956,7 @@ main = interact wordCount
 ```
 ::::
 
-Find or create a text file; let\'s call it `quux.txt`[^1].
+Find or create a text file; let's call it `quux.txt`[^1].
 
 ``` screen
 $ cat quux.txt

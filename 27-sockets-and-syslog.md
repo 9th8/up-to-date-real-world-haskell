@@ -5,8 +5,8 @@
 In several earlier chapters of this book, we have discussed services
 that operate over a network. Two examples are client/server databases
 and web services. When the need arises to devise a new protocol, or to
-communicate with a protocol that doesn\'t have an existing helper
-library in Haskell, you\'ll need to use the lower-level networking tools
+communicate with a protocol that doesn't have an existing helper
+library in Haskell, you'll need to use the lower-level networking tools
 in the Haskell library.
 
 In this chapter, we will discuss these lower-level tools. Network
@@ -14,7 +14,7 @@ communication is a broad topic with entire books devoted to it. In this
 chapter, we will show you how to use Haskell to apply low-level network
 knowledge you already have.
 
-Haskell\'s networking functions almost always correspond directly to
+Haskell's networking functions almost always correspond directly to
 familiar C function calls. As most other languages also layer atop C,
 you should find this interface familiar.
 
@@ -26,7 +26,7 @@ checksumming to ensure that packets that arrive have not been corrupted.
 UDP tends to be used in applications that are performance- or
 latency-sensitive, in which each individual packet of data is less
 important than the overall performance of the system. It may also be
-used where the TCP behavior isn\'t the most efficient, such as ones that
+used where the TCP behavior isn't the most efficient, such as ones that
 send short, discrete messages. Examples of systems that tend to use UDP
 include audio and video conferencing, time synchronization,
 network-based filesystems, and logging systems.
@@ -285,7 +285,7 @@ there are a few packets that must be sent at the start of the TCP
 conversation to establish the link. For very short conversations, then,
 UDP would have a performance advantage. Also, TCP tries very hard to get
 data through. If one end of a conversation tries to send data to the
-remote, but doesn\'t receive an acknowledgment back, it will
+remote, but doesn't receive an acknowledgment back, it will
 periodically re-transmit the data for some time before giving up. This
 makes TCP robust in the face of dropped packets. However, it also means
 that TCP is not the best choice for real-time protocols that involve
@@ -294,7 +294,7 @@ things such as live audio or video.
 ### Handling Multiple TCP Streams
 
 With TCP, connections are stateful. That means that there is a dedicated
-logical \"channel\" between a client and server, rather than just
+logical "channel" between a client and server, rather than just
 one-off packets as with UDP. This makes things easy for client
 developers. Server applications almost always will want to be able to
 handle more than one TCP connection at once. How then to do this?
@@ -302,7 +302,7 @@ handle more than one TCP connection at once. How then to do this?
 On the server side, you will first create a socket and bind to a port,
 just like UDP. Instead of repeatedly listening for data from any
 location, your main loop will be around the `accept` call. Each time a
-client connects, the server\'s operating system allocates a new socket
+client connects, the server's operating system allocates a new socket
 for it. So we have the *master* socket, used only to listen for incoming
 connections, and never to transmit data. We also have the potential for
 multiple *child* sockets to be used at once, each corresponding to a
@@ -314,11 +314,11 @@ an efficient internal implementation of this that performs quite well.
 
 ### TCP Syslog Server
 
-Let\'s say that we wanted to reimplement syslog using TCP instead of
+Let's say that we wanted to reimplement syslog using TCP instead of
 UDP. We could say that a single message is defined not by being in a
 single packet, but is ended by a trailing newline character `'\n'`. Any
 given client could send 0 or more messages to the server using a given
-TCP connection. Here\'s how we might write that.
+TCP connection. Here's how we might write that.
 
 ``` example
 import Data.Bits
@@ -393,33 +393,33 @@ plainHandler addr msg =
     putStrLn $ "From " ++ show addr ++ ": " ++ msg
 ```
 
-For our `SyslogTypes` implementation, see [the section called \"UDP
+For our `SyslogTypes` implementation, see [the section called "UDP
 Client Example:
-syslog\"](27-sockets-and-syslog.org::*UDP Client Example: syslog)
+syslog"](27-sockets-and-syslog.org::*UDP Client Example: syslog)
 
-Let\'s look at this code. Our main loop is in `procRequests`, where we
+Let's look at this code. Our main loop is in `procRequests`, where we
 loop forever waiting for new connections from clients. The `accept` call
 blocks until a client connects. When a client connects, we get a new
 socket and the address of the client. We pass a message to the handler
 about that, then use `forkIO` to create a thread to handle the data from
 that client. This thread runs `procMessages`.
 
-When dealing with TCP data, it\'s often convenient to convert a socket
+When dealing with TCP data, it's often convenient to convert a socket
 into a Haskell `Handle`. We do so here, and explicitly set the
 buffering---an important point for TCP communication. Next, we set up
-lazy reading from the socket\'s `Handle`. For each incoming line, we
+lazy reading from the socket's `Handle`. For each incoming line, we
 pass it to `handle`. After there is no more data---because the remote
 end has closed the socket---we output a message about that.
 
 Since we may be handling multiple incoming messages at once, we need to
-ensure that we\'re not writing out multiple messages at once in the
+ensure that we're not writing out multiple messages at once in the
 handler. That could result in garbled output. We use a simple lock to
 serialize access to the handler, and write a simple `handle` function to
 handle that.
 
-You can test this with the client we\'ll present next, or you can even
+You can test this with the client we'll present next, or you can even
 use the `telnet` program to connect to this server. Each line of text
-you send to it will be printed on the display by the server. Let\'s try
+you send to it will be printed on the display by the server. Let's try
 it out:
 
 ``` screen
@@ -446,7 +446,7 @@ telnet> quit
 Connection closed.
 ```
 
-Meanwhile, in our other terminal running the TCP server, you\'ll see
+Meanwhile, in our other terminal running the TCP server, you'll see
 something like this:
 
 ``` screen
@@ -463,7 +463,7 @@ time you run the program.
 
 ### TCP Syslog Client
 
-Now, let\'s write a client for our TCP syslog protocol. This client will
+Now, let's write a client for our TCP syslog protocol. This client will
 be similar to the UDP client, but there are a couple of changes. First,
 since TCP is a streaming protocol, we can send data using a `handle`
 rather than using the lower-level socket operations. Secondly, we no
@@ -471,9 +471,9 @@ longer need to store the destination address in the `SyslogHandle` since
 we will be using `connect` to establish the TCP connection. Finally, we
 need a way to know where one message ends and the next begins. With UDP,
 that was easy because each message was a discrete logical packet. With
-TCP, we\'ll just use the newline character `'\n'` as the end-of-message
+TCP, we'll just use the newline character `'\n'` as the end-of-message
 marker, though that means that no individual message may contain the
-newline. Here\'s our code:
+newline. Here's our code:
 
 ``` example
 import Data.Bits
@@ -558,7 +558,7 @@ ghci> syslog sl USER INFO "This is my TCP message again"
 ghci> closelog sl
 ```
 
-Over on the server, you\'ll see something like this:
+Over on the server, you'll see something like this:
 
 ``` screen
 From 127.0.0.1:46319: syslogtcpserver.hs: client connected

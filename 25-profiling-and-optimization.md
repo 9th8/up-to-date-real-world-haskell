@@ -17,21 +17,21 @@ such, we need a good knowledge of how our program data is represented,
 the precise consequences of using lazy or strict evaluation strategies,
 and techniques for analyzing and controlling space and time behavior.
 
-In this chapter we\'ll look at typical space and time problems a Haskell
+In this chapter we'll look at typical space and time problems a Haskell
 programmer might encounter, and how to methodically analyse, understand
-and address them. To do this we\'ll use investigate a range of
+and address them. To do this we'll use investigate a range of
 techniques: time and space profiling, runtime statistics, and reasoning
-about strict and lazy evaluation. We\'ll also look at the impact of
+about strict and lazy evaluation. We'll also look at the impact of
 compiler optimizations on performance, and the use of advanced
 optimization techniques that become feasible in a purely functional
-language. So let\'s begin with a challenge: squashing unexpected memory
+language. So let's begin with a challenge: squashing unexpected memory
 usage in some inoccuous looking code.
 
 ## Profiling Haskell programs
 
-Let\'s consider the following list manipulating program, which naively
+Let's consider the following list manipulating program, which naively
 computes the mean of some large list of values. While only a program
-fragment (and we\'ll stress that the particular algorithm we\'re
+fragment (and we'll stress that the particular algorithm we're
 implementing is irrelevant here), it is representative of real code we
 might find in any Haskell program: typically concise list manipulation
 code, and heavy use of standard library functions. It also illustrates
@@ -56,11 +56,11 @@ mean xs = sum xs / fromIntegral (length xs)
 ::::
 
 This program is very simple: we import functions for accessing the
-system\'s environment (in particular, `getArgs`), and the Haskell
+system's environment (in particular, `getArgs`), and the Haskell
 version of `printf`, for formatted text output. The program then reads a
 numeric literal from the command line, using that to build a list of
 floating point values, whose mean value we compute by dividing the list
-sum by its length. The result is printed as a string. Let\'s compile
+sum by its length. The result is printed as a string. Let's compile
 this source to native code (with optimizations on) and run it with the
 `time` command to see how it performs:
 
@@ -81,26 +81,26 @@ $ time ./A 1e7
 
 It worked well for small numbers, but the program really started to
 struggle with input size of ten million. From this alone we know
-something\'s not quite right, but it\'s unclear what resources are being
-used. Let\'s investigate.
+something's not quite right, but it's unclear what resources are being
+used. Let's investigate.
 
 ### Collecting runtime statistics
 
 To get access to that kind of information, GHC lets us pass flags
 directly to the Haskell runtime, using the special `+RTS` and `-RTS`
 flags to delimit arguments reserved for the runtime system. The
-application itself won\'t see those flags, as they\'re immediately
+application itself won't see those flags, as they're immediately
 consumed by the Haskell runtime system.
 
 In particular, we can ask the runtime system to gather memory and
 garbage collector performance numbers with the `-s` flag (as well as
 control the number of OS threads with `-N`, or tweak the stack and heap
-sizes). We\'ll also use runtime flags to enable different varieties of
+sizes). We'll also use runtime flags to enable different varieties of
 profiling. The complete set of flags the Haskell runtime accepts is
-documented in the [GHC User\'s
+documented in the [GHC User's
 Guide](http://www.haskell.org/ghc/docs/latest/html/users_guide/):
 
-So let\'s run the program with statistic reporting enabled, via
+So let's run the program with statistic reporting enabled, via
 `+RTS -sstderr`, yielding this result.
 
 ``` screen
@@ -130,22 +130,22 @@ $ ./A 1e7 +RTS -sstderr
   Productivity   3.1% of total user, 2.9% of total elapsed
 ```
 
-When using `-sstderr`, our program\'s performance numbers are printed to
+When using `-sstderr`, our program's performance numbers are printed to
 the standard error stream, giving us a lot of information about what our
 program was doing. In particular, it tells us how much time was spent in
 garbage collection, and what the maximum live memory usage was. It turns
 out that to compute the mean of a list of 10 million elements our
 program used a maximum of 742 megabytes on the heap, and spent 96.9% of
-its time doing garbage collection! In total, only 3.1% of the program\'s
+its time doing garbage collection! In total, only 3.1% of the program's
 running time was spent doing productive work.
 
 So why is our program behaving so badly, and what can we do to improve
-it? After all, Haskell is a lazy language: shouldn\'t it be able to
+it? After all, Haskell is a lazy language: shouldn't it be able to
 process the list in constant space?
 
 ### Time profiling
 
-GHC, thankfully, comes with several tools to analyze a program\'s time
+GHC, thankfully, comes with several tools to analyze a program's time
 and space usage. In particular, we can compile a program with profiling
 enabled, which, when run, yields useful information about what resources
 each function was using. Profiling proceeds in three steps: compiling
@@ -154,8 +154,8 @@ enabled; and inspecting the resulting statistics.
 
 To compile our program for basic time and allocation profiling, we use
 the `-prof`{.verbatim} flag. We also need to tell the profiling code
-which functions we\'re interested in profiling, by adding \"cost
-centres\" to them. A cost centre is a location in the program we\'d like
+which functions we're interested in profiling, by adding "cost
+centres" to them. A cost centre is a location in the program we'd like
 to collect statistics about, and GHC will generate code to compute the
 cost of evaluating the expression at each location. Cost centres can be
 added manually to instrument any expression, using the `SCC` pragma:
@@ -181,10 +181,10 @@ One complication to be aware of: in a lazy, pure language like Haskell,
 values with no arguments need only be computed once (for example, the
 large list in our example program), and the result shared for later
 uses. Such values are not really part of the call graph of a program, as
-they\'re not evaluated on each call, but we would of course still like
+they're not evaluated on each call, but we would of course still like
 to know how expensive their one-off cost of evaluation was. To get
-accurate numbers for these values, known as \"constant applicative
-forms\", or CAFs, we use the `-caf-all` flag.
+accurate numbers for these values, known as "constant applicative
+forms", or CAFs, we use the `-caf-all` flag.
 
 Compiling our example program for profiling then (using the
 `-fforce-recomp` flag to to force full recompilation):
@@ -196,7 +196,7 @@ Linking A ...
 ```
 
 We can now run this annotated program with time profiling enabled (and
-we\'ll use a smaller input size for the time being, as the program now
+we'll use a smaller input size for the time being, as the program now
 has additional profiling overhead):
 
 ``` screen
@@ -254,9 +254,9 @@ MAIN        MAIN            1           0   0.0    0.0   100.0  100.0
  CAF        GHC.Handle    110           4   0.0    0.0     0.0    0.0
 ```
 
-This gives us a view into the program\'s runtime behavior. We can see
-the program\'s name and the flags we ran it with. The \"total time\" is
-time actually spent executing code from the runtime system\'s point of
+This gives us a view into the program's runtime behavior. We can see
+the program's name and the flags we ran it with. The "total time" is
+time actually spent executing code from the runtime system's point of
 view, and the total allocation is the number of bytes allocated during
 the entire program run (not the maximum live memory, which was around
 700MB).
@@ -264,7 +264,7 @@ the entire program run (not the maximum live memory, which was around
 The second section of the profiling report is the proportion of time and
 space each function was responsible for. The third section is the cost
 centre report, structured as a call graph (for example, we can see that
-`mean` was called from `main`. The \"individual\" and \"inherited\"
+`mean` was called from `main`. The "individual" and "inherited"
 columns give us the resources a cost centre was responsible for on its
 own, and what it and its children were responsible for. Additionally, we
 see the one-off costs of evaluating constants (such as the floating
@@ -283,21 +283,21 @@ For simple performance hot spot identification, particularly in large
 programs where we might have little idea where time is being spent, the
 initial time profile can highlight a particular problematic module and
 top level function, which is often enough to reveal the trouble spot.
-Once we\'ve narrowed down the code to a problematic section, such as our
+Once we've narrowed down the code to a problematic section, such as our
 example here, we can use more sophisticated profiling tools to extract
 more information.
 
 ### Space profiling
 
 Beyond basic time and allocation statistics, GHC is able to generate
-graphs of memory usage of the heap, over the program\'s lifetime. This
-is perfect for revealing \"space leaks\", where memory is retained
+graphs of memory usage of the heap, over the program's lifetime. This
+is perfect for revealing "space leaks", where memory is retained
 unnecessarily, leading to the kind of heavy garbage collector activity
 we see in our example.
 
 Constructing a heap profile follows the same steps as constructing a
 normal time profile, namely, compile with `-prof -auto-all
--caf-all`, but when we execute the program, we\'ll ask the runtime
+-caf-all`, but when we execute the program, we'll ask the runtime
 system to gather more detailed heap use statistics. We can break down
 the heap use information in several ways: via cost-centre, via module,
 by constructor, by data type, each with its own insights. Heap profiling
@@ -368,8 +368,8 @@ Which yields the following graph:
 
 The most interesting things to notice here are large parts of the heap
 devoted to values of list type (the `[]` band), and heap-allocated
-`Double` values. There\'s also some heap allocated data of unknown type
-(represented as data of type \"\*\"). Finally, let\'s break it down by
+`Double` values. There's also some heap allocated data of unknown type
+(represented as data of type "\*"). Finally, let's break it down by
 what constructors are being allocated, using the `-hd` flag:
 
 ``` screen
@@ -404,10 +404,10 @@ mean xs = sum xs / fromIntegral (length xs)
 ::::
 
 At first we sum our list, which triggers the allocation of list nodes,
-but we\'re unable to release the list nodes once we\'re done, as the
+but we're unable to release the list nodes once we're done, as the
 entire list is still needed by `length`. As soon as `sum` is done
 though, and `length` starts consuming the list, the garbage collector
-can chase it along, deallocating the list nodes, until we\'re done.
+can chase it along, deallocating the list nodes, until we're done.
 These two phases of evaluation give two strikingly different phases of
 allocation and deallocation, and point at exactly what we need to do:
 traverse the list only once, summing and averaging it as we go.
@@ -417,7 +417,7 @@ traverse the list only once, summing and averaging it as we go.
 We have a number of options if we want to write our loop to traverse the
 list only once. For example, we can write the loop as a fold over the
 list, or via explicit recursion on the list structure. Sticking to the
-high level approaches, we\'ll try a fold first:
+high level approaches, we'll try a fold first:
 
 :::: captioned-content
 ::: caption
@@ -437,7 +437,7 @@ Now, instead of taking the sum of the list, and retaining the list until
 we can take its length, we left-fold over the list, accumulating the
 intermediate sum and length values in a pair (and we must left-fold,
 since a right-fold would take us to the end of the list and work
-backwards, which is exactly what we\'re trying to avoid).
+backwards, which is exactly what we're trying to avoid).
 
 The body of our loop is the `k` function, which takes the intermediate
 loop state, and the current element, and returns a new state with the
@@ -503,7 +503,7 @@ mean xs = s / fromIntegral n
 ```
 ::::
 
-However, if we run this implementation, we see we still haven\'t quite
+However, if we run this implementation, we see we still haven't quite
 got it right:
 
 ``` screen
@@ -535,9 +535,9 @@ foldl' f z xs = lgo z xs
 
 This loop uses `` `seq` `` to reduce the accumulated state at each step,
 but only to the outermost constructor on the loop state. That is, `seq`
-reduces an expression to \"weak head normal form\". Evaluation stops on
+reduces an expression to "weak head normal form". Evaluation stops on
 the loop state once the first constructor is reached. In this case, the
-outermost constructor is the tuple wrapper, `(,)`, which isn\'t deep
+outermost constructor is the tuple wrapper, `(,)`, which isn't deep
 enough. The problem is still the unevaluated numeric state inside the
 tuple.
 
@@ -615,8 +615,8 @@ and does so quickly.
     There are a number of other ways we could have addressed the
     strictness issue here. For deep strictness, we can use the `rnf`
     function, part of the parallel strategies library (along with
-    `using`), which unlike `seq` reduces to the fully evaluated \"normal
-    form\" (hence its name). Such a \"deep seq\" fold we can write as:
+    `using`), which unlike `seq` reduces to the fully evaluated "normal
+    form" (hence its name). Such a "deep seq" fold we can write as:
 
     :::: captioned-content
     ::: caption
@@ -659,8 +659,8 @@ and does so quickly.
 2.  Bang patterns
 
     Perhaps the cheapest way, syntactically, to add required strictness
-    to code that\'s excessively lazy is via \"bang patterns\" (whose
-    name comes from pronunciation of the \"!\" character as \"bang\"), a
+    to code that's excessively lazy is via "bang patterns" (whose
+    name comes from pronunciation of the "!" character as "bang"), a
     language extension introduced with the following pragma:
 
     :::: captioned-content
@@ -729,7 +729,7 @@ and does so quickly.
 
     In large projects, when we are investigating memory allocation hot
     spots, bang patterns are the cheapest way to speculatively modify
-    the strictness properties of some code, as they\'re syntactically
+    the strictness properties of some code, as they're syntactically
     less invasive than other methods.
 
 3.  Strict data types
@@ -778,7 +778,7 @@ exactly what your program is doing is to look at the final program
 source after the compiler is done optimizing it, particularly in the
 case of Haskell compilers, which can perform very aggressive
 transformations on the code. GHC uses what is humorously referred to as
-\"a simple functional language\", known as Core, as the compiler
+"a simple functional language", known as Core, as the compiler
 intermediate representation. It is essentially a subset of Haskell,
 augmented with unboxed data types (raw machine types, directly
 corresponding to primitive data types in languages like C), suitable for
@@ -791,14 +791,14 @@ understanding.
 
 To view the Core version of our Haskell program we compile with the
 `-ddump-simpl` flag, or use the `ghc-core` tool, a third-party utility
-that lets us view Core in a pager. So let\'s look at the representation
+that lets us view Core in a pager. So let's look at the representation
 of our final `fold` using strict data types, in Core form:
 
 ``` screen
 $ ghc -O2 -ddump-simpl G.hs
 ```
 
-A screenful of text is generated. If we look carefully at, we\'ll see a
+A screenful of text is generated. If we look carefully at, we'll see a
 loop (here, cleaned up slightly for clarity):
 
 ``` screen
@@ -947,7 +947,7 @@ allocate it to the heap, operate on it, and continue. The list type is
 also polymorphic, so the elements of the list will be represented as
 heap allocated `double` values.
 
-What we\'d like to do is eliminate the list entirely, keeping just the
+What we'd like to do is eliminate the list entirely, keeping just the
 next element we need in a register. Perhaps surprisingly, GHC is able to
 transform the list program into a listless version, using an
 optimization known as deforestation, which refers to a general class of
@@ -961,13 +961,13 @@ This optimization transforms recursive list generation and
 transformation functions into non-recursive `unfold~s. When an
 ~unfold` appears next to a `fold`, the structure between them is then
 eliminated entirely, yielding a single, tight loop, with no heap
-allocation. The optimization isn\'t enabled by default, and it can
+allocation. The optimization isn't enabled by default, and it can
 radically change the complexity of a piece of code, but is enabled by a
-number of data structure libraries, which provide \"rewrite rules\",
+number of data structure libraries, which provide "rewrite rules",
 custom optimizations the compiler applies to functions the library
 exports.
 
-We\'ll use the `uvector` library, which provides a suite of list-like
+We'll use the `uvector` library, which provides a suite of list-like
 operations that use stream fusion to remove intermediate data
 structures. Rewriting our program to use streams is straightforward:
 
@@ -1036,7 +1036,7 @@ For example, we can squeeze out the last drops of performance from our
 final fused loop code by using `-funbox-strict-fields -fvia-C
 -optc-O2`, which cuts the running time in half again (as the C compiler
 is able to optimize away some redundant move instructions in the
-program\'s inner loop):
+program's inner loop):
 
 ``` screen
 $ ghc -fforce-recomp --make -O2 -funbox-strict-fields -fvia-C -optc-O2 I.hs
@@ -1060,18 +1060,18 @@ go:
   jmp go
 ```
 
-We\'ve effectively massaged the program through multiple source-level
-optimizations, all the way to the final assembly. There\'s nowhere else
+We've effectively massaged the program through multiple source-level
+optimizations, all the way to the final assembly. There's nowhere else
 to go from here. Optimising code to this level is very rarely necessary,
 of course, and typically only makes sense when writing low level
 libraries, or optimizing particularly important code, where all
 algorithm choices have already been determined. For day-to-day code,
 choosing better algorithms is always a more effective strategy, but
-it\'s useful to know we can optimize down to the metal if necessary.
+it's useful to know we can optimize down to the metal if necessary.
 
 ### Conclusions
 
-In this chapter we\'ve looked at a suite of tools and techniques you can
+In this chapter we've looked at a suite of tools and techniques you can
 use to track down and identify problematic areas of your code, along
 with a variety of conventions that can go a long way towards keeping
 your code lean and efficient. The goal is really to program in such a

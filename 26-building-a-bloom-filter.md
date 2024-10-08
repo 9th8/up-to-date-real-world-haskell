@@ -26,14 +26,14 @@ in contrast, would consume about half a megabyte, at the cost of missing
 perhaps 1% of misspelled words.
 
 Behind the scenes, a Bloom filter is remarkably simple. It consists of a
-bit array and a handful of hash functions. We\'ll use *k* for the number
+bit array and a handful of hash functions. We'll use *k* for the number
 of hash functions. If we want to insert a value into the Bloom filter,
 we compute *k* hashes of the value, and turn on those bits in the bit
 array. If we want to see whether a value is present, we compute *k*
 hashes, and check all of those bits in the array to see if they are
 turned on.
 
-To see how this works, let\'s say we want to insert the strings `"foo"`
+To see how this works, let's say we want to insert the strings `"foo"`
 and `"bar"` into a Bloom filter that is 8 bits wide, and we have two
 hash functions.
 
@@ -72,7 +72,7 @@ We will segregate the mutable and immutable APIs that we publish by
 placing them in different modules: `BloomFilter` for the immutable code,
 and `BloomFilter.Mutable` for the mutable code.
 
-In addition, we will create several \"helper\" modules that won\'t
+In addition, we will create several "helper" modules that won't
 provide parts of the public API, but will keep the internal code
 cleaner.
 
@@ -114,7 +114,7 @@ When we create our Cabal package, we will not be exporting this
 `BoomFilter.Internal` module. It exists purely to let us control the
 visibility of names. We will import `BoomFilter.Internal` into both the
 mutable and immutable modules, but we will re-export from each module
-only the type that is relevant to that module\'s API.
+only the type that is relevant to that module's API.
 
 ### Unboxing, lifting, and bottom
 
@@ -122,7 +122,7 @@ Unlike other Haskell arrays, a `UArray` contains *unboxed* values.
 
 For a normal Haskell type, a value can be either fully evaluated, an
 unevaluated thunk, or the special value ⊥, pronounced (and sometimes
-written) \"bottom\". The value ⊥ is a placeholder for a computation that
+written) "bottom". The value ⊥ is a placeholder for a computation that
 does not succeed. Such a computation could take any of several forms. It
 could be an infinite loop; an application of `error`; or the special
 value `undefined`.
@@ -152,7 +152,7 @@ Boxing and lifting
 
 The counterpart of an unboxed type is a *boxed* type, which uses
 indirection. All lifted types are boxed, but a few low-level boxed types
-are not lifted. For instance, GHC\'s runtime system has a low-level
+are not lifted. For instance, GHC's runtime system has a low-level
 array type for which it uses boxing (i.e. it maintains a pointer to the
 array). If it has a reference to such an array, it knows that the array
 must exist, so it does not need to account for the possibility of ⊥.
@@ -166,8 +166,8 @@ elements into each byte, so this type is perfect for our needs.
 
 ## The `ST` monad
 
-Back in [the section called \"Modifying array
-elements\"](12-barcode-recognition.org::*Modifying array elements)
+Back in [the section called "Modifying array
+elements"](12-barcode-recognition.org::*Modifying array elements)
 mentioned that modifying an immutable array is prohibitively expensive,
 as it requires copying the entire array. Using a `UArray` does not
 change this, so what can we do to reduce the cost to bearable levels?
@@ -195,7 +195,7 @@ monad via the execution function `runST`, in the same way as for most
 other Haskell monads (except `IO`, of course), and we escape by
 returning from `runST`.
 
-When we apply a monad\'s execution function, we expect it to behave
+When we apply a monad's execution function, we expect it to behave
 repeatably: given the same body and arguments, we must get the same
 results every time. This also applies to `runST`. To achieve this
 repeatability, the `ST` monad is more restrictive than the `IO` monad.
@@ -239,7 +239,7 @@ import BloomFilter.Internal (MutBloom(..))
 We export several names that clash with names exported by the Prelude.
 This is deliberate: we expect users of our modules to import them with
 qualified names. This reduces the burden on the memory of our users, as
-they should already be familiar with the Prelude\'s `elem`, `notElem`,
+they should already be familiar with the Prelude's `elem`, `notElem`,
 and `length` functions.
 
 When we use a module written in this style, we might often import it
@@ -251,20 +251,20 @@ Alternatively, we could import the module unqualified, and import the
 Prelude while hiding the clashing names with `import Prelude
 hiding (length)`. This is much less useful, as it gives a reader
 skimming the code no local cue that they are *not* actually seeing the
-Prelude\'s `length`.
+Prelude's `length`.
 
-Of course, we seem to be violating this precept in our own module\'s
+Of course, we seem to be violating this precept in our own module's
 header: we import the Prelude, and hide some of the names it exports.
 There is a practical reason for this. We define a function named
 `length`. If we export this from our module without first hiding the
-Prelude\'s `length`, the compiler will complain that it cannot tell
-whether to export our version of `length` or the Prelude\'s.
+Prelude's `length`, the compiler will complain that it cannot tell
+whether to export our version of `length` or the Prelude's.
 
 While we could export the fully qualified name
 `BloomFilter.Mutable.length` to eliminate the ambiguity, that seems
 uglier in this case. This decision has no consequences for someone using
 our module, just for ourselves as the authors of what ought to be a
-\"black box\", so there is little chance of confusion here.
+"black box", so there is little chance of confusion here.
 
 ## Creating a mutable Bloom filter
 
@@ -304,8 +304,8 @@ Most of the methods of `STUArray` are actually implementations of the
 `MArray` type class, which is defined in the `Data.Array.MArray` module.
 
 Our `length` function is slightly complicated by two factors. We are
-relying on our bit array\'s record of its own bounds, and an `MArray`
-instance\'s `getBounds` function has a monadic type. We also have to add
+relying on our bit array's record of its own bounds, and an `MArray`
+instance's `getBounds` function has a monadic type. We also have to add
 one to the answer, as the upper bound of the array is one less than its
 actual length.
 
@@ -482,7 +482,7 @@ easyList :: (Hashable a)
 ```
 ::::
 
-Here is a possible \"friendlier\" way to create a Bloom filter. It
+Here is a possible "friendlier" way to create a Bloom filter. It
 leaves responsibility for hashing values in the hands of a type class,
 Hashable. It lets us configure the Bloom filter based on a parameter
 that is easier to understand, namely the rate of false positives that we
@@ -510,7 +510,7 @@ know that if we import `BloomFilter` unqualified and try to use
 also makes the name `length` available.
 
 The Haskell standard requires an implementation to be able to tell when
-several names refer to the same \"thing\". For instance, the Bloom type
+several names refer to the same "thing". For instance, the Bloom type
 is exported by `BloomFilter` and `BloomFilter.Easy`. If we import both
 modules and try to use Bloom, GHC will be able to see that the Bloom
 re-exported from `BloomFilter.Easy` is the same as the one exported from
@@ -545,7 +545,7 @@ the `main` of any Haskell program you link this library against.
 ::::
 
 There remains one hitch: we will frequently need seven or even ten hash
-functions. We really don\'t want to scrape together that many different
+functions. We really don't want to scrape together that many different
 functions, and fortunately we do not need to: in most cases, we can get
 away with just two. We will see how shortly. The Jenkins hash library
 includes two functions, `hashword2` and `hashlittle2`, that compute two
@@ -576,7 +576,7 @@ void hashlittle2(const void *key,   /* array of bytes */
 #endif /* _lookup3_h */
 ```
 
-A \"salt\" is a value that perturbs the hash value that the function
+A "salt" is a value that perturbs the hash value that the function
 computes. If we hash the same value with two different salts, we will
 get two different hashes. Since these functions compute two hashes, they
 accept two salts.
@@ -665,7 +665,7 @@ Since the C hash function will write the computed hashes into `p1` and
 `p2`, we only need to `peek` the pointer `sp` to retrieve the computed
 hash.
 
-We don\'t want clients of this module to be stuck fiddling with
+We don't want clients of this module to be stuck fiddling with
 low-level details, so we use a type class to provide a clean, high-level
 interface.
 
@@ -720,7 +720,7 @@ instance Storable a => Hashable a where
 
 Unfortunately, Haskell does not permit us to write instances of this
 form, as allowing them would make the type system *undecidable*: they
-can cause the compiler\'s type checker to loop infinitely. This
+can cause the compiler's type checker to loop infinitely. This
 restriction on undecidable types forces us to write out individual
 declarations. It does not, however, pose a problem for a definition such
 as this one.
@@ -930,7 +930,7 @@ ghci> mapM_ (print . kbytes) . take 10 . sort $ sizings 10000000 0.001
 We achieve the most compact table (just over 17KB) by computing 10
 hashes. If we really were hashing the data repeatedly, we could reduce
 the number of hashes to 7 at a cost of 5% in space. Since we are using
-Jenkins\'s hash functions which compute two hashes in a single pass, and
+Jenkins's hash functions which compute two hashes in a single pass, and
 double hashing the results to produce additional hashes, the cost to us
 of computing extra those hashes is tiny, so we will choose the smallest
 table size.
@@ -985,7 +985,7 @@ Tip
 
 Property names are case insensitive
 
-When reading a property (the text before a \"`:`\" character), Cabal
+When reading a property (the text before a "`:`" character), Cabal
 ignores case, so it treats `extra-source-files` and `Extra-Source-Files`
 as the same.
 ::::
@@ -1000,8 +1000,8 @@ libraries. For instance, the array types migrated from `base` into a
 package named `array`.
 
 A Cabal package needs to specify the other packages that it needs to
-have present in order to build. This makes it possible for Cabal\'s
-command line interface automatically download and build a package\'s
+have present in order to build. This makes it possible for Cabal's
+command line interface automatically download and build a package's
 dependencies, if necessary. We would like our code to work with as many
 versions of GHC as possible, regardless of whether they have the modern
 layout of `base` and numerous other packages. We thus need to be able to
@@ -1111,7 +1111,7 @@ without optimisation is very slow, so we should always use `-O2` for
 production code.
 
 To help ourselves to write cleaner code, we usually add the `-Wall`
-option, which enables all of GHC\'s warnings. This will cause GHC to
+option, which enables all of GHC's warnings. This will cause GHC to
 issue complaints if it encounters potential problems, such as
 overlapping patterns; function parameters that are not used; and a
 myriad of other potential stumbling blocks. While it is often safe to
@@ -1120,9 +1120,9 @@ eliminate them. The small added effort usually yields code that is
 easier to read and maintain.
 
 When we compile with `-fvia-C`, GHC will generate C code and use the
-system\'s C compiler to compile it, instead of going straight to
+system's C compiler to compile it, instead of going straight to
 assembly language as it usually does. This slows compilation down, but
-sometimes the C compiler can further improve GHC\'s optimised code, so
+sometimes the C compiler can further improve GHC's optimised code, so
 it can be worthwhile.
 
 We include `-fvia-C` here mainly to show how to make compilation with it
@@ -1156,7 +1156,7 @@ Compiling with `-fvia-C` has a useful safety benefit when we write FFI
 bindings. If we mention a header file in an FFI declaration (e.g.
 `foreign import "string.h memcpy")`, the C compiler will type-check the
 generated Haskell code and ensure that its invocation of the C function
-is consistent with the C function\'s prototype in the header file.
+is consistent with the C function's prototype in the header file.
 
 If we do not use `-fvia-C`, we lose that additional layer of safety.
 This makes it easy to let simple C type errors slip into our Haskell
@@ -1481,7 +1481,7 @@ ghci> B.suggestSizing 1678125842 8.501133057303545e-3
       Use -v to see a list of the files searched for.
 ```
 
-Since we can\'t easily predict which combinations will cause this
+Since we can't easily predict which combinations will cause this
 problem, we must resort to eliminating sizes and false positive rates
 before they bite us.
 
@@ -1556,7 +1556,7 @@ ghci> handyCheck 40000 $ prop_suggestions_sane
 
 We now have a correctness base line: our QuickCheck tests pass. When we
 start tweaking performance, we can rerun the tests at any time to ensure
-that we haven\'t inadvertently broken anything.
+that we haven't inadvertently broken anything.
 
 Our first step is to write a small test application that we can use for
 timing.
@@ -1594,8 +1594,8 @@ instance NFData (B.Bloom a) where
 ::::
 
 We borrow the `rnf` function that we introduced in [the section called
-\"Separating algorithm from
-evaluation\"](24-concurrent-and-multicore-programming.org::*Separating algorithm from evaluation)
+"Separating algorithm from
+evaluation"](24-concurrent-and-multicore-programming.org::*Separating algorithm from evaluation)
 develop a simple timing harness. Out `timed` action ensures that a value
 is evaluated to normal form in order to accurately capture the cost of
 evaluating it.
@@ -1672,7 +1672,7 @@ rebuild it and run it with profiling enabled.
 Since we already built `WordTest` and have not subsequently changed it,
 if we rerun `ghc` to enable profiling support, it will quite reasonably
 decide to do nothing. We must force it to rebuild, which we accomplish
-by updating the filesystem\'s idea of when we last edited the source
+by updating the filesystem's idea of when we last edited the source
 file.
 
 ``` screen
@@ -1717,7 +1717,7 @@ Tip
 Always profile before---and while---you tune!
 
 Before our first profiling run, we did not expect `doubleHash` to even
-appear in the top ten of \"hot\" functions, much less to dominate it.
+appear in the top ten of "hot" functions, much less to dominate it.
 Without this knowledge, we would probably have started tuning something
 entirely irrelevant.
 ::::
@@ -1744,11 +1744,11 @@ allocates so much memory, but when code this simple performs so badly,
 we should be suspicious.
 
 Faced with a performance mystery, the suspicious mind will naturally
-want to inspect the output of the compiler. We don\'t need to start
-scrabbling through assembly language dumps: it\'s best to start at a
+want to inspect the output of the compiler. We don't need to start
+scrabbling through assembly language dumps: it's best to start at a
 higher level.
 
-GHC\'s `-ddump-simpl` option prints out the code that it produces after
+GHC's `-ddump-simpl` option prints out the code that it produces after
 performing all of its high-level optimisations.
 
 ``` screen
@@ -1766,7 +1766,7 @@ exactly at the right spot from a Unix shell.
 $ less +/doubleHash dump.txt
 ```
 
-It can be difficult to start reading the output of GHC\'s simplifier.
+It can be difficult to start reading the output of GHC's simplifier.
 There are many automatically generated names, and the code has many
 obscure annotations. We can make substantial progress by ignoring things
 that we do not understand, focusing on those that look familiar. The
@@ -1958,9 +1958,9 @@ for such a small change.
 
 ## Footnotes
 
-[^1]: The name `ST` is an acronym of \"state transformer\".
+[^1]: The name `ST` is an acronym of "state transformer".
 
-[^2]: Jenkins\'s hash functions have *much* better mixing properties
+[^2]: Jenkins's hash functions have *much* better mixing properties
     than some other popular non-cryptographic hash functions that you
     might be familiar with, such as FNV and `hashpjw`, so we recommend
     avoiding them.

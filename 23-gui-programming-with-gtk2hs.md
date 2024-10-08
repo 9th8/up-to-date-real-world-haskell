@@ -7,7 +7,7 @@ for Haskell. In this chapter, we will look at one of the, gtk2hs.[^1]
 
 ## Installing gtk2hs
 
-Before we dive in to working with gtk2hs, you\'ll need to get it
+Before we dive in to working with gtk2hs, you'll need to get it
 installed. On most Linux, BSD, or other POSIX platforms, you will find
 ready-made gtk2hs packages. You will generally need to install the GTK+
 development environment, Glade, and gtk2hs. The specifics of doing so
@@ -21,14 +21,14 @@ consult <http://sourceforge.net/projects/gladewin32>.
 
 ## Overview of the GTK+ Stack
 
-Before diving in to the code, let\'s pause a brief moment and consider
+Before diving in to the code, let's pause a brief moment and consider
 the architecture of the system we are going to use. First off, we have
 GTK+. GTK+ is a cross-platform GUI-building toolkit, implemented in C.
 It runs on Windows, Mac, Linux, BSDs, and more. It is also the toolkit
 beneath the Gnome desktop environment.
 
 Next, we have Glade. Glade is a user interface designer, which lets you
-graphically lay out your application\'s windows and dialogs. Glade saves
+graphically lay out your application's windows and dialogs. Glade saves
 the interface in XML files, which your application will load at runtime.
 
 The last piece of this puzzle is gtk2hs. This is the Haskell binding for
@@ -64,7 +64,7 @@ interface to design our graphical interface. We could build up the
 window components using a bunch of calls to GTK+ functions, but it is
 usually easier to do this with Glade.
 
-The fundamental \"thing\" we work with in GTK+ is the *widget*. A widget
+The fundamental "thing" we work with in GTK+ is the *widget*. A widget
 represents any part of the GUI, and may contain other widgets. Some
 examples of widgets include a window, dialog box, button, and text
 within the button.
@@ -79,8 +79,8 @@ Glade saves the widget descriptions into an XML file. Our program loads
 this XML file at runtime. We load the widgets by asking the Glade
 runtime library to load a widget with a specific name.
 
-Here\'s a screenshot of an example working with Glade to design our
-application\'s main screen:
+Here's a screenshot of an example working with Glade to design our
+application's main screen:
 
 ![](figs/gui-glade-3.png)
 
@@ -93,7 +93,7 @@ Glade and edit it if you wish.
 GTK+, like many GUI toolkits, is an *event-driven* toolkit. That means
 that instead of, say, displaying a dialog box and waiting for the user
 to click on a button, we instead tell gtk2hs what function to call if a
-certain button is clicked, but don\'t sit there waiting for a click in
+certain button is clicked, but don't sit there waiting for a click in
 the dialog box.
 
 This is different from the model traditionally used for console
@@ -102,24 +102,24 @@ program could have multiple windows open, and writing code to sit there
 waiting for input in the particular combination of open windows could be
 a complicated proposition.
 
-Event-driven programming complements Haskell nicely. As we\'ve discussed
+Event-driven programming complements Haskell nicely. As we've discussed
 over and over in this book, functional languages thrive on passing
-around functions. So we\'ll be passing functions to gtk2hs that get
+around functions. So we'll be passing functions to gtk2hs that get
 called when certain events occur. These are known as *callback
 functions*.
 
 At the core of a GTK+ program is the *main loop*. This is the part of
 the program that waits for actions from the user or commands from the
 program and carries them out. The GTK+ main loop is handled entirely by
-GTK+. To us, it looks like an I/O action that we execute, that doesn\'t
+GTK+. To us, it looks like an I/O action that we execute, that doesn't
 return until the GUI has been disposed of.
 
 Since the main loop is responsible for doing everything from handling
 clicks of a mouse to redrawing a window when it has been uncovered, it
-must always be available. We can\'t just run a long-running task---such
+must always be available. We can't just run a long-running task---such
 as downloading a podcast episode---from within the main loop. This would
 make the GUI unresponsive, and actions such as clicking a Cancel button
-wouldn\'t be processed in a timely manner.
+wouldn't be processed in a timely manner.
 
 Therefore, we will be using multithreading to handle these long-running
 tasks. More information on multithreading can be found in [Chapter 24,
@@ -134,8 +134,8 @@ user will never notice.
 ## Initializing the GUI
 
 Our first steps are going to involve initializing the GUI for our
-program. For reasons that we\'ll explain in [the section called \"Using
-Cabal\"](23-gui-programming-with-gtk2hs.org::*Using Cabal) file called
+program. For reasons that we'll explain in [the section called "Using
+Cabal"](23-gui-programming-with-gtk2hs.org::*Using Cabal) file called
 `PodLocalMain.hs` that loads `PodMain` and passes to it the path to
 `podresources.glade`, the XML file saved by Glade that gives the
 information about our GUI widgets.
@@ -154,12 +154,12 @@ main = PodMainGUI.main "podresources.glade"
 ```
 ::::
 
-Now, let\'s consider `PodMainGUI.hs`. This file is the only Haskell
+Now, let's consider `PodMainGUI.hs`. This file is the only Haskell
 source file that we had to modify from the example in [Chapter 22,
 *Extended Example: Web Client
 Programming*](22-web-client-programming.org) to make it work as a GUI.
-Let\'s start by looking at the start of our new `PodMainGUI.hs`
-file---we\'ve renamed it from `PodMain.hs` for clarity.
+Let's start by looking at the start of our new `PodMainGUI.hs`
+file---we've renamed it from `PodMain.hs` for clarity.
 
 :::: captioned-content
 ::: caption
@@ -191,14 +191,14 @@ This first part of `PodMainGUI.hs` is similar to our non-GUI version. We
 import three additional components, however. First, we have
 `Graphics.UI.Gtk`, which provides most of the GTK+ functions we will be
 using. Both this module and `Database.HDBC` provide a function named
-`disconnect`. Since we\'ll be using the HDBC version, but not the GTK+
-version, we don\'t import that function from `Graphics.UI.Gtk`.
+`disconnect`. Since we'll be using the HDBC version, but not the GTK+
+version, we don't import that function from `Graphics.UI.Gtk`.
 `Graphics.UI.Gtk.Glade` contains functions needed for loading and
 working with our Glade file.
 
 We also import `Control.Concurrent`, which has the basics needed for
-multi-threaded programming. We\'ll use a few functions from here as
-described above once we get into the guts of the program. Next, let\'s
+multi-threaded programming. We'll use a few functions from here as
+described above once we get into the guts of the program. Next, let's
 define a type to store information about our GUI.
 
 :::: captioned-content
@@ -229,12 +229,12 @@ data GUI = GUI {
 Our new `GUI` type stores all the widgets we will care about in the
 entire program. Large programs may not wish to have a monolithic type
 like this. For this small example, it makes sense because it can be
-easily passed around to different functions, and we\'ll know that we
+easily passed around to different functions, and we'll know that we
 always have the information we need available.
 
 Within this record, we have fields for a `Window` (a top-level window),
 `Dialog` (dialog window), `Button` (clickable button), `Label` (piece of
-text), and `Entry` (place for the user to enter text). Let\'s now look
+text), and `Entry` (place for the user to enter text). Let's now look
 at our `main` function:
 
 :::: captioned-content
@@ -281,7 +281,7 @@ call our `connectGui` function to set up our callback functions. Then,
 we fire up the GTK+ main loop. We expect it could be minutes, hours, or
 even days before `mainGUI` returns. When it does, it means the user has
 closed the main window or clicked the Exit button. After that, we
-disconnect from the database and close the program. Now, let\'s look at
+disconnect from the database and close the program. Now, let's look at
 our `loadGlade` function.
 
 :::: captioned-content
@@ -324,11 +324,11 @@ to extract the result value on success. If it fails, there will be a
 console (not graphical) exception displayed; one of the exercises at the
 end of this chapter addresses this.
 
-Now that we have Glade\'s XML file loaded, you will see a bunch of calls
+Now that we have Glade's XML file loaded, you will see a bunch of calls
 to `xmlGetWidget`. This Glade function is used to load the XML
 definition of a widget, and return a GTK+ widget type for that widget.
 We have to pass along to that function a value indicating what GTK+ type
-we expect---we\'ll get a runtime error if these don\'t match.
+we expect---we'll get a runtime error if these don't match.
 
 We start by creating a widget for the main window. It is loaded from the
 XML widget defined with name `"mainWindow"` and stored in the `mw`
@@ -360,7 +360,7 @@ connectGui gui dbh =
 ::::
 
 We start out the `connectGui` function by calling `onDestroy`. This
-means that when somebody clicks on the operating system\'s close button
+means that when somebody clicks on the operating system's close button
 (typically an X in the titlebar on Windows or Linux, or a red circle on
 Mac OS X), on the main window, we call the `mainQuit` function.
 `mainQuit` closes all GUI windows and terminates the GTK+ main loop.
@@ -378,7 +378,7 @@ podcatcher. It looks like this:
 
 ## The Add Podcast Window
 
-Now that we\'ve covered the main window, let\'s talk about the other
+Now that we've covered the main window, let's talk about the other
 windows that our application presents, starting with the Add Podcast
 window. When the user clicks the button to add a new podcast, we need to
 pop up a dialog box to prompt for the URL of the podcast. We have
@@ -406,9 +406,9 @@ guiAdd gui dbh =
 ::::
 
 We start by calling `entrySetText` to set the contents of the entry box
-(the place where the user types in the URL) to the empty string. That\'s
+(the place where the user types in the URL) to the empty string. That's
 because the same widget gets reused over the lifetime of the program,
-and we don\'t want the last URL the user entered to remain there. Next,
+and we don't want the last URL the user entered to remain there. Next,
 we set up actions for the two buttons in the dialog. If the users clicks
 on the cancel button, we simply remove the dialog box from the screen by
 calling `widgetHide` on it. If the user clicks the OK button, we call
@@ -420,12 +420,12 @@ calls `add` to add the URL to the database. This `add` is exactly the
 same function as we had in the non-GUI version of the program.
 
 The last thing we do in `guiAdd` is actually display the pop-up window.
-That\'s done by calling `windowPresent`, which is the opposite of
+That's done by calling `windowPresent`, which is the opposite of
 `widgetHide`.
 
 Note that the `guiAdd` function returns almost immediately. It just sets
 up the widgets and causes the box to be displayed; at no point does it
-block waiting for input. Here\'s what the dialog box looks like:
+block waiting for input. Here's what the dialog box looks like:
 
 ![](figs/gui-pod-addwin.png)
 
@@ -433,7 +433,7 @@ block waiting for input. Here\'s what the dialog box looks like:
 
 As we think about the buttons available in the main window, three of
 them correspond to tasks that could take a while to complete: update,
-download, and fetch. While these operations take place, we\'d like to do
+download, and fetch. While these operations take place, we'd like to do
 two things with our GUI: provide the user with the status of the
 operation, and provide the user with the ability to cancel the operation
 as it is in progress.
@@ -441,14 +441,14 @@ as it is in progress.
 Since all three of these things are very similar operations, it makes
 sense to provide a generic way to handle this interaction. We have
 defined a single status window widget in the Glade file that will be
-used by all three of these. In our Haskell source code, we\'ll define a
+used by all three of these. In our Haskell source code, we'll define a
 generic `statusWindow` function that will be used by all three of these
 operations as well.
 
 `statusWindow` takes four parameters: the GUI information, the database
 information, a `String` giving the title of the window, and a function
 that will perform the operation. This function will itself be passed a
-function that it can call to report its progress. Here\'s the code:
+function that it can call to report its progress. Here's the code:
 
 :::: captioned-content
 ::: caption
@@ -506,8 +506,8 @@ statusWindow gui dbh title func =
 
 This function starts by clearing the label text from the last run. Next,
 we disable (gray out) the OK button and enable the cancel button. While
-the operation is in progress, clicking OK doesn\'t make much sense. And
-when it\'s done, clicking Cancel doesn\'t make much sense.
+the operation is in progress, clicking OK doesn't make much sense. And
+when it's done, clicking Cancel doesn't make much sense.
 
 Next, we set the title of the window. The title is the part that is
 displayed by the system in the title bar of the window. Finally, we
@@ -516,7 +516,7 @@ thread ID. Then, we define what to do if the user clicks on Cancel ---we
 call `cancelChild`, passing along the thread ID. Finally, we call
 `windowPresent` to show the status window.
 
-In `childTasks`, we display a message saying that we\'re starting the
+In `childTasks`, we display a message saying that we're starting the
 thread. Then we call the actual worker function, passing `updateLabel`
 as the function to use for displaying status messages. Note that a
 command-line version of the program could pass `putStrLn` here.
@@ -553,7 +553,7 @@ guiFetch gui dbh =
 
 For brevity, we have given the type for only the first one, but all
 three have the same type, and Haskell can work them out via type
-inference. Notice our implementation of `guiFetch`. We don\'t call
+inference. Notice our implementation of `guiFetch`. We don't call
 `statusWindow` twice, but rather combine functions in its action.
 
 The final piece of the puzzle consists of the three functions that do
@@ -597,31 +597,31 @@ download dbh logf =
 ```
 ::::
 
-Here\'s what the final result looks like after running an update:
+Here's what the final result looks like after running an update:
 
 ![](figs/gui-update-complete.png)
 
 ## Using Cabal
 
 We presented a Cabal file to build this project for the command-line
-version in [the section called \"Main
-Program\"](22-web-client-programming.org::*Main Program) for it to work
-with our GUI version. First, there\'s the obvious need to add the gtk2hs
+version in [the section called "Main
+Program"](22-web-client-programming.org::*Main Program) for it to work
+with our GUI version. First, there's the obvious need to add the gtk2hs
 packages to the list of build dependencies. There is also the matter of
 the Glade XML file.
 
 Earlier, we wrote a `PodLocalMain.hs` that simply assumed this file was
 named `podresources.glade` and stored in the current working directory.
-For a real, system-wide installation, we can\'t make that assumption.
+For a real, system-wide installation, we can't make that assumption.
 Moreover, different systems may place the file at different locations.
 
 Cabal provides a way around this problem. It automatically generates a
 module that exports functions that can interrogate the environment. We
 must add a `Data-files` line to our Cabal description file. This file
 names all data files that will be part of a system-wide installation.
-Then, Cabal will export a `Paths_pod` module (the \"pod\" part comes
+Then, Cabal will export a `Paths_pod` module (the "pod" part comes
 from the `Name` line in the Cabal file) that we can interrogate for the
-location at runtime. Here\'s our new Cabal description file:
+location at runtime. Here's our new Cabal description file:
 
 :::: captioned-content
 ::: caption

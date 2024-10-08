@@ -9,7 +9,7 @@ textual list of key-value pairs.
 name=Attila+%42The+Hun%42&occupation=Khan
 ```
 
-The encoding is named `application/x-www-form-urlencoded`, and it\'s
+The encoding is named `application/x-www-form-urlencoded`, and it's
 easy to understand. Each key-value pair is separated by an `&`
 character. Within a pair, a key is a series of characters, followed by
 an `=`, followed by a value.
@@ -19,23 +19,23 @@ specification is not clear about whether a key must be followed by a
 value. We can capture this ambiguity by representing a value as a
 `Maybe String`. If we use `Nothing` for a value, then there was no value
 present. If we wrap a string in `Just`, then there was a value. Using
-`Maybe` lets us distinguish between \"no value\" and \"empty value\".
+`Maybe` lets us distinguish between "no value" and "empty value".
 
 Haskell programmers use the name *association list* for the type
 `[(a, b)]`, where we can think of each element as an association between
 a key and a value. The name originates in the Lisp community, where
-it\'s usually abbreviated as an *alist*. We could thus represent the
+it's usually abbreviated as an *alist*. We could thus represent the
 above string as the following Haskell value.
 
 ``` haskell
-[("name",       Just "Attila \"The Hun\""),
+[("name",       Just "Attila "The Hun""),
  ("occupation", Just "Khan")]
 ```
 
-In [the section called \"Parsing an URL-encoded query
-string\"](14-using-parsec.org::*Parsing an URL-encoded query string)
+In [the section called "Parsing an URL-encoded query
+string"](14-using-parsec.org::*Parsing an URL-encoded query string)
 parsed an `application/x-www-form-urlencoded` string, and represented
-the result as an alist of `[(String, Maybe String)]`. Let\'s say we want
+the result as an alist of `[(String, Maybe String)]`. Let's say we want
 to use one of these alists to fill out a data structure.
 
 :::: captioned-content
@@ -54,7 +54,7 @@ data MovieReview = MovieReview {
 ```
 ::::
 
-We\'ll begin by belabouring the obvious with a naive function.
+We'll begin by belabouring the obvious with a naive function.
 
 :::: captioned-content
 ::: caption
@@ -78,12 +78,12 @@ simpleReview alist =
 ::::
 
 It only returns a `MovieReview` if the alist contains all of the
-necessary values, and they\'re all non-empty strings. However, the fact
+necessary values, and they're all non-empty strings. However, the fact
 that it validates its inputs is its only merit: it suffers badly from
-the \"staircasing\" that we\'ve learned to be wary of, and it knows the
+the "staircasing" that we've learned to be wary of, and it knows the
 intimate details of the representation of an alist.
 
-Since we\'re now well acquainted with the `Maybe` monad, we can tidy up
+Since we're now well acquainted with the `Maybe` monad, we can tidy up
 the staircasing.
 
 :::: captioned-content
@@ -104,11 +104,11 @@ lookup1 key alist = case lookup key alist of
 ```
 ::::
 
-Although this is much tidier, we\'re still repeating ourselves. We can
+Although this is much tidier, we're still repeating ourselves. We can
 take advantage of the fact that the `MovieReview` constructor acts as a
 normal, pure function by *lifting* it into the monad, as we discussed in
-[the section called \"Mixing pure and monadic
-code\"](15-monads.org::*Mixing pure and monadic code)
+[the section called "Mixing pure and monadic
+code"](15-monads.org::*Mixing pure and monadic code)
 
 :::: captioned-content
 ::: caption
@@ -128,17 +128,17 @@ also more difficult to remove.
 
 ## Generalised lifting
 
-Although using `liftM3` tidies up our code, we can\'t use a
+Although using `liftM3` tidies up our code, we can't use a
 `liftM`-family function to solve this sort of problem in general,
-because they\'re only defined up to `liftM5` by the standard libraries.
+because they're only defined up to `liftM5` by the standard libraries.
 We could write variants up to whatever number we pleased, but that would
 amount to drudgery.
 
 If we had a constructor or pure function that took, say, ten parameters,
-and decided to stick with the standard libraries you might think we\'d
+and decided to stick with the standard libraries you might think we'd
 be out of luck.
 
-Of course, our toolbox isn\'t yet empty. In `Control.Monad`, there\'s a
+Of course, our toolbox isn't yet empty. In `Control.Monad`, there's a
 function named `ap` with an interesting type signature.
 
 ``` screen
@@ -149,7 +149,7 @@ ap :: Monad m => m (a -> b) -> m a -> m b
 
 You might wonder who would put a single-argument pure function inside a
 monad, and why. Recall, however, that *all* Haskell functions really
-take only one argument, and you\'ll begin to see how this might relate
+take only one argument, and you'll begin to see how this might relate
 to the `MovieReview` constructor.
 
 ``` screen
@@ -159,7 +159,7 @@ MovieReview :: String -> String -> String -> MovieReview
 
 We can just as easily write that type as
 `String -> (String -> (String -> MovieReview))`. If we use plain old
-`liftM` to lift `MovieReview` into the `Maybe` monad, we\'ll have a
+`liftM` to lift `MovieReview` into the `Maybe` monad, we'll have a
 value of type `Maybe (String -> (String -> (String -> MovieReview)))`.
 We can now see that this type is suitable as an argument for `ap`, in
 which case the result type will be
@@ -182,7 +182,7 @@ apReview alist =
 We can chain applications of `ap` like this as many times as we need to,
 thereby bypassing the `liftM` family of functions.
 
-Another helpful way to look at `ap` is that it\'s the monadic equivalent
+Another helpful way to look at `ap` is that it's the monadic equivalent
 of the familiar `(<*>)` operator: think of pronouncing `ap` as *apply*.
 We can see this clearly when we compare the type signatures of the two
 functions.
@@ -194,12 +194,12 @@ ghci> :type ap
 ap :: Monad m => m (a -> b) -> m a -> m b
 ```
 
-And that\'s why, as we saw in [Chapter 15, Monads](15-monads.org), they
+And that's why, as we saw in [Chapter 15, Monads](15-monads.org), they
 are synonyms.
 
 ## Looking for alternatives
 
-Here\'s a simple representation of a person\'s phone numbers.
+Here's a simple representation of a person's phone numbers.
 
 :::: captioned-content
 ::: caption
@@ -224,7 +224,7 @@ twalumba = [(Business, "+260-02-55-5121")]
 ::::
 
 Suppose we want to get in touch with someone to make a personal call. We
-don\'t want their business number, and we\'d prefer to use their home
+don't want their business number, and we'd prefer to use their home
 number (if they have one) instead of their mobile number.
 
 :::: captioned-content
@@ -240,7 +240,7 @@ onePersonalPhone ps = case lookup Home ps of
 ```
 ::::
 
-Of course, if we use `Maybe` as the result type, we can\'t accommodate
+Of course, if we use `Maybe` as the result type, we can't accommodate
 the possibility that someone might have more than one number that meet
 our criteria. For that, we switch to a list.
 
@@ -273,7 +273,7 @@ ghci> allBusinessPhones nils
 ["+47-922-12-121","+47-922-25-551"]
 ```
 
-Haskell\'s `Control.Monad` module defines a type class, `MonadPlus`,
+Haskell's `Control.Monad` module defines a type class, `MonadPlus`,
 that lets us abstract the common pattern out of our `case` expressions.
 
 :::: captioned-content
@@ -311,7 +311,7 @@ instance MonadPlus Maybe where
 ::::
 
 We can now use `mplus` to get rid of our `case` expressions entirely.
-For variety, let\'s fetch one business and all personal phone numbers.
+For variety, let's fetch one business and all personal phone numbers.
 
 :::: captioned-content
 ::: caption
@@ -329,12 +329,12 @@ allPersonalPhones ps = map snd $ filter (contextIs Home) ps `mplus`
 ::::
 
 In these functions, because we know that `lookup` returns a value of
-type `Maybe`, and `filter` returns a list, it\'s obvious which version
+type `Maybe`, and `filter` returns a list, it's obvious which version
 of `mplus` is going to be used in each case.
 
-What\'s more interesting is that we can use `mzero` and `mplus` to write
+What's more interesting is that we can use `mzero` and `mplus` to write
 functions that will be useful for *any* `MonadPlus` instance. As an
-example, here\'s the standard `lookup` function, which returns a value
+example, here's the standard `lookup` function, which returns a value
 of type `Maybe`.
 
 ``` haskell
@@ -365,19 +365,19 @@ This lets us get either no result or one, if our result type is `Maybe`;
 all results, if our result type is a list; or something more appropriate
 for some other exotic instance of `MonadPlus`.
 
-For small functions, such as those we present above, there\'s little
+For small functions, such as those we present above, there's little
 benefit to using `mplus`. The advantage lies in more complex code and in
 code that is independent of the monad in which it executes. Even if you
-don\'t find yourself needing `MonadPlus` for your own code, you are
-likely to encounter it in other people\'s projects.
+don't find yourself needing `MonadPlus` for your own code, you are
+likely to encounter it in other people's projects.
 
 ### The name `mplus` does not imply addition
 
-Even though the `mplus` function contains the text \"plus\", you should
-not think of it as necessarily implying that we\'re trying to add two
+Even though the `mplus` function contains the text "plus", you should
+not think of it as necessarily implying that we're trying to add two
 values.
 
-Depending on the monad we\'re working in, `mplus` *may* implement an
+Depending on the monad we're working in, `mplus` *may* implement an
 operation that looks like addition. For example, `mplus` in the list
 monad is implemented as the `(++)` operator.
 
@@ -416,9 +416,9 @@ v >> mzero == mzero
 
 ### Failing safely with `MonadPlus`
 
-When we introduced the `fail` function in [the section called \"The
-Monad type class\"](15-monads.org::*The Monad type class) warn against
-its use: in many monads, it\'s implemented as a call to `error`, which
+When we introduced the `fail` function in [the section called "The
+Monad type class"](15-monads.org::*The Monad type class) warn against
+its use: in many monads, it's implemented as a call to `error`, which
 has unpleasant consequences.
 
 The `MonadPlus` type class gives us a gentler way to fail a computation,
@@ -441,9 +441,9 @@ guard False  =  mzero
 ```
 ::::
 
-As a simple example, here\'s a function that takes a number `x` and
+As a simple example, here's a function that takes a number `x` and
 computes its value modulo some other number `n`. If the result is zero,
-it returns `x`, otherwise the current monad\'s `mzero`.
+it returns `x`, otherwise the current monad's `mzero`.
 
 :::: captioned-content
 ::: caption
@@ -457,13 +457,13 @@ x `zeroMod` n = guard ((x `mod` n) == 0) >> return x
 
 ## Adventures in hiding the plumbing
 
-In [the section called \"Using the state monad: generating random
-values\"](15-monads.org::*Using the state monad: generating random values)
+In [the section called "Using the state monad: generating random
+values"](15-monads.org::*Using the state monad: generating random values)
 we showed how to use the `State` monad to give ourselves access to
 random numbers in a way that is easy to use.
 
-A drawback of the code we developed is that it\'s *leaky*: someone who
-uses it knows that they\'re executing inside the `State` monad. This
+A drawback of the code we developed is that it's *leaky*: someone who
+uses it knows that they're executing inside the `State` monad. This
 means that they can inspect and modify the state of the random number
 generator just as easily as we, the authors, can.
 
@@ -472,27 +472,27 @@ someone will surely come along and monkey with them. For a sufficiently
 small program, this may be fine, but in a larger software project, when
 one consumer of a library modifies its internals in a way that other
 consumers are not prepared for, the resulting bugs can be among the
-hardest of all to track down. These bugs occur at a level where we\'re
+hardest of all to track down. These bugs occur at a level where we're
 unlikely to question our basic assumptions about a library until long
-after we\'ve exhausted all other avenues of inquiry.
+after we've exhausted all other avenues of inquiry.
 
 Even worse, once we leave our implementation exposed for a while, and
 some well-intentioned person inevitably bypasses our APIs and uses the
 implementation directly, we create a nasty quandary for ourselves if we
 need to fix a bug or make an enhancement. Either we can modify our
-internals, and break code that depends on them; or we\'re stuck with our
+internals, and break code that depends on them; or we're stuck with our
 existing internals, and must try to find some other way to make the
 change we need.
 
-How can we revise our random number monad so that the fact that we\'re
+How can we revise our random number monad so that the fact that we're
 using the `State` monad is hidden? We need to somehow prevent our users
 from being able to call `get` or `put`. This is not difficult to do, and
-it introduces some tricks that we\'ll reuse often in day-to-day Haskell
+it introduces some tricks that we'll reuse often in day-to-day Haskell
 programming.
 
-To widen our scope, we\'ll move beyond random numbers, and implement a
-monad that supplies unique values of *any* kind. The name we\'ll give to
-our monad is `Supply`. We\'ll provide the execution function,
+To widen our scope, we'll move beyond random numbers, and implement a
+monad that supplies unique values of *any* kind. The name we'll give to
+our monad is `Supply`. We'll provide the execution function,
 `runSupply`, with a list of values; it will be up to us to ensure that
 each one is unique.
 
@@ -506,12 +506,12 @@ runSupply :: Supply s a -> [s] -> (a, [s])
 ```
 ::::
 
-The monad won\'t care what the values are: they might be random numbers,
+The monad won't care what the values are: they might be random numbers,
 or names for temporary files, or identifiers for HTTP cookies.
 
 Within the monad, every time a consumer asks for a value, the `next`
 action will take the next one from the list and give it to the consumer.
-Each value is wrapped in a `Maybe` constructor in case the list isn\'t
+Each value is wrapped in a `Maybe` constructor in case the list isn't
 long enough to satisfy the demand.
 
 :::: captioned-content
@@ -542,8 +542,8 @@ module Supply
 ```
 ::::
 
-Since a module that imports the library can\'t see the internals of the
-monad, it can\'t manipulate them.
+Since a module that imports the library can't see the internals of the
+monad, it can't manipulate them.
 
 Our plumbing is exceedingly simple: we use a `newtype` declaration to
 wrap the existing `State` monad.
@@ -565,15 +565,15 @@ supply, and `a` is the usual type parameter that we must provide in
 order to make our type a monad.
 
 Our use of `newtype` for the `Supply` type and our module header join
-forces to prevent our clients from using the `State` monad\'s `get` and
+forces to prevent our clients from using the `State` monad's `get` and
 `set` actions. Because our module does not export the `s` data
-constructor, clients have no programmatic way to see that we\'re
+constructor, clients have no programmatic way to see that we're
 wrapping the `State` monad, or to access it.
 
-At this point, we\'ve got a type, `Supply`, that we need to make an
+At this point, we've got a type, `Supply`, that we need to make an
 instance of the `Monad` type class. We could follow the usual pattern of
 defining `(>>=)` and `return`, but this would be pure boilerplate code.
-All we\'d be doing is wrapping and unwrapping the `State` monad\'s
+All we'd be doing is wrapping and unwrapping the `State` monad's
 versions of `(>>=)` and `return` using our `s` value constructor. Here
 is how such code would look.
 
@@ -621,7 +621,7 @@ Usually, we can only automatically derive instances of a handful of
 standard type classes, such as `Show` and `Eq`. As its name suggests,
 the `GeneralizedNewtypeDeriving` extension broadens our ability to
 derive type class instances, and it is specific to `newtype`
-declarations. If the type we\'re wrapping is an instance of any type
+declarations. If the type we're wrapping is an instance of any type
 class, the extensions can automatically make our new type an instance of
 that type class as follows.
 
@@ -635,7 +635,7 @@ deriving (Monad)
 ```
 ::::
 
-This takes the underlying type\'s implementations of `(>>=)` and
+This takes the underlying type's implementations of `(>>=)` and
 `return`, adds the necessary wrapping and unwrapping with our `s` data
 constructor, and uses the new versions of those functions to derive a
 `Monad` instance for us.
@@ -664,7 +664,7 @@ instance Applicative (Supply s) where
 ```
 ::::
 
-Now that we\'ve seen the `GeneralizedNewtypeDeriving` technique, all
+Now that we've seen the `GeneralizedNewtypeDeriving` technique, all
 that remains is to provide definitions of `next` and `runSupply`.
 
 :::: captioned-content
@@ -701,14 +701,14 @@ ghci> runSupply (liftM2 (,) next next) [1]
 ### Supplying random numbers
 
 If we want to use our `Supply` monad as a source of random numbers, we
-have a small difficulty to face. Ideally, we\'d like to be able to
+have a small difficulty to face. Ideally, we'd like to be able to
 provide it with an infinite stream of random numbers. We can get a
-`StdGen` in the `IO` monad, but we must \"put back\" a different
-`StdGen` when we\'re done. If we don\'t, the next piece of code to get a
+`StdGen` in the `IO` monad, but we must "put back" a different
+`StdGen` when we're done. If we don't, the next piece of code to get a
 `StdGen` will get the same state as we did. This means it will generate
 the same random numbers as we did, which is potentially catastrophic.
 
-From the parts of the `System.Random` module we\'ve seen so far, it\'s
+From the parts of the `System.Random` module we've seen so far, it's
 difficult to reconcile these demands. We can use `getStdRandom`, whose
 type ensures that when we get a `StdGen`, we put one back.
 
@@ -722,10 +722,10 @@ random number. And we can use `randoms` to get an infinite list of
 random numbers. But how do we get both an infinite list of random
 numbers *and* a new `StdGen`?
 
-The answer lies with the `RandomGen` type class\'s `split` function,
+The answer lies with the `RandomGen` type class's `split` function,
 which takes one random number generator, and turns it into two
 generators. Splitting a random generator like this is a most unusual
-thing to be able to do: it\'s obviously tremendously useful in a pure
+thing to be able to do: it's obviously tremendously useful in a pure
 functional setting, but essentially never either necessary or provided
 by an impure language.
 
@@ -752,7 +752,7 @@ randomsIO =
 ```
 ::::
 
-If we\'ve written this function properly, our example ought to print a
+If we've written this function properly, our example ought to print a
 different random number on each invocation.
 
 ``` screen
@@ -769,7 +769,7 @@ Just (-7180502226926150515)
 Recall that our `runSupply` function returns both the result of
 executing the monadic action and the unconsumed remainder of the list.
 Since we passed it an infinite list of random numbers, we compose with
-`fst` to ensure that we don\'t get drowned in random numbers when `ghci`
+`fst` to ensure that we don't get drowned in random numbers when `ghci`
 tries to print the result.
 
 ### Another round of golf
@@ -790,9 +790,9 @@ ghci> second odd ('a',1)
 ('a',True)
 ```
 
-(Indeed, we already encountered `second`, in [the section called \"JSON
+(Indeed, we already encountered `second`, in [the section called "JSON
 type classes without overlapping
-instances\"](6-using-typeclasses.org::*JSON type classes without overlapping instances)
+instances"](6-using-typeclasses.org::*JSON type classes without overlapping instances)
 We can use `first` to golf our definition of `randomsIO`, turning it
 into a one-liner.
 
@@ -812,7 +812,7 @@ randomsIO_golfed = getStdRandom (first randoms . split)
 
 ## Separating interface from implementation
 
-In the previous section, we saw how to hide the fact that we\'re using a
+In the previous section, we saw how to hide the fact that we're using a
 `State` monad to hold the state for our `Supply` monad.
 
 Another important way to make code more modular involves separating its
@@ -824,7 +824,7 @@ quite slow. If we use our `randomsIO` function to provide it with random
 numbers, then our `next` action will not perform well.
 
 One simple and effective way that we could deal with this is to provide
-`Supply` with a better source of random numbers. Let\'s set this idea
+`Supply` with a better source of random numbers. Let's set this idea
 aside, though, and consider an alternative approach, one that is useful
 in many settings. We will separate the actions we can perform with the
 monad from how it works using a type class.
@@ -862,19 +862,19 @@ that is a monad, we can make it an instance of the type class
 
 As this language extension allows a type class to have more than one
 parameter, its name is `MultiParamTypeClasses`. The parameter `s` serves
-the same purpose as the `Supply` type\'s parameter of the same name: it
+the same purpose as the `Supply` type's parameter of the same name: it
 represents the type of the values handed out by the `next` function.
 
-Notice that we don\'t need to mention `(>>=)` or `return` in the
-definition of `MonadSupply s`, since the type class\'s context
+Notice that we don't need to mention `(>>=)` or `return` in the
+definition of `MonadSupply s`, since the type class's context
 (superclass) requires that a `MonadSupply s` must already be a monad.
 
 ### Functional dependencies
 
 To revisit a snippet that we ignored earlier, `| m -> s` is a
 *functional dependency*, often called a *fundep*. We can read the
-vertical bar `|` as \"such that\", and the arrow `->` as \"uniquely
-determines\". Our functional dependency establishes a *relationship*
+vertical bar `|` as "such that", and the arrow `->` as "uniquely
+determines". Our functional dependency establishes a *relationship*
 between `m` and `s`.
 
 The availability of functional dependencies is governed by the
@@ -892,8 +892,8 @@ every time it sees some monad `m` being used in the context of a
 it. If we were to omit the functional dependency, the type checker would
 simply give up with an error message.
 
-It\'s hard to picture what the relationship between `m` and `s` really
-means, so let\'s look at an instance of this type class.
+It's hard to picture what the relationship between `m` and `s` really
+means, so let's look at an instance of this type class.
 
 :::: captioned-content
 ::: caption
@@ -911,7 +911,7 @@ to our functional dependency, the type checker now knows that when it
 sees a type `S.Supply s`, the type can be used as an instance of the
 type class `MonadSupply s`.
 
-If we didn\'t have a functional dependency, the type checker would not
+If we didn't have a functional dependency, the type checker would not
 be able to figure out the relationship between the type parameter of the
 class `MonadSupply s` and that of the type `Supply s`, and it would
 abort compilation with an error. The definition itself would compile;
@@ -921,7 +921,7 @@ To strip away one final layer of abstraction, consider the type
 `S.Supply Int`. Without a functional dependency, we could declare this
 an instance of `MonadSupply s`. However, if we tried to write code using
 this instance, the compiler would not be able to figure out that the
-type\'s `Int` parameter needs to be the same as the type class\'s `s`
+type's `Int` parameter needs to be the same as the type class's `s`
 parameter, and it would report an error.
 
 Functional dependencies can be tricky to understand, and once we move
@@ -932,7 +932,7 @@ situations as simple as ours, where they cause little trouble.
 ### Rounding out our module
 
 If we save our type class and instance in a source file named
-`SupplyClass.hs`, we\'ll need to add a module header such as the
+`SupplyClass.hs`, we'll need to add a module header such as the
 following.
 
 :::: captioned-content
@@ -950,14 +950,14 @@ module SupplyClass
 ```
 ::::
 
-Notice that we\'re re-exporting the `runSupply` and `Supply` names from
-this module. It\'s perfectly legal to export a name from one module even
-though it\'s defined in another. In our case, it means that client code
+Notice that we're re-exporting the `runSupply` and `Supply` names from
+this module. It's perfectly legal to export a name from one module even
+though it's defined in another. In our case, it means that client code
 only needs to import the `SupplyClass` module, without also importing
-the `Supply` module. This reduces the number of \"moving parts\" that a
+the `Supply` module. This reduces the number of "moving parts" that a
 user of our code needs to keep in mind.
 
-### Programming to a monad\'s interface
+### Programming to a monad's interface
 
 Here is a simple function that fetches two values from our `Supply`
 monad, formats them as a string, and returns them.
@@ -978,7 +978,7 @@ showTwo = do
 
 This code is tied by its result type to our `Supply` monad. We can
 easily generalize to any monad that implements our `MonadSupply`
-interface by modifying our function\'s type. Notice that the body of the
+interface by modifying our function's type. Notice that the body of the
 function remains unchanged.
 
 :::: captioned-content
@@ -999,17 +999,17 @@ showTwo_class = do
 
 The `State` monad lets us plumb a piece of mutable state through our
 code. Sometimes, we would like to be able to pass some *immutable* state
-around, such as a program\'s configuration data. We could use the
+around, such as a program's configuration data. We could use the
 `State` monad for this purpose, but we could then find ourselves
 accidentally modifying data that should remain unchanged.
 
-Let\'s forget about monads for a moment and think about what a
+Let's forget about monads for a moment and think about what a
 *function* with our desired characteristics ought to do. It should
 accept a value of some type `e` (for *environment*) that represents the
-data that we\'re passing in, and return a value of some other type `a`
+data that we're passing in, and return a value of some other type `a`
 as its result. The overall type we want is `e -> a`.
 
-To turn this type into a convenient `Monad` instance, we\'ll wrap it in
+To turn this type into a convenient `Monad` instance, we'll wrap it in
 a `newtype`.
 
 :::: captioned-content
@@ -1031,7 +1031,7 @@ newtype Reader e a = R { runReader :: e -> a }
 ```
 ::::
 
-Making this into a `Monad` instance doesn\'t take much work.
+Making this into a `Monad` instance doesn't take much work.
 
 :::: captioned-content
 ::: caption
@@ -1052,16 +1052,16 @@ instance Monad (Reader e) where
 ::::
 
 We can think of our value of type `e` as an *environment* in which
-we\'re evaluating some expression. The `return` action should have the
+we're evaluating some expression. The `return` action should have the
 same effect no matter what the environment is, so our version ignores
 its environment.
 
 Our definition of `(>>=)` is a little more complicated, but only because
 we have to make the environment---here the variable \~r\~---available
-both in the current computation and in the computation we\'re chaining
+both in the current computation and in the computation we're chaining
 into.
 
-How does a piece of code executing in this monad find out what\'s in its
+How does a piece of code executing in this monad find out what's in its
 environment? It simply has to `ask`.
 
 :::: captioned-content
@@ -1076,7 +1076,7 @@ ask = R id
 ::::
 
 Within a given chain of actions, every invocation of `ask` will return
-the same value, since the value stored in the environment doesn\'t
+the same value, since the value stored in the environment doesn't
 change. Our code is easy to test in `ghci`.
 
 ``` screen
@@ -1090,25 +1090,25 @@ ghci> runReader (ask >>= \x -> return (x * 3)) 2
 The `Reader` monad is included in the standard `mtl` library, which is
 usually bundled with GHC. You can find it in the `Control.Monad.Reader`
 module. The motivation for this monad may initially seem a little thin,
-because it is most often useful in complicated code. We\'ll often need
+because it is most often useful in complicated code. We'll often need
 to access a piece of configuration information deep in the bowels of a
 program; passing that information in as a normal parameter would require
 a painful restructuring of our code. By hiding this information in our
-monad\'s plumbing, intermediate functions that don\'t care about the
-configuration information don\'t need to see it.
+monad's plumbing, intermediate functions that don't care about the
+configuration information don't need to see it.
 
 The clearest motivation for the `Reader` monad will come in [Chapter 18,
 *Monad transformers*](18-monad-transformers.org), when we discuss
-combining several monads to build a new monad. There, we\'ll see how to
+combining several monads to build a new monad. There, we'll see how to
 gain finer control over state, so that our code can modify some values
 via the `State` monad, while other values remain immutable, courtesy of
 the `Reader` monad.
 
 ## A return to automated deriving
 
-Now that we know about the `Reader` monad, let\'s use it to create an
+Now that we know about the `Reader` monad, let's use it to create an
 instance of our `MonadSupply` type class. To keep our example simple,
-we\'ll violate the spirit of `MonadSupply` here: our `next` action will
+we'll violate the spirit of `MonadSupply` here: our `next` action will
 always return the same value, instead of always returning a different
 value.
 
@@ -1117,7 +1117,7 @@ the `MonadSupply` class, because then *any* `Reader` could act as a
 `MonadSupply`. This would usually not make any sense.
 
 Instead, we create a `newtype` based on `Reader`. The `newtype` hides
-the fact that we\'re using `Reader` internally. We must now make our
+the fact that we're using `Reader` internally. We must now make our
 type an instance of both of the type classes we care about. With the
 `GeneralizedNewtypeDeriving` extension enabled, GHC will do most of the
 hard work for us.
@@ -1151,7 +1151,7 @@ instance MonadSupply e (MySupply e) where
 Notice that we must make our type an instance of `MonadSupply e`, not
 `MonadSupply`. If we omit the type variable, the compiler will complain.
 
-To try out our `MySupply` type, we\'ll first create a simple function
+To try out our `MySupply` type, we'll first create a simple function
 that should work with any `MonadSupply` instance.
 
 :::: captioned-content
@@ -1230,14 +1230,14 @@ ghci> runMS xy 2
 Like our `MonadSupply` type class and `Supply` monad, almost all of the
 common Haskell monads are built with a split between interface and
 implementation. For example, the `get` and `put` functions that we
-introduced as \"belonging to\" the `State` monad are actually methods of
+introduced as "belonging to" the `State` monad are actually methods of
 the `MonadState` type class; the `State` type is an instance of this
 class.
 
 Similarly, the standard `Reader` monad is an instance of the
 `MonadReader` type class, which specifies the `ask` method.
 
-While the separation of interface and implementation that we\'ve
+While the separation of interface and implementation that we've
 discussed above is appealing for its architectural cleanliness, it has
 important practical applications that will become clearer later. When we
 start combining monads in [Chapter 18, *Monad
@@ -1252,14 +1252,14 @@ programming mistakes, then the `IO` monad should be a great source of
 unease. Because the `IO` monad imposes no restrictions on what we can
 do, it leaves us vulnerable to all kinds of accidents.
 
-How can we tame its power? Let\'s say that we would like to guarantee to
+How can we tame its power? Let's say that we would like to guarantee to
 ourselves that a piece of code can read and write files on the local
-file system, but that it will not access the network. We can\'t use the
-plain `IO` monad, because it won\'t restrict us.
+file system, but that it will not access the network. We can't use the
+plain `IO` monad, because it won't restrict us.
 
 ### Using a `newtype`
 
-Let\'s create a module that provides a small set of functionality for
+Let's create a module that provides a small set of functionality for
 reading and writing files.
 
 :::: captioned-content
@@ -1382,17 +1382,17 @@ ghci> runHandleIO (safeHello "goodbye" >> removeFile "goodbye")
 
 ### Designing for unexpected uses
 
-There\'s one small, but significant, problem with our `HandleIO` monad:
-it doesn\'t take into account the possibility that we might occasionally
+There's one small, but significant, problem with our `HandleIO` monad:
+it doesn't take into account the possibility that we might occasionally
 need an escape hatch. If we define a monad like this, it is likely that
-we will occasionally need to perform an I/O action that isn\'t allowed
+we will occasionally need to perform an I/O action that isn't allowed
 for by the design of our monad.
 
 Our purpose in defining a monad like this is to make it easier for us to
 write solid code in the common case, not to make corner cases
-impossible. Let\'s thus give ourselves a way out.
+impossible. Let's thus give ourselves a way out.
 
-The `Control.Monad.Trans` module defines a \"standard escape hatch\",
+The `Control.Monad.Trans` module defines a "standard escape hatch",
 the `MonadIO` type class. This defines a single function, `liftIO`,
 which lets us embed an `IO` action in another monad.
 
@@ -1452,7 +1452,7 @@ the earlier material from that of `MonadIO`.
 
 ### Using type classes
 
-The disadvantage of hiding `IO` in another monad is that we\'re still
+The disadvantage of hiding `IO` in another monad is that we're still
 tied to a concrete implementation. If we want to swap `HandleIO` for
 some other monad, we must change the type of every action that uses
 `HandleIO`.
@@ -1483,8 +1483,8 @@ class Monad m => MonadHandle h m | m -> h where
 ```
 ::::
 
-Here, we\'ve chosen to abstract away both the type of the monad and the
-type of a file handle. To satisfy the type checker, we\'ve added a
+Here, we've chosen to abstract away both the type of the monad and the
+type of a file handle. To satisfy the type checker, we've added a
 functional dependency: for any instance of `MonadHandle`, there is
 exactly one handle type that we can use. When we make the `IO` monad an
 instance of this class, we use a regular Handle.
@@ -1553,22 +1553,22 @@ ghci> removeFile "hello to my fans in domestic surveillance"
 
 The beauty of the type class approach is that we can swap one underlying
 monad for another without touching much code, as most of our code
-doesn\'t know or care about the implementation. For instance, we could
+doesn't know or care about the implementation. For instance, we could
 replace `IO` with a monad that compresses files as it writes them out.
 
-Defining a monad\'s interface through a type class has a further
+Defining a monad's interface through a type class has a further
 benefit. It lets other people hide our implementation in a `newtype`
 wrapper, and automatically derive instances of just the type classes
 they want to expose.
 
 ### Isolation and testing
 
-In fact, because our `safeHello` function doesn\'t use the `IO` type, we
-can even use a monad that *can\'t* perform I/O. This allows us to test
+In fact, because our `safeHello` function doesn't use the `IO` type, we
+can even use a monad that *can't* perform I/O. This allows us to test
 code that would normally have side effects in a completely pure,
 controlled environment.
 
-To do this, we will create a monad that doesn\'t perform I/O, but
+To do this, we will create a monad that doesn't perform I/O, but
 instead logs every file-related event for later processing.
 
 :::: captioned-content
@@ -1596,8 +1596,8 @@ data Event = Open FilePath IOMode
 ::::
 
 Although we already developed a `Logger` type in [the section called
-\"Using a new monad: show your
-work!\"](15-monads.org::*Using a new monad: show your work!) we\'ll use
+"Using a new monad: show your
+work!"](15-monads.org::*Using a new monad: show your work!) we'll use
 the standard, and more general, `Writer` monad. Like other `mtl` monads,
 the API provided by `Writer` is defined in a type class, in this case
 `MonadWriter`. Its most useful method is `tell`, which logs a value.
@@ -1609,9 +1609,9 @@ tell :: MonadWriter w m => w -> m ()
 ```
 
 The values we log can be of any `Monoid` type. Since the list type is a
-`Monoid`, we\'ll log to a list of `Event`.
+`Monoid`, we'll log to a list of `Event`.
 
-We could make `Writer [Event]` an instance of `MonadHandle`, but it\'s
+We could make `Writer [Event]` an instance of `MonadHandle`, but it's
 cheap, easy, and safer to make a special-purpose monad.
 
 :::: captioned-content
@@ -1626,7 +1626,7 @@ newtype WriterIO a = W { runW :: Writer [Event] a }
 ::::
 
 Our execution function simply removes the `newtype` wrapper we added,
-then calls the normal Writer monad\'s execution function.
+then calls the normal Writer monad's execution function.
 
 :::: captioned-content
 ::: caption
@@ -1653,7 +1653,7 @@ instance MonadHandle FilePath WriterIO where
 ::::
 
 When we try this code out in `ghci`, it gives us a log of the
-function\'s file activities.
+function's file activities.
 
 ``` screen
 ghci> :load WriterIO
@@ -1667,7 +1667,7 @@ ghci> runWriterIO (safeHello "foo")
 
 ### The writer monad and lists
 
-The writer monad uses the monoid\'s `mappend` function every time we use
+The writer monad uses the monoid's `mappend` function every time we use
 `tell`. Because `mappend` for lists is `(++)`, lists are not a good
 practical choice for use with `Writer`: repeated appends are expensive.
 We use lists above purely for simplicity.
@@ -1675,14 +1675,14 @@ We use lists above purely for simplicity.
 In production code, if you want to use the `Writer` monad and you need
 list-like behaviour, use a type with better append characteristics. One
 such type is the difference list, which we introduced in [the section
-called \"Taking advantage of functions as
-data\"](13-data-structures.org::*Taking advantage of functions as data)
-You don\'t need to roll your own difference list implementation: a well
+called "Taking advantage of functions as
+data"](13-data-structures.org::*Taking advantage of functions as data)
+You don't need to roll your own difference list implementation: a well
 tuned library is available for download from Hackage, the Haskell
 package database. Alternatively, you can use the `Seq` type from the
 `Data.Sequence` module, which we introduced in [the section called
-\"General purpose
-sequences\"](13-data-structures.org::*General purpose sequences)
+"General purpose
+sequences"](13-data-structures.org::*General purpose sequences)
 
 ### Arbitrary I/O revisited
 
@@ -1711,7 +1711,7 @@ This approach has a problem, though: the added `MonadIO` constraint
 loses us the ability to test our code in a pure environment, because we
 can no longer tell whether a test might have damaging side effects. The
 alternative is to move this constraint from the type class, where it
-\"infects\" all functions, to only those functions that really need to
+"infects" all functions, to only those functions that really need to
 perform I/O.
 
 :::: captioned-content
@@ -1730,7 +1730,7 @@ tidyHello path = do
 We can use pure property tests on the functions that lack `MonadIO`
 constraints, and traditional unit tests on the rest.
 
-Unfortunately, we\'ve substituted one problem for another: we can\'t
+Unfortunately, we've substituted one problem for another: we can't
 invoke code with both `MonadIO` and `MonadHandle` constraints from code
 that has the `MonadHandle` constraint alone. If we find that somewhere
 deep in our `MonadHandle`-only code, we really need the `MonadIO`

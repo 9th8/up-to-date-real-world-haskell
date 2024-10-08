@@ -16,9 +16,9 @@ failure. In our case, if a parse fails early on, we want to stop
 parsing, not continue in some broken state. Our monad combines the
 effect of carrying state around with the effect of early exit.
 
-The normal `State` monad doesn\'t let us escape in this way; it only
+The normal `State` monad doesn't let us escape in this way; it only
 carries state. It uses the default implementation of `fail`: this calls
-`error`, which throws an exception that we can\'t catch in pure code.
+`error`, which throws an exception that we can't catch in pure code.
 The `State` monad thus *appears* to allow for failure, without that
 capability actually being any use. (Once again, we recommend that you
 almost always avoid using `fail`!)
@@ -26,10 +26,10 @@ almost always avoid using `fail`!)
 It would be ideal if we could somehow take the standard `State` monad
 and add failure handling to it, without resorting to the wholesale
 construction of custom monads by hand. The standard monads in the `mtl`
-library don\'t allow us to combine them. Instead, the library provides a
+library don't allow us to combine them. Instead, the library provides a
 set of *monad transformers*[^1] to achieve the same result.
 
-A monad transformer is similar to a regular monad, but it\'s not a
+A monad transformer is similar to a regular monad, but it's not a
 standalone entity: instead, it modifies the behaviour of an underlying
 monad. Most of the monads in the `mtl` library have transformer
 equivalents. By convention, the transformer version of a monad has the
@@ -40,7 +40,7 @@ when stacked on top of another monad.
 
 ## A simple monad transformer example
 
-Before we introduce monad transformers, let\'s look at a function
+Before we introduce monad transformers, let's look at a function
 written using techniques we are already familiar with. The function
 below recurses into a directory tree, and returns a list of the number
 of entries it finds at each level of the tree.
@@ -74,16 +74,16 @@ countEntriesTrad path = do
 ```
 ::::
 
-We\'ll now look at using the `Writer` monad to achieve the same goal.
-Since this monad lets us record a value wherever we want, we don\'t need
+We'll now look at using the `Writer` monad to achieve the same goal.
+Since this monad lets us record a value wherever we want, we don't need
 to explicitly build up a result.
 
 As our function must execute in the `IO` monad so that it can traverse
-directories, we can\'t use the `Writer` monad directly. Instead, we use
+directories, we can't use the `Writer` monad directly. Instead, we use
 `WriterT` to add the recording capability to `IO`. We will find the
 going easier if we look at the types involved.
 
-The normal `Writer` monad has two type parameters, so it\'s more
+The normal `Writer` monad has two type parameters, so it's more
 properly written `Writer w a`. The first parameter `w` is the type of
 the values to be recorded, and `a` is the usual type that the `Monad`
 type class requires. Thus `Writer [(FilePath, Int)] a` is a writer monad
@@ -94,7 +94,7 @@ type parameter `m`: this is the underlying monad whose behaviour we are
 augmenting. The full signature of `WriterT is WriterT w m a`.
 
 Because we need to traverse directories, which requires access to the
-`IO` monad, we\'ll stack our writer on top of the `IO` monad. Our
+`IO` monad, we'll stack our writer on top of the `IO` monad. Our
 combination of monad transformer and underlying monad will thus have the
 type `WriterT [(FilePath, Int)] IO a`. This stack of monad transformer
 and monad is itself a monad.
@@ -129,7 +129,7 @@ This code is not terribly different from our earlier version. We use
 `liftIO` to expose the `IO` monad where necessary, and `tell` to record
 a visit to a directory.
 
-To run our code, we must use one of `WriterT`\'s execution functions.
+To run our code, we must use one of `WriterT`'s execution functions.
 
 ``` screen
 ghci> :type runWriterT
@@ -164,7 +164,7 @@ Most of the monads and monad transformers in the `mtl` library follow a
 few common patterns around naming and type classes.
 
 To illustrate these rules, we will focus on a single straightforward
-monad: the reader monad. The reader monad\'s API is detailed by the
+monad: the reader monad. The reader monad's API is detailed by the
 `MonadReader` type class. Most `mtl` monads have similarly named type
 classes: `MonadWriter` defines the API of the writer monad, and so on.
 
@@ -179,9 +179,9 @@ monad carries around. The `Reader r` monad is an instance of the
 `MonadReader` class, as is the `ReaderT r m` monad transformer. Again,
 this pattern is repeated by other `mtl` monads: there usually exist both
 a concrete monad and a transformer, each of which are instances of the
-type class that defines the monad\'s API.
+type class that defines the monad's API.
 
-Returning to the specifics of the `Reader` monad, we haven\'t touched
+Returning to the specifics of the `Reader` monad, we haven't touched
 upon the `local` function before. It temporarily modifies the current
 environment using the `r -> r` function, and executes its action in the
 modified environment. To make this idea more concrete, here is a simple
@@ -243,7 +243,7 @@ that we can again stack a monad transformer on top of our combined
 monad, to give a new monad, and in fact this is a common thing to do.
 Under what circumstances might we want to create such a stack?
 
--   If we need to talk to the outside world, we\'ll have `IO` at the
+-   If we need to talk to the outside world, we'll have `IO` at the
     base of the stack. Otherwise, we will have some normal monad.
 -   If we add a `ReaderT` layer, we give ourselves access to read-only
     configuration information.
@@ -295,7 +295,7 @@ type App = ReaderT AppConfig (StateT AppState IO)
 ::::
 
 Our transformer stack has `IO` on the bottom, then `StateT`, with
-`ReaderT` on top. In this particular case, it doesn\'t matter whether we
+`ReaderT` on top. In this particular case, it doesn't matter whether we
 have `ReaderT` or `WriterT` on top, but `IO` must be on the bottom.
 
 Even a small stack of monad transformers quickly develops an unwieldy
@@ -307,9 +307,9 @@ signatures that we write.
 Note
 :::
 
-Where\'s the missing type parameter?
+Where's the missing type parameter?
 
-You might have noticed that our `type` synonym doesn\'t have the usual
+You might have noticed that our `type` synonym doesn't have the usual
 type parameter `a` that we associate with a monadic type:
 
 :::: captioned-content
@@ -329,8 +329,8 @@ compiler will allow `WriterT [String] App a`, but reject
 `WriterT [String] App2 a`.
 
 The reason for this is that Haskell does not allow us to partially apply
-a type synonym. The synonym `App` doesn\'t take a type parameter, so it
-doesn\'t pose a problem. However, because `App2` takes a type parameter,
+a type synonym. The synonym `App` doesn't take a type parameter, so it
+doesn't pose a problem. However, because `App2` takes a type parameter,
 we must supply some type for that parameter if we want to use `App2` to
 create another type.
 
@@ -389,15 +389,15 @@ constrainedCount curDepth path = do
 ::::
 
 Our use of monad transformers here is admittedly a little contrived.
-Because we\'re writing a single straightforward function, we\'re not
-really winning anything. What\'s useful about this approach, though, is
+Because we're writing a single straightforward function, we're not
+really winning anything. What's useful about this approach, though, is
 that it *scales* to bigger programs.
 
-We can write most of an application\'s imperative-style code in a monad
-stack similar to our `App` monad. In a real program, we\'d carry around
-more complex configuration data, but we\'d still use `ReaderT` to keep
-it read-only and hidden except when needed. We\'d have more mutable
-state to manage, but we\'d still use `StateT` to encapsulate it.
+We can write most of an application's imperative-style code in a monad
+stack similar to our `App` monad. In a real program, we'd carry around
+more complex configuration data, but we'd still use `ReaderT` to keep
+it read-only and hidden except when needed. We'd have more mutable
+state to manage, but we'd still use `StateT` to encapsulate it.
 
 ### Hiding our work
 
@@ -438,7 +438,7 @@ monad implements `MonadIO`. If the underlying monad is an instance of
 `ReaderT`.
 
 There is thus no magic going on: the top-level monad transformer in the
-stack is an instance of all of the type classes that we\'re rederiving
+stack is an instance of all of the type classes that we're rederiving
 with our `deriving` clause. This is a consequence of `mtl` providing a
 carefully coordinated set of type classes and instances that fit
 together well. There is nothing more going on than the usual automatic
@@ -464,7 +464,7 @@ monad transformers to simplify many common programming tasks.
 There are a few useful ways in which we can depart from the comfort of
 `mtl`. Most often, a custom monad sits at the bottom of the stack, or a
 custom monad transformer lies somewhere within the stack. To understand
-the potential difficulty, let\'s look at an example.
+the potential difficulty, let's look at an example.
 
 Suppose we have a custom monad transformer, `CustomT`.
 
@@ -510,14 +510,14 @@ monad transformer. Every monad transformer is an instance of
 
 We use the name `lift` based on its similarity of purpose to `fmap` and
 `liftM`. In each case, we hoist something from a lower level of the type
-system to the level we\'re currently working in.
+system to the level we're currently working in.
 
 -   `fmap` elevates a pure function to the level of functors;
 -   `liftM` takes a pure function to the level of monads;
 -   and `lift` raises a monadic action from one level beneath in the
     transformer stack to the current one.
 
-Let\'s revisit the `App` monad stack we defined earlier (before we
+Let's revisit the `App` monad stack we defined earlier (before we
 wrapped it with a `newtype`).
 
 :::: captioned-content
@@ -531,7 +531,7 @@ type App = ReaderT AppConfig (StateT AppState IO)
 ::::
 
 If we want to access the `AppState` carried by the `StateT`, we would
-usually rely on `mtl`\'s type classes and instances to handle the
+usually rely on `mtl`'s type classes and instances to handle the
 plumbing for us.
 
 :::: captioned-content
@@ -579,7 +579,7 @@ type Foo = StateT Int (State String)
 ::::
 
 If we try to use the `put` action of the `MonadState` type class, the
-instance we will get is that of `StateT Int`, because it\'s at the top
+instance we will get is that of `StateT Int`, because it's at the top
 of the stack.
 
 :::: captioned-content
@@ -593,7 +593,7 @@ outerPut = put
 ```
 ::::
 
-In this case, the only way we can access the underlying `State` monad\'s
+In this case, the only way we can access the underlying `State` monad's
 `put` is through use of `lift`.
 
 :::: captioned-content
@@ -674,9 +674,9 @@ bindMT :: (Monad m) => MaybeT m a -> (a -> MaybeT m b) -> MaybeT m b
 ::::
 
 To understand this type signature, hark back to our discussion of
-multi-parameter type classes in [the section called \"Multi-parameter
+multi-parameter type classes in [the section called "Multi-parameter
 type
-classes\"](16-programming-with-monads.org::*Multi-parameter type classes)
+classes"](16-programming-with-monads.org::*Multi-parameter type classes)
 intend to make a `Monad` instance is the *partial type* `MaybeT m`: this
 has the usual single type parameter, `a`, that satisfies the
 requirements of the `Monad` type class.
@@ -700,14 +700,14 @@ x `bindMT` f = MaybeT $ do
 ::::
 
 Our `runMaybeT` function unwraps the result contained in `x`. Next,
-recall that the `<-` symbol desugars to `(>>=)`: a monad transformer\'s
-`(>>=)` must use the underlying monad\'s `(>>=)`. The final bit of case
+recall that the `<-` symbol desugars to `(>>=)`: a monad transformer's
+`(>>=)` must use the underlying monad's `(>>=)`. The final bit of case
 analysis determines whether we short circuit or chain our computation.
 Finally, look back at the top of the body: here, we must wrap the result
 with the `MaybeT` constructor, to once again hide the underlying monad.
 
 The `do` notation above might be pleasant to read, but it hides the fact
-that we are relying on the underlying monad\'s `(>>=)` implementation.
+that we are relying on the underlying monad's `(>>=)` implementation.
 Here is a more idiomatic version of `(>>=)` for `MaybeT` that makes this
 clearer.
 
@@ -763,7 +763,7 @@ instance MonadTrans MaybeT where
 ::::
 
 The underlying monad starts out with a type parameter of a: we
-\"inject\" the `Just` constructor so it will acquire the type that we
+"inject" the `Just` constructor so it will acquire the type that we
 need, `Maybe a`. We then hide the monad with our `MaybeT` constructor.
 
 ### More type class instances
@@ -790,7 +790,7 @@ instance (MonadState s m) => MonadState s (MaybeT m) where
 
 Because several of the `mtl` type classes use functional dependencies,
 some of our instance declarations require us to considerably relax
-GHC\'s usual strict type checking rules. (If we were to forget any of
+GHC's usual strict type checking rules. (If we were to forget any of
 these directives, the compiler would helpfully advise us which ones we
 needed in its error messages.)
 
@@ -807,7 +807,7 @@ MaybeT.hs
 
 Is it better to use `lift` explicitly, or to spend time writing these
 boilerplate instances? That depends on what we expect to do with our
-monad transformer. If we\'re going to use it in just a few restricted
+monad transformer. If we're going to use it in just a few restricted
 situations, we can get away with providing an instance for `MonadTrans`
 alone. In this case, a few more instances might still make sense, such
 as `MonadIO`. On the other hand, if our transformer is going to pop up
@@ -819,8 +819,8 @@ write those instances might be a good investment.
 Now that we have developed a monad transformer that can exit early, we
 can use it to bail if, for example, a parse fails partway through. We
 could thus replace the `Parse` type that we developed in [the section
-called \"Implicit
-state\"](10-parsing-a-binary-data-format.org::*Implicit state)
+called "Implicit
+state"](10-parsing-a-binary-data-format.org::*Implicit state)
 customised to our needs.
 
 :::: captioned-content
@@ -860,7 +860,7 @@ evalParse m s = evalState (runMaybeT (runP m)) (ParseState s 0)
 
 1.  Our `Parse` monad is not a perfect replacement for its earlier
     counterpart. Because we are using `Maybe` instead of `Either` to
-    represent a result, we can\'t report any useful information if a
+    represent a result, we can't report any useful information if a
     parse fails.
 
     Create an `EitherT sometype` monad transformer, and use it to
@@ -881,7 +881,7 @@ evalParse m s = evalState (runMaybeT (runP m)) (ParseState s 0)
     into a monad, when you could use a type parameter instead of
     `String`.
 
-    *Hint*: If you follow this suggestion, you\'ll probably need to use
+    *Hint*: If you follow this suggestion, you'll probably need to use
     the `FlexibleInstances` language extension in your definition.
     ::::
 
@@ -889,16 +889,16 @@ evalParse m s = evalState (runMaybeT (runP m)) (ParseState s 0)
 
 From our early examples using monad transformers like `ReaderT` and
 `StateT`, it might be easy to conclude that the order in which we stack
-monad transformers doesn\'t matter.
+monad transformers doesn't matter.
 
 When we stack `StateT` on top of `State`, it should be clearer that
 order can indeed make a difference. The types
 `StateT Int (State String)` and `StateT String (State Int)` might carry
-around the same information, but we can\'t use them interchangeably. The
+around the same information, but we can't use them interchangeably. The
 ordering determines when we need to use `lift` to get at one or the
 other piece of state.
 
-Here\'s a case that more dramatically demonstrates the importance of
+Here's a case that more dramatically demonstrates the importance of
 ordering. Suppose we have a computation that might fail, and we want to
 log the circumstances under which it does so.
 
@@ -939,7 +939,7 @@ b = problem
 ```
 ::::
 
-Let\'s try the alternatives in `ghci`.
+Let's try the alternatives in `ghci`.
 
 ``` screen
 ghci> runWriterT a
@@ -970,14 +970,14 @@ results, we are not surprised. So it is with monad transformers, too.
 
 ## Putting monads and monad transformers into perspective
 
-It\'s useful to step back from details for a few moments, and look at
+It's useful to step back from details for a few moments, and look at
 the weaknesses and strengths of programming with monads and monad
 transformers.
 
 ### Interference with pure code
 
 Probably the biggest practical irritation of working with monads is that
-a monad\'s type constructor often gets in our way when we\'d like to use
+a monad's type constructor often gets in our way when we'd like to use
 pure code. Many useful pure functions need monadic counterparts, simply
 to tack on a placeholder parameter `m` for some monadic type
 constructor.
@@ -990,12 +990,12 @@ filterM :: (Monad m) => (a -> m Bool) -> [a] -> m [a]
     -- Defined in Control.Monad
 ```
 
-However, the coverage is incomplete: the standard libraries don\'t
+However, the coverage is incomplete: the standard libraries don't
 always provide monadic versions of pure functions.
 
 The reason for this lies in history. Eugenio Moggi introduced the idea
 of using monads for programming in 1988, around the time the Haskell 1.0
-standard was being developed. Many of the functions in today\'s
+standard was being developed. Many of the functions in today's
 `Prelude` date back to Haskell 1.0, which was released in
 
 1.  In 1991, Philip Wadler started writing for a wider
@@ -1005,7 +1005,7 @@ point they began to see some use.
 
 Not until 1996, and the release of Haskell 1.3, did the standard acquire
 support for monads. By this time, the language designers were already
-constrained by backwards compatibility: they couldn\'t change the
+constrained by backwards compatibility: they couldn't change the
 signatures of functions in the `Prelude`, because it would have broken
 existing code.
 
@@ -1014,8 +1014,8 @@ suitable abstractions, so that we can write code that is less affected
 by the pure/monadic divide. You can find modern distillations of these
 ideas in the `Data.Traversable` and `Data.Foldable` modules. As
 appealing as those modules are, we do not cover them in this book. This
-is in part for want of space, but also because if you\'re still
-following our book at this point, you won\'t have trouble figuring them
+is in part for want of space, but also because if you're still
+following our book at this point, you won't have trouble figuring them
 out for yourself.
 
 In an ideal world, would we make a break from the past, and switch over
@@ -1024,7 +1024,7 @@ Learning Haskell is already a stimulating enough adventure for
 newcomers. The `Foldable` and `Traversable` abstractions are easy to
 pick up when we already understand functors and monads, but they would
 put early learners on too pure a diet of abstraction. For teaching the
-language, it\'s *good* that `map` operates on lists, not on functors.
+language, it's *good* that `map` operates on lists, not on functors.
 
 ### Overdetermined ordering
 
@@ -1051,7 +1051,7 @@ problem = do
 
 Because we are executing in a monad, we are guaranteed that the effect
 of the `tell` will occur before the effect of `fail`. The problem is
-that we get this guarantee of ordering even when we don\'t necessarily
+that we get this guarantee of ordering even when we don't necessarily
 want it: the compiler is not free to rearrange monadic code, even if
 doing so would make it more efficient.
 
@@ -1060,7 +1060,7 @@ doing so would make it more efficient.
 Finally, when we use monads and monad transformers, we can pay an
 efficiency tax. For instance, the `State` monad carries its state around
 in a closure. Closures might be cheap in a Haskell implementation, but
-they\'re not free.
+they're not free.
 
 A monad transformer adds its own overhead to that of whatever is
 underneath. Our `MaybeT` transformer has to wrap and unwrap `Maybe`
@@ -1088,12 +1088,12 @@ transformers, and using them with those provided by `mtl`, some
 deficiencies start to show.
 
 For example, if we create a new monad transformer `FooT` and want to
-follow the same pattern as `mtl`, we\'ll have it implement a type class
+follow the same pattern as `mtl`, we'll have it implement a type class
 `MonadFoo`. If we really want to integrate it cleanly into the `mtl`,
-we\'ll have to provide instances for each of the dozen or so `mtl` type
+we'll have to provide instances for each of the dozen or so `mtl` type
 classes.
 
-On top of that, we\'ll have to declare instances of `MonadFoo` for each
+On top of that, we'll have to declare instances of `MonadFoo` for each
 of the `mtl` transformers. Most of those instances will be almost
 identical, and quite dull to write. If we want to keep integrating new
 monad transformers into the `mtl` framework, the number of moving parts
@@ -1101,10 +1101,10 @@ we must deal with increases with the *square* of the number of new
 transformers!
 
 In fairness, this problem only matters to a tiny number of people. Most
-users of `mtl` don\'t need to develop new transformers at all, so they
+users of `mtl` don't need to develop new transformers at all, so they
 are not affected.
 
-This weakness of `mtl`\'s design lies with the fact that it was the
+This weakness of `mtl`'s design lies with the fact that it was the
 first library of monad transformers that was developed. Given that its
 designers were plunging into the unknown, they did a remarkable job of
 producing a powerful library that is easy for most users to understand
@@ -1116,9 +1116,9 @@ hacker of monad transformers, it is well worth looking at.
 
 The quadratic instances definition is actually a problem with the
 approach of using monad transformers. There have been many other
-approaches put forward for composing monads that don\'t have this
+approaches put forward for composing monads that don't have this
 problem, but none of them seem as convenient to the end user as monad
-transformers. Fortunately, there simply aren\'t that many foundational,
+transformers. Fortunately, there simply aren't that many foundational,
 generically useful monad transformers.
 
 ### Pulling it all together
@@ -1137,4 +1137,4 @@ meaning.
 
 ## Footnotes
 
-[^1]: The name \"mtl\" stands for \"monad transformer library\".
+[^1]: The name "mtl" stands for "monad transformer library".

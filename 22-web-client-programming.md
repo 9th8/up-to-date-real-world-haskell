@@ -1,20 +1,20 @@
 # Chapter 22. Extended Example: Web Client Programming
 
-By this point, you\'ve seen how to interact with a database, parse
-things, and handle errors. Let\'s now take this a step farther and
+By this point, you've seen how to interact with a database, parse
+things, and handle errors. Let's now take this a step farther and
 introduce a web client library to the mix.
 
-We\'ll develop a real application in this chapter: a podcast downloader,
-or \"podcatcher\". The idea of a podcatcher is simple. It is given a
+We'll develop a real application in this chapter: a podcast downloader,
+or "podcatcher". The idea of a podcatcher is simple. It is given a
 list of URLs to process. Downloading each of these URLs results in an
-XML file in the RSS format. Inside this XML file, we\'ll find references
+XML file in the RSS format. Inside this XML file, we'll find references
 to URLs for audio files to download.
 
 Podcatchers usually let the user subscribe to podcasts by adding RSS
 URLs to their configuration. Then, the user can periodically run an
 update operation. The podcatcher will download the RSS documents,
 examine them for audio file references, and download any audio files
-that haven\'t already been downloaded on behalf of this user.
+that haven't already been downloaded on behalf of this user.
 
 :::: tip
 ::: title
@@ -31,14 +31,14 @@ To make this happen, we need to have several things:
 
 -   An HTTP client library to download files
 -   An XML parser
--   A way to specify and persistently store which podcasts we\'re
+-   A way to specify and persistently store which podcasts we're
     interested in
--   A way to persistently store which podcast episodes we\'ve already
+-   A way to persistently store which podcast episodes we've already
     downloaded
 
-The last two items can be accommodated via a database we\'ll set up
+The last two items can be accommodated via a database we'll set up
 using HDBC. The first two can be accommodated via other library modules
-we\'ll introduce in this chapter.
+we'll introduce in this chapter.
 
 :::: tip
 ::: title
@@ -55,20 +55,20 @@ you are interested in studying hpodder, its source code is freely
 available at <http://software.complete.org/hpodder>.
 ::::
 
-We\'ll write the code for this chapter in pieces. Each piece will be its
-own Haskell module. You\'ll be able to play with each piece by itself in
-`ghci`. At the end, we\'ll write the final code that ties everything
-together into a finished application. We\'ll start with the basic types
-we\'ll need to use.
+We'll write the code for this chapter in pieces. Each piece will be its
+own Haskell module. You'll be able to play with each piece by itself in
+`ghci`. At the end, we'll write the final code that ties everything
+together into a finished application. We'll start with the basic types
+we'll need to use.
 
 ## Basic Types
 
 The first thing to do is have some idea of the basic information that
 will be important to the application. This will generally be information
 about the podcasts the user is interested in, plus information about
-episodes that we have seen and processed. It\'s easy enough to change
-this later if needed, but since we\'ll be importing it just about
-everywhere, we\'ll define it first.
+episodes that we have seen and processed. It's easy enough to change
+this later if needed, but since we'll be importing it just about
+everywhere, we'll define it first.
 
 :::: captioned-content
 ::: caption
@@ -94,7 +94,7 @@ data Episode =
 ```
 ::::
 
-We\'ll be storing this information in a database. Having a unique
+We'll be storing this information in a database. Having a unique
 identifier for both a podcast and an episode makes it easy to find which
 episodes belong to a particular podcast, load information for a
 particular podcast or episode, or handle future cases such as changing
@@ -102,18 +102,18 @@ URLs for podcasts.
 
 ## The Database
 
-Next, we\'ll write the code to make possible persistent storage in a
-database. We\'ll primarily be interested in moving data between the
+Next, we'll write the code to make possible persistent storage in a
+database. We'll primarily be interested in moving data between the
 Haskell structures we defined in `PodTypes.hs` and the database on disk.
-Also, the first time the user runs the program, we\'ll need to create
-the database tables that we\'ll use to store our data.
+Also, the first time the user runs the program, we'll need to create
+the database tables that we'll use to store our data.
 
-We\'ll use HDBC (see [Chapter 21, *Using
+We'll use HDBC (see [Chapter 21, *Using
 Databases*](21-using-databases.org)) to interact with a Sqlite database.
 Sqlite is lightweight and self-contained, which makes it perfect for
 this project. For information on installing HDBC and Sqlite, consult
-[the section called \"Installing HDBC and
-Drivers\"](21-using-databases.org::*Installing HDBC and Drivers)
+[the section called "Installing HDBC and
+Drivers"](21-using-databases.org::*Installing HDBC and Drivers)
 
 :::: captioned-content
 ::: caption
@@ -150,17 +150,17 @@ prepDB :: IConnection conn => conn -> IO ()
 prepDB dbh =
     do tables <- getTables dbh
        when (not ("podcasts" `elem` tables)) $
-           do run dbh "CREATE TABLE podcasts (\
-                       \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
+           do run dbh "CREATE TABLE podcasts (
+                       \castid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                        \castURL TEXT NOT NULL UNIQUE)" []
               return ()
        when (not ("episodes" `elem` tables)) $
-           do run dbh "CREATE TABLE episodes (\
-                       \epid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\
-                       \epcastid INTEGER NOT NULL,\
-                       \epurl TEXT NOT NULL,\
-                       \epdone INTEGER NOT NULL,\
-                       \UNIQUE(epcastid, epurl),\
+           do run dbh "CREATE TABLE episodes (
+                       \epid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                       \epcastid INTEGER NOT NULL,
+                       \epurl TEXT NOT NULL,
+                       \epdone INTEGER NOT NULL,
+                       \UNIQUE(epcastid, epurl),
                        \UNIQUE(epcastid, epid))" []
               return ()
        commit dbh
@@ -197,7 +197,7 @@ Also, we generally won't care about the new ID here, so don't bother
 fetching it. -}
 addEpisode :: IConnection conn => conn -> Episode -> IO ()
 addEpisode dbh ep =
-    run dbh "INSERT OR IGNORE INTO episodes (epCastId, epURL, epDone) \
+    run dbh "INSERT OR IGNORE INTO episodes (epCastId, epURL, epDone) 
                 \VALUES (?, ?, ?)"
                 [toSql (castId . epCast $ ep), toSql (epURL ep),
                  toSql (epDone ep)]
@@ -215,7 +215,7 @@ updatePodcast dbh podcast =
 database record to match the given episode. -}
 updateEpisode :: IConnection conn => conn -> Episode -> IO ()
 updateEpisode dbh episode =
-    run dbh "UPDATE episodes SET epCastId = ?, epURL = ?, epDone = ? \
+    run dbh "UPDATE episodes SET epCastId = ?, epURL = ?, epDone = ? 
              \WHERE epId = ?"
              [toSql (castId . epCast $ episode),
               toSql (epURL episode),
@@ -305,7 +305,7 @@ ghci> disconnect dbh
 
 Now that we have the database component, we need to have code to parse
 the podcast feeds. These are XML files that contain various information.
-Here\'s an example XML file to show you what they look like:
+Here's an example XML file to show you what they look like:
 
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -333,7 +333,7 @@ Here\'s an example XML file to show you what they look like:
 Out of these files, we are mainly interested in two things: the podcast
 title and the enclosure URLs. We use the [HaXml
 toolkit](http://www.cs.york.ac.uk/fp/HaXml/) to parse the XML file.
-Here\'s the source code for this component:
+Here's the source code for this component:
 
 :::: captioned-content
 ::: caption
@@ -448,7 +448,7 @@ contentToString =
 ```
 ::::
 
-Let\'s look at this code. First, we declare two types: `PodItem` and
+Let's look at this code. First, we declare two types: `PodItem` and
 `Feed`. We will be transforming the XML document into a `Feed`, which
 then contains items. We also provide a function to convert an `PodItem`
 into an `Episode` as defined in `PodTypes.hs`.
@@ -457,7 +457,7 @@ Next, it is on to parsing. The `parse` function takes a `String`
 representing the XML content as well as a `String` representing a name
 to use in error messages, and returns a `Feed`.
 
-HaXml is designed as a \"filter\" converting data of one type to
+HaXml is designed as a "filter" converting data of one type to
 another. It can be a simple straightforward conversion of XML to XML, or
 of XML to Haskell data, or of Haskell data to XML. HaXml has a data type
 called `CFilter`, which is defined like this:
@@ -471,7 +471,7 @@ or more fragments. A `CFilter` might be asked to find all children of a
 specified tag, all tags with a certain name, the literal text contained
 within a part of an XML document, or any of a number of other things.
 There is also an operator `(/>)` that chains `CFilter` functions
-together. All of the data that we\'re interested in occurs within the
+together. All of the data that we're interested in occurs within the
 `<channel>` tag, so first we want to get at that. We define a simple
 `CFilter`:
 
@@ -489,17 +489,17 @@ any part of the document.
 
 ## Downloading
 
-The next part of our program is a module to download data. We\'ll need
+The next part of our program is a module to download data. We'll need
 to download two different types of data: the content of a podcast, and
-the audio for each episode. In the former case, we\'ll parse the data
-and update our database. For the latter, we\'ll write the data out to a
+the audio for each episode. In the former case, we'll parse the data
+and update our database. For the latter, we'll write the data out to a
 file on disk.
 
-We\'ll be downloading from HTTP servers, so we\'ll use a Haskell [HTTP
+We'll be downloading from HTTP servers, so we'll use a Haskell [HTTP
 library](http://www.haskell.org/http/). For downloading podcast feeds,
-we\'ll download the document, parse it, and update the database. For
-episode audio, we\'ll download the file, write it to disk, and mark it
-downloaded in the database. Here\'s the code:
+we'll download the document, parse it, and update the database. For
+episode audio, we'll download the file, write it to disk, and mark it
+downloaded in the database. Here's the code:
 
 :::: captioned-content
 ::: caption
@@ -596,7 +596,7 @@ available from Hackage, for serious HTTP needs.
 
 ## Main Program
 
-Finally, we need a main program to tie it all together. Here\'s our main
+Finally, we need a main program to tie it all together. Here's our main
 module:
 
 :::: captioned-content
@@ -652,11 +652,11 @@ download dbh =
                  getEpisode dbh ep
 
 syntaxError = putStrLn
-  "Usage: pod command [args]\n\
-  \\n\
-  \pod add url      Adds a new podcast with the given URL\n\
-  \pod download     Downloads all pending episodes\n\
-  \pod fetch        Updates, then downloads\n\
+  "Usage: pod command [args]\n
+  \\n
+  \pod add url      Adds a new podcast with the given URL\n
+  \pod download     Downloads all pending episodes\n
+  \pod fetch        Updates, then downloads\n
   \pod update       Downloads podcast feeds, looks for new episodes\n"
 ```
 ::::
@@ -668,13 +668,13 @@ command-line arguments.
 You can compile this program with a command like this:
 
 ``` screen
-ghc --make -O2 -o pod -package HTTP -package HaXml -package network \
+ghc --make -O2 -o pod -package HTTP -package HaXml -package network 
     -package HDBC -package HDBC-sqlite3 PodMain.hs
 ```
 
 Alternatively, you could use a Cabal file as documented in [the section
-called \"Creating a
-package\"](5-writing-a-library.org::*Creating a package)
+called "Creating a
+package"](5-writing-a-library.org::*Creating a package)
 
 :::: captioned-content
 ::: caption
@@ -691,7 +691,7 @@ pod.cabal
     GHC-Options: -O2
 ::::
 
-Also, you\'ll want a simple `Setup.hs` file:
+Also, you'll want a simple `Setup.hs` file:
 
 ``` haskell
 import Distribution.Simple
@@ -705,5 +705,5 @@ runghc Setup.hs configure
 runghc Setup.hs build
 ```
 
-And you\'ll find a `dist` directory containing your output. To install
+And you'll find a `dist` directory containing your output. To install
 the program system-wide, run `runghc Setup.hs install`.

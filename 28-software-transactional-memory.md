@@ -2,7 +2,7 @@
 
 In the traditional threaded model of concurrent programming, when we
 share data among threads, we keep it consistent using locks, and we
-notify threads of changes using condition variables. Haskell\'s `MVar`
+notify threads of changes using condition variables. Haskell's `MVar`
 mechanism improves somewhat upon these tools, but it still suffers from
 all of the same problems.
 
@@ -46,9 +46,9 @@ quite familiar.
 
 ## Some simple examples
 
-In a multi-player role playing game, a player\'s character will have
+In a multi-player role playing game, a player's character will have
 some state such as health, possessions, and money. To explore the world
-of STM, let\'s start with a few simple functions and types based around
+of STM, let's start with a few simple functions and types based around
 working with some character state for a game. We will refine our code as
 we learn more about the API.
 
@@ -85,7 +85,7 @@ data Player = Player {
 
 The `TVar` parameterized type is a mutable variable that we can read or
 write inside an `atomically` block. For simplicity, we represent a
-player\'s inventory as a list of items. Notice, too, that we use
+player's inventory as a list of items. Notice, too, that we use
 `newtype` declarations so that we cannot accidentally confuse wealth
 with health.
 
@@ -100,7 +100,7 @@ basicTransfer qty fromBal toBal = do
   writeTVar toBal   (toQty + qty)
 ```
 
-Let\'s write a small function to try this out.
+Let's write a small function to try this out.
 
 ``` example
 transferTest = do
@@ -123,15 +123,15 @@ Loading package stm-2.1.1.0 ... linking ... done.
 ```
 
 The properties of atomicity and isolation guarantee that if another
-thread sees a change in `bob`\'s balance, they will also be able to see
-the modification of `alice`\'s balance.
+thread sees a change in `bob`'s balance, they will also be able to see
+the modification of `alice`'s balance.
 
 Even in a concurrent program, we strive to keep as much of our code as
 possible purely functional. This makes our code easier both to reason
 about and to test. It also gives the underlying STM engine less work to
-do, since the data involved is not transactional. Here\'s a pure
+do, since the data involved is not transactional. Here's a pure
 function that removes an item from the list we use to represent a
-player\'s inventory.
+player's inventory.
 
 ``` example
 removeInv :: Eq a => a -> [a] -> Maybe [a]
@@ -142,7 +142,7 @@ removeInv x xs =
 ```
 
 The result uses `Maybe` so that we can tell whether the item was
-actually present in the player\'s inventory.
+actually present in the player's inventory.
 
 Here is a transactional function to give an item to another player. It
 is slightly complicated by the need to determine whether the donor
@@ -164,7 +164,7 @@ maybeGiveItem item fromInv toInv = do
 
 If we are to provide atomic, isolated transactions, it is critical that
 we cannot either deliberately or accidentally escape from an
-`atomically` block. Haskell\'s type system enforces this on our behalf,
+`atomically` block. Haskell's type system enforces this on our behalf,
 via the STM monad.
 
 ``` screen
@@ -241,9 +241,9 @@ giveItem item fromInv toInv = do
 ```
 
 Our `basicTransfer` from earlier had a different kind of flaw: it did
-not check the sender\'s balance to see if they had sufficient money to
+not check the sender's balance to see if they had sufficient money to
 transfer. We can use `retry` to correct this, while keeping the
-function\'s type the same.
+function's type the same.
 
 ``` example
 transfer :: Gold -> Balance -> Balance -> STM ()
@@ -267,7 +267,7 @@ sellItem item price buyer seller = do
 ```
 
 Its behavior is slightly different from our earlier function. Instead of
-immediately returning `False` if the seller doesn\'t have the item, it
+immediately returning `False` if the seller doesn't have the item, it
 will block (if necessary) until both the seller has the item and the
 buyer has enough money to pay for it.
 
@@ -277,8 +277,8 @@ third that will also behave itself, all with minimal effort.
 
 ### What happens when we retry?
 
-The `retry` function doesn\'t just make our code cleaner: its underlying
-behavior seems nearly magical. When we call it, it doesn\'t restart our
+The `retry` function doesn't just make our code cleaner: its underlying
+behavior seems nearly magical. When we call it, it doesn't restart our
 transaction immediately. Instead, it blocks our thread until one or more
 of the variables that we touched before calling `retry` is changed by
 another thread.
@@ -286,18 +286,18 @@ another thread.
 For instance, if we invoke `transfer` with insufficient funds, `retry`
 will *automatically wait* until our balance changes before it starts the
 `atomically` block again. The same happens with our new `giveItem`
-function: if the sender doesn\'t currently have the item in their
+function: if the sender doesn't currently have the item in their
 inventory, the thread will block until they do.
 
 ## Choosing between alternatives
 
-We don\'t always want to restart an `atomically` action if it calls
+We don't always want to restart an `atomically` action if it calls
 `retry` or fails due to concurrent modification by another thread. For
 instance, our new `sellItem` function will retry indefinitely as long as
 we are missing either the item or enough money, but we might prefer to
 just try the sale once.
 
-The `orElse` combinator lets us perform a \"backup\" action if the main
+The `orElse` combinator lets us perform a "backup" action if the main
 one fails.
 
 ``` screen
@@ -310,7 +310,7 @@ action, causing our sale function to return immediately.
 
 ### Using higher order code with transactions
 
-Imagine that we\'d like to be a little more ambitious, and buy the first
+Imagine that we'd like to be a little more ambitious, and buy the first
 item from a list that is both in the possession of the seller and
 affordable to us, but do nothing if we cannot afford something right
 now. We could of course write code to do this in a direct manner.
@@ -421,7 +421,7 @@ The `IO` action that we execute must not start another `atomically`
 transaction. If a thread tries to nest transactions, the runtime system
 will throw an exception.
 
-Since the type system can\'t help us to ensure that our `IO` code is
+Since the type system can't help us to ensure that our `IO` code is
 doing something sensible, we will be safest if we limit our use of
 `unsafeIOToSTM` as much as possible. Here is a typical error that can
 arise with `IO` in an `atomically` block.
@@ -436,7 +436,7 @@ notActuallyAtomic = do
 ```
 
 If the `mightRetry` block causes our transaction to restart, we will
-call `launchTorpedoes` more than once. Indeed, we can\'t predict how
+call `launchTorpedoes` more than once. Indeed, we can't predict how
 many times it will be called, since the runtime system handles retries
 for us. The solution is not to perform these kinds of non-idempotent[^1]
 I/O operations inside a transaction.
@@ -459,7 +459,7 @@ minutes before our connection attempt times out. If we use multiple
 threads, we can still get useful work done while one or two are stuck
 talking to slow or dead servers.
 
-We can\'t simply create one thread per URL, because that may overburden
+We can't simply create one thread per URL, because that may overburden
 either our CPU or our network connection if (as we expect) most of the
 links are live and responsive. Instead, we use a fixed number of worker
 threads, which fetch URLs to download from a queue.
@@ -573,7 +573,7 @@ forkTimes k alive act =
 ```
 
 The `forkTimes` function starts a number of identical worker threads,
-and decreases the \"alive\" count each time a thread exits. We use a
+and decreases the "alive" count each time a thread exits. We use a
 `finally` combinator to ensure that the count is always decremented, no
 matter how the thread terminates.
 
@@ -643,9 +643,9 @@ getHead uri = simpleHTTP Request { rqURI = uri,
 
 We follow a HTTP redirect response just a few times, to avoid endless
 redirect loops. To determine whether a URL is valid, we use the HTTP
-standard\'s HEAD verb, which uses less bandwidth than a full GET.
+standard's HEAD verb, which uses less bandwidth than a full GET.
 
-This code has the classic \"marching off the left of the screen\" style
+This code has the classic "marching off the left of the screen" style
 that we have learned to be wary of. Here is a rewrite that offers
 greater clarity via the `ErrorT` monad transformer and a few generally
 useful functions.
@@ -714,7 +714,7 @@ worker badLinks jobQueue badCount = loop
 
 We structure our link finding around a state monad transformer stacked
 on the `IO` monad. Our state tracks links that we have already seen (so
-we don\'t check a repeated link more than once), the total number of
+we don't check a repeated link more than once), the total number of
 links we have encountered, and the queue to which we should add the
 links that we will be checking.
 
@@ -730,7 +730,7 @@ execJob :: Job a -> JobState -> IO JobState
 execJob = execStateT . runJob
 ```
 
-Strictly speaking, for a small standalone program, we don\'t need the
+Strictly speaking, for a small standalone program, we don't need the
 `newtype` wrapper, but we include it here as an example of good practice
 (it only costs a few lines of code, anyway).
 
@@ -768,15 +768,15 @@ sendJobs js = do
     liftIO . atomically $ mapM_ (writeTChan c . Check) js
 ```
 
-Our `extractLinks` function doesn\'t attempt to properly parse a HTML or
+Our `extractLinks` function doesn't attempt to properly parse a HTML or
 text file. Instead, it looks for strings that appear to be URLs, and
-treats them as \"good enough\".
+treats them as "good enough".
 
 ``` example
 extractLinks :: B.ByteString -> [URL]
 extractLinks = concatMap uris . B.lines
   where uris s      = filter looksOkay (B.splitWith isDelim s)
-        isDelim c   = isControl c || c `elem` " <>\"{}|\\^[]`"
+        isDelim c   = isControl c || c `elem` " <>"{}|\\^[]`"
         looksOkay s = http `B.isPrefixOf` s
         http        = B.pack "http:"
 ```
@@ -837,7 +837,7 @@ options = [ Option ['h'] ["help"] (NoArg Help)
 Our `options` list describes each option that we accept. Each
 description must be able to create a `Flag` value. Take a look at our
 uses of `NoArg` and `ReqArg` above. These are constructors for the
-`GetOpt` module\'s `ArgDescr` type.
+`GetOpt` module's `ArgDescr` type.
 
 ``` example
 data ArgDescr a = NoArg a
@@ -851,7 +851,7 @@ data ArgDescr a = NoArg a
 -   The `ReqArg` constructor accepts a function that maps a required
     argument to a value. Its second argument is used when printing help.
     Here, we convert a string into an integer, and pass it to our `Flag`
-    type\'s `N` constructor.
+    type's `N` constructor.
 -   The `OptArg` constructor is similar to the `ReqArg` constructor, but
     it permits the use of options that can be used without arguments.
 
@@ -885,7 +885,7 @@ testme_noguards x xs = case lookup x xs of
                          _              -> 0
 ```
 
-Pattern guards let us \"collapse\" a collection of guards and `case`
+Pattern guards let us "collapse" a collection of guards and `case`
 expressions into a single guard, allowing us to write more succinct and
 descriptive guards.
 
@@ -902,9 +902,9 @@ programming makes composability impossible, STM restores it as a key
 assumption that we can rely upon.
 
 The `STM` monad prevents us from accidentally performing
-non-transactional I/O actions. We don\'t need to worry about lock
+non-transactional I/O actions. We don't need to worry about lock
 ordering, since our code contains no locks. We can forget about lost
-wakeups, since we don\'t have condition variables. If an exception is
+wakeups, since we don't have condition variables. If an exception is
 thrown, we can either catch it using `catchSTM`, or be bounced out of
 our transaction, leaving our state untouched. Finally, the `retry` and
 `orElse` functions give us some beautiful ways to structure our code.
@@ -991,7 +991,7 @@ populateWorld = sequence [ newPlayer 20 20 [Wand, Banjo],
 ```
 
 This function returns an invariant that we can use to ensure that the
-world\'s money balance is always consistent: the balance at any point in
+world's money balance is always consistent: the balance at any point in
 time should be the same as at the creation of the world.
 
 ``` example
@@ -1006,7 +1006,7 @@ consistentBalance players = do
         addBalance a b = (a+) `liftM` readTVar (balance b)
 ```
 
-Let\'s write a small function that exercises this.
+Let's write a small function that exercises this.
 
 ``` example
 tryBogusSale = do

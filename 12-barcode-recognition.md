@@ -1,6 +1,6 @@
 # Chapter 12: Barcode Recognition
 
-In this chapter, we\'ll make use of the image parsing library we
+In this chapter, we'll make use of the image parsing library we
 developed in [Chapter 10, *Code case study: parsing a binary data
 format*](10-parsing-a-binary-data-format.org) to build a barcode
 recognition application. Given a picture of the back of a book taken
@@ -15,7 +15,7 @@ typically use either UPC-A or EAN-13. UPC-A was developed in the United
 States, while EAN-13 is European in origin.
 
 EAN-13 was developed after UPC-A, and is a superset of UPC-A. (In fact,
-UPC-A has been officially declared obsolete since 2005, though it\'s
+UPC-A has been officially declared obsolete since 2005, though it's
 still widely used within the United States.) Any software or hardware
 that can understand EAN-13 barcodes will automatically handle UPC-A
 barcodes. This neatly reduces our descriptive problem to one standard.
@@ -26,7 +26,7 @@ broken into four groups.
 -   The first two digits describe the *number system*. This can either
     indicate the nationality of the manufacturer, or describe one of a
     few other categories, such as ISBN (book identifier) numbers.
--   The next five digits are a manufacturer ID, assigned by a country\'s
+-   The next five digits are a manufacturer ID, assigned by a country's
     numbering authority.
 -   The five digits that follow are a product ID, assigned by the
     manufacturer. (Smaller manufacturers may have a longer manufacturer
@@ -68,7 +68,7 @@ check digit is the difference between their sum, modulo ten, and the
 number ten.
 
 A barcode is a series of fixed-width bars, where black represents a
-binary \"one\" bit, and white a \"zero\". A run of the same digits thus
+binary "one" bit, and white a "zero". A run of the same digits thus
 looks like a thicker bar.
 
 The sequence of bits in a barcode is as follows.
@@ -114,24 +114,24 @@ import Parse                    -- from chapter 10
 
 The barcode encoding process can largely be table-driven, in which we
 use small tables of bit patterns to decide how to encode each digit.
-Haskell\'s bread-and-butter data types, lists and tuples, are not well
+Haskell's bread-and-butter data types, lists and tuples, are not well
 suited to use for tables whose elements may be accessed randomly. A list
 has to be traversed linearly to reach the /k/th element. A tuple
-doesn\'t have this problem, but Haskell\'s type system makes it
+doesn't have this problem, but Haskell's type system makes it
 difficult to write a function that takes a tuple and an element offset
-and returns the element at that offset within the tuple. (We\'ll explore
+and returns the element at that offset within the tuple. (We'll explore
 why in the exercises below.)
 
 The usual data type for constant-time random access is of course the
-array. Haskell provides several array data types. We\'ll thus represent
+array. Haskell provides several array data types. We'll thus represent
 our encoding tables as arrays of strings.
 
-The simplest array type is in the `Data.Array` module, which we\'re
+The simplest array type is in the `Data.Array` module, which we're
 using here. This presents arrays that can contain values of any Haskell
 type. Like other common Haskell types, these arrays are immutable. An
 immutable array is populated with values just once, when it is created.
 Its contents cannot subsequently be modified. (The standard libraries
-also provide other array types, some of which are mutable, but we won\'t
+also provide other array types, some of which are mutable, but we won't
 cover those for a while.)
 
 :::: captioned-content
@@ -165,7 +165,7 @@ parityCodes = listToArray parityList
 ```
 ::::
 
-The `Data.Array` module\'s `listArray` function populates an array from
+The `Data.Array` module's `listArray` function populates an array from
 a list. It takes as its first parameter the bounds of the array to
 create; the second is the values with which to populate it.
 
@@ -212,7 +212,7 @@ ghci> a ! 100
 ```
 
 Since the array construction function lets us specify the bounds of an
-array, we don\'t have to use the zero-based array indexing familiar to C
+array, we don't have to use the zero-based array indexing familiar to C
 programmers. We can choose whatever bounds are convenient for our
 purposes.
 
@@ -233,7 +233,7 @@ ghci> a ! 'e'
 
 To create a higher-dimensioned array, we use a tuple of `Ix` instances
 as the index type. The prelude makes tuples of up to five elements
-members of the `Ix` class. To illustrate, here\'s a small
+members of the `Ix` class. To illustrate, here's a small
 three-dimensional array.
 
 ``` screen
@@ -246,7 +246,7 @@ ghci> a ! (4,3,7)
 
 The list that we use to populate the array must contain at least as many
 elements as are in the array. If we do not provide enough elements,
-we\'ll get an error at runtime. When the error will occur depends on the
+we'll get an error at runtime. When the error will occur depends on the
 nature of the array.
 
 Here, we are using an array type that is non-strict in its elements. If
@@ -265,15 +265,15 @@ ghci> a ! 4
 
 Haskell also provides strict arrays, which behave differently. We will
 discuss the tradeoffs between the two kinds of array much later, in [the
-section called \"Unboxing, lifting, and
-bottom\"](26-building-a-bloom-filter.org::*Unboxing, lifting, and bottom)
+section called "Unboxing, lifting, and
+bottom"](26-building-a-bloom-filter.org::*Unboxing, lifting, and bottom)
 
 ### Folding over arrays
 
 The `bounds` function returns a tuple describing the bounds that we used
 to create the array. The `indices` function returns a list of every
 index. We can use these to define some useful folds, since the
-`Data.Array` module doesn\'t define any fold functions itself.
+`Data.Array` module doesn't define any fold functions itself.
 
 :::: captioned-content
 ::: caption
@@ -295,7 +295,7 @@ foldA1 f a = foldA f (a ! fst (bounds a)) a
 ```
 ::::
 
-You might wonder why the array modules don\'t already provide such
+You might wonder why the array modules don't already provide such
 useful things as folding functions. There are some obvious
 correspondences between a one-dimensional array and a list. For
 instance, there are only two natural ways in which we can fold
@@ -309,15 +309,15 @@ over rows or columns, too. On top of this, for element-at-a-time
 folding, there are no longer just two sequences for traversal.
 
 In other words, for two-dimensional arrays, there are enough
-permutations of possibly useful behaviour that there aren\'t many
+permutations of possibly useful behaviour that there aren't many
 compelling reasons to choose a handful for a standard library. This
-problem is only compounded for higher dimensions, so it\'s best to let
+problem is only compounded for higher dimensions, so it's best to let
 developers write folds that suit the needs of their applications. As we
 can see from our examples above, this is not hard to do.
 
 ### Modifying array elements
 
-While there exist \"modification\" functions for immutable arrays, they
+While there exist "modification" functions for immutable arrays, they
 are not very practical. For example, the `accum` function takes an array
 and a list of `(index, value)` pairs, and returns a new array with the
 values at the given indices replaced.
@@ -337,7 +337,7 @@ currently too slow to be of practical use.
 Note
 :::
 
-Don\'t lose hope
+Don't lose hope
 
 It *is* in fact possible to modify an array efficiently in Haskell,
 using the `ST` monad. This is a subject that we will return to later, in
@@ -347,7 +347,7 @@ filter*](26-building-a-bloom-filter.org).
 
 ### Exercises
 
-Let\'s briefly explore the suitability of tuples as stand-ins for
+Let's briefly explore the suitability of tuples as stand-ins for
 arrays.
 
 1.  Write a function that takes two arguments: a four-element tuple, and
@@ -363,7 +363,7 @@ arrays.
 
 ## Encoding an EAN-13 barcode
 
-Even though our goal is to *decode* a barcode, it\'s useful to have an
+Even though our goal is to *decode* a barcode, it's useful to have an
 encoder for reference. This will allow us to, for example, ensure that
 our code is correct by checking that the output of `decode . encode` the
 same as its input.
@@ -401,7 +401,7 @@ The string to encode is twelve digits long, with `encodeDigits` adding a
 thirteenth check digit.
 
 The barcode is encoded as two groups of six digits, with a guard
-sequence in the middle and \"outside\" sequences on either side. But if
+sequence in the middle and "outside" sequences on either side. But if
 we have two groups of six digits, what happened to the missing digit?
 
 Each digit in the left group is encoded using either odd or even parity,
@@ -414,25 +414,25 @@ standard.
 
 ## Constraints on our decoder
 
-Before we talk about decoding, let\'s set a few practical limits on what
+Before we talk about decoding, let's set a few practical limits on what
 kinds of barcode image we can work with.
 
 Phone cameras and webcams generally output JPEG images, but writing a
-JPEG decoder would take us several chapters. We\'ll simplify our parsing
+JPEG decoder would take us several chapters. We'll simplify our parsing
 problem by handling the netpbm file format. We will use the parsing
 combinators we developed earlier, in [Chapter 10, *Code case study:
 parsing a binary data format*](10-parsing-a-binary-data-format.org).
 
-We\'d like to deal with real images from the kinds of cheap, fixed-focus
+We'd like to deal with real images from the kinds of cheap, fixed-focus
 cameras that come with low-end cell phones. These images tend to be out
 of focus, noisy, low in contrast, and of poor resolution. Fortunately,
-it\'s not hard to write code that can handle noisy, defocused
-VGA-resolution (640x480) images with terrible contrast ratios. We\'ve
+it's not hard to write code that can handle noisy, defocused
+VGA-resolution (640x480) images with terrible contrast ratios. We've
 verified that the code in this chapter captures barcodes from real
 books, using pictures taken by authentically mediocre cameras.
 
-We will avoid any image processing heroics, because that\'s another
-chapter-consuming subject. We won\'t correct perspective. Neither will
+We will avoid any image processing heroics, because that's another
+chapter-consuming subject. We won't correct perspective. Neither will
 we sharpen images taken from too near to the subject, which causes
 narrow bars to fade out; or from too far, which causes adjacent bars to
 blur together.
@@ -458,28 +458,28 @@ subproblems, each of which is self-contained and more tractable.
     guesses as to what the encoded digits in this line could be.
 -   From the guesses, create a list of valid decodings.
 
-Many of these subproblems can be further divided, as we\'ll see.
+Many of these subproblems can be further divided, as we'll see.
 
 You might wonder how closely this approach of subdivision mirrors the
 actual work we did when writing the code that we present in this
-chapter. The answer is that we\'re far from image processing gurus, and
-when we started on this chapter we didn\'t know exactly what our
+chapter. The answer is that we're far from image processing gurus, and
+when we started on this chapter we didn't know exactly what our
 solution was going to look like.
 
 We made some early educated guesses as to what a reasonable solution
 might look like, and came up with the list of subtasks above. We were
 then able to start tackling those parts that we knew how to solve, using
 our spare time to think about the bits that we had no prior experience
-with. We certainly didn\'t have a pre-existing algorithm or master plan
+with. We certainly didn't have a pre-existing algorithm or master plan
 in mind.
 
 Dividing the problem up like this helped us in two ways. By making
 progress on familiar ground, we had the psychological advantage of
-starting to solve the problem, even when we didn\'t really know where we
+starting to solve the problem, even when we didn't really know where we
 were going. And as we started to work on a particular subproblem, we
 found ourselves able to further subdivide it into tasks of varying
 familiarity. We continued to focus on easier components, deferring ones
-we hadn\'t thought about in enough detail yet, and jumping from one
+we hadn't thought about in enough detail yet, and jumping from one
 element of the master list above to another. Eventually, we ran out of
 problems that were both unfamiliar and unsolved, and we had a complete
 idea of our eventual solution.
@@ -493,16 +493,16 @@ pixel is either black or white.
 
 ### Parsing a colour image
 
-As we mentioned earlier, we\'ll work with netpbm images. The netpbm
+As we mentioned earlier, we'll work with netpbm images. The netpbm
 colour image format is only slightly more complicated than the greyscale
 image format that we parsed in [Chapter 10, *Code case study: parsing a
 binary data format*](10-parsing-a-binary-data-format.org). The
-identifying string in a header is \"P6\", with the rest of the header
+identifying string in a header is "P6", with the rest of the header
 layout identical to the greyscale format. In the body of an image, each
 pixel is represented as three bytes, one each for red, green and blue.
 
-We\'ll represent the image data as a two-dimensional array of pixels.
-We\'re using arrays here purely to gain experience with them. For this
+We'll represent the image data as a two-dimensional array of pixels.
+We're using arrays here purely to gain experience with them. For this
 application, we could just as well use a list of lists. The only
 advantage of an array here is slight: we can efficiently extract a row.
 
@@ -523,8 +523,8 @@ We provide a few type synonyms to make our type signatures more
 readable.
 
 Since Haskell gives us considerable freedom in how we lay out an array,
-we must choose a representation. We\'ll play safe and follow a popular
-convention: indices begin at zero. We don\'t need to store the
+we must choose a representation. We'll play safe and follow a popular
+convention: indices begin at zero. We don't need to store the
 dimensions of the image explicitly, since we can extract them using the
 `bounds` function.
 
@@ -569,7 +569,7 @@ parser a given number of times, building up a list of results.
 
 Now that we have a colour image in hand, we need to convert the colour
 data into monochrome. An intermediate step is to convert the data to
-greyscale. There\'s a simple, widely used formula[^1] for converting an
+greyscale. There's a simple, widely used formula[^1] for converting an
 RGB image into a greyscale image, based on the perceived brightness of
 each colour channel.
 
@@ -604,9 +604,9 @@ pixmapToGreymap = fmap luminance
 ```
 ::::
 
-This `pixmapToGreymap` function is just for illustration. Since we\'ll
-only be checking a few rows of an image for possible barcodes, there\'s
-no reason to do the extra work of converting data we\'ll never
+This `pixmapToGreymap` function is just for illustration. Since we'll
+only be checking a few rows of an image for possible barcodes, there's
+no reason to do the extra work of converting data we'll never
 subsequently use.
 
 ### Greyscale to binary, and type safety
@@ -614,23 +614,23 @@ subsequently use.
 Our next subproblem is to convert the greyscale image into a two-valued
 image, where each pixel is either on or off.
 
-In an image processing application, where we\'re juggling lots of
+In an image processing application, where we're juggling lots of
 numbers, it would be easy to reuse the same numeric type for several
 different purposes. For example, we could use the `Pixel` type to
 represent on/off states, using the convention that the digit one
-represents a bit that\'s \"on\", and zero \"off\".
+represents a bit that's "on", and zero "off".
 
 However, reusing types for multiple purposes in this way quickly leads
 to potential confusion. To see whether a particular `Pixel` is a number
 or an on/off value, we can no longer simply glance at a type signature.
-We could easily use a value containing \"the wrong kind of number\" in
-some context, and the compiler won\'t catch it because the types work
+We could easily use a value containing "the wrong kind of number" in
+some context, and the compiler won't catch it because the types work
 out.
 
 We could try to work around this by introducing a type alias. In the
 same way that we declared `Pixel` to be a synonym of `Word8`, we could
 declare a `Bit` type as a synonym of `Pixel`. While this might help
-readability, type synonyms still don\'t make the compiler do any useful
+readability, type synonyms still don't make the compiler do any useful
 work on our behalf.
 
 The compiler would treat `Pixel` and `Bit` as exactly the same type, so
@@ -662,17 +662,17 @@ threshold n a = binary <$> a
 
 Our `threshold` function computes the minimum and maximum values in its
 input array. It takes these and a threshold valued between zero and one,
-and computes a \"pivot\" value. Then for each value in the array, if
+and computes a "pivot" value. Then for each value in the array, if
 that value is less than the pivot, the result is `Zero`, otherwise
 `One`. Notice that we use one of the folding functions that we wrote in
-[the section called \"Folding over
-arrays\"](12-barcode-recognition.org::*Folding over arrays)
+[the section called "Folding over
+arrays"](12-barcode-recognition.org::*Folding over arrays)
 
 ## What have we done to our image?
 
-Let\'s step back for a moment and consider what we\'ve done to our image
-when we converted it from colour to monochrome. Here\'s an image
-captured from a VGA-resolution camera. All we\'ve done is crop it down
+Let's step back for a moment and consider what we've done to our image
+when we converted it from colour to monochrome. Here's an image
+captured from a VGA-resolution camera. All we've done is crop it down
 to the barcode.
 
 ![](ch12-barcode-photo.jpg)
@@ -680,13 +680,13 @@ to the barcode.
 The encoded digit string, 9780132114677, is printed below the barcode.
 The left group encodes the digits 780132, with 9 encoded in their
 parity. The right group encodes the digits 114677, where the final 7 is
-the check digit. Here\'s a clean encoding of this barcode, from one of
+the check digit. Here's a clean encoding of this barcode, from one of
 the many web sites that offer barcode image generation for free.
 
 ![](ch12-barcode-generated.png)
 
-We\'ve chosen a row from the captured image, and stretched it out
-vertically to make it easier to see. We\'ve superimposed this on top of
+We've chosen a row from the captured image, and stretched it out
+vertically to make it easier to see. We've superimposed this on top of
 the perfect image, and stretched it out so that the two are aligned.
 
 ![](ch12-barcode-example.png)
@@ -702,16 +702,16 @@ left or right.
 
 Clearly, any attempt to find exact matches in an image with problems
 like these is not going to succeed very often. We must write code
-that\'s robust in the face of bars that are too thick, too thin, or not
-exactly where they\'re supposed to be. The widths of our bars will
-depend on how far our book was from the camera, so we can\'t make any
+that's robust in the face of bars that are too thick, too thin, or not
+exactly where they're supposed to be. The widths of our bars will
+depend on how far our book was from the camera, so we can't make any
 assumptions about widths, either.
 
 ## Finding matching digits
 
 Our first problem is to find the digits that *might* be encoded at a
-given position. For the next while, we\'ll make a few simplifying
-assumptions. The first is that we\'re working with a single row. The
+given position. For the next while, we'll make a few simplifying
+assumptions. The first is that we're working with a single row. The
 second is that we know exactly where in a row the left edge of a barcode
 begins.
 
@@ -757,7 +757,7 @@ ghci> runLength bits
 [(2,0),(2,1),(2,0),(2,1),(6,0),(4,1),(4,0)]
 ```
 
-Since the data we\'re run length encoding are just ones and zeros, the
+Since the data we're run length encoding are just ones and zeros, the
 encoded numbers will simply alternate between one and zero. We can throw
 the encoded values away without losing any useful information, keeping
 only the length of each run.
@@ -778,16 +778,16 @@ ghci> runLengths bits
 [2,2,2,2,6,4,4]
 ```
 
-The bit patterns above aren\'t random; they\'re the left outer guard and
+The bit patterns above aren't random; they're the left outer guard and
 first encoded digit of a row from our captured image. If we drop the
-guard bars, we\'re left with the run lengths `[2,6,4,4]`. How do we find
+guard bars, we're left with the run lengths `[2,6,4,4]`. How do we find
 matches for these in the encoding tables we wrote in [the section called
-\"Introducing arrays\"](12-barcode-recognition.org::*Introducing arrays)
+"Introducing arrays"](12-barcode-recognition.org::*Introducing arrays)
 
 ### Scaling run lengths, and finding approximate matches
 
 One possible approach is to scale the run lengths so that they sum to
-one. We\'ll use the `Ratio Int` type instead of the usual `Double` to
+one. We'll use the `Ratio Int` type instead of the usual `Double` to
 manage these scaled values, as `Ratio~s print out more
 readably in ~ghci`. This makes interactive debugging and development
 much easier.
@@ -820,20 +820,20 @@ paritySRL = asSRL parityList
 ```
 ::::
 
-We use the `Score` type synonym so that most of our code won\'t have to
-care what the underlying type is. Once we\'re done developing our code
+We use the `Score` type synonym so that most of our code won't have to
+care what the underlying type is. Once we're done developing our code
 and poking around with `ghci`, we could, if we wish, go back and turn
 the `Score` type synonym into \~Double\~s, without changing any code.
 
-We can use `scaleToOne` to scale a sequence of digits that we\'re
-searching for. We\'ve now corrected for variations in bar widths due to
+We can use `scaleToOne` to scale a sequence of digits that we're
+searching for. We've now corrected for variations in bar widths due to
 distance, as there should be a pretty close match between an entry in a
 scaled run length encoding table and a run length sequence pulled from
 an image.
 
-The next question is how we turn the intuitive idea of \"pretty close\"
-into a measure of \"close enough\". Given two scaled run length
-sequences, we can calculate an approximate \"distance\" between them as
+The next question is how we turn the intuitive idea of "pretty close"
+into a measure of "close enough". Given two scaled run length
+sequences, we can calculate an approximate "distance" between them as
 follows.
 
 :::: captioned-content
@@ -934,7 +934,7 @@ zip (map (flip distance (scaleToOne ps)) srl) digits
 [(distance d (scaleToOne ps), n) | d <- srl, n <- digits]
 ```
 
-### Remembering a match\'s parity
+### Remembering a match's parity
 
 For each match in the left group, we have to remember whether we found
 it in the even parity table or the odd table.
@@ -984,7 +984,7 @@ compareWithoutParity = compare `on` fromParity
 ```
 ::::
 
-In case it\'s unclear, try thinking of `on` as a function of two
+In case it's unclear, try thinking of `on` as a function of two
 arguments, `f` and `g`, which returns a function of two arguments, `x`
 and `y`. It applies `g` to `x` and to `y`, then `f` on the two results
 (hence the name `on`).
@@ -1013,7 +1013,7 @@ sort them based only on the quality of each match.
 1.  Another kind of laziness, of the keyboarding variety
 
     In our definition of the `Parity` type, we could have used
-    Haskell\'s record syntax to avoid the need to write a `fromParity`
+    Haskell's record syntax to avoid the need to write a `fromParity`
     function. In other words, we could have written it as follows.
 
     :::: captioned-content
@@ -1048,19 +1048,19 @@ sort them based only on the quality of each match.
 
     The `Show` instance for the variant that uses record syntax is
     considerably more verbose. This creates much more noise that we must
-    scan through when we\'re trying to read, say, a list of
+    scan through when we're trying to read, say, a list of
     parity-encoded values output by `ghci`.
 
-    Of course we could write our own, less noisy, `Show` instance. It\'s
+    Of course we could write our own, less noisy, `Show` instance. It's
     simply less effort to avoid record syntax and write our own
     `fromParity` function instead, letting GHC derive a more terse
-    `Show` instance for us. This isn\'t an especially satisfying
+    `Show` instance for us. This isn't an especially satisfying
     rationale, but programmer laziness can lead in odd directions at
     times.
 
 ### Chunking a list
 
-A common aspect of working with lists is needing to \"chunk\" them. For
+A common aspect of working with lists is needing to "chunk" them. For
 example, each digit in a barcode is encoded using a run of four digits.
 We can turn the flat list that represents a row into a list of
 four-element lists as follows.
@@ -1081,7 +1081,7 @@ chunksOf n = chunkWith (splitAt n)
 ```
 ::::
 
-It\'s somewhat rare that we need to write generic list manipulation
+It's somewhat rare that we need to write generic list manipulation
 functions like this. Often, a glance through the `Data.List` module will
 find us a function that does exactly, or close enough to, what we need.
 
@@ -1107,7 +1107,7 @@ candidateDigits rle | length rle < 59 = []
 ::::
 
 If any application of `bestLeft` or `bestRight` results in an empty
-list, we can\'t possibly have a match. Otherwise, we throw away the
+list, we can't possibly have a match. Otherwise, we throw away the
 scores, and return a list of lists of parity-encoded candidate digits.
 The outer list is twelve elements long, one per digit in the barcode.
 The digits in each sublist are ordered by match quality.
@@ -1130,7 +1130,7 @@ candidateDigits rle
 ```
 ::::
 
-Let\'s take a glance at the candidate digits chosen for each group of
+Let's take a glance at the candidate digits chosen for each group of
 bars, from a row taken from the image above.
 
 ``` screen
@@ -1156,29 +1156,29 @@ ghci> mapM_ print $ candidateDigits input
 
 ## Life without arrays or hash tables
 
-In an imperative language, the array is as much a \"bread and butter\"
+In an imperative language, the array is as much a "bread and butter"
 type as a list or tuple in Haskell. We take it for granted that an array
 in an imperative language is usually mutable; we can change an element
 of an array whenever it suits us.
 
-As we mentioned in [the section called \"Modifying array
-elements\"](12-barcode-recognition.org::*Modifying array elements)
-Haskell arrays are *not* mutable. This means that to \"modify\" a single
+As we mentioned in [the section called "Modifying array
+elements"](12-barcode-recognition.org::*Modifying array elements)
+Haskell arrays are *not* mutable. This means that to "modify" a single
 array element, a copy of the entire array is made, with that single
 element set to its new value. Clearly, this approach is not a winner for
 performance.
 
 The mutable array is a building block for another ubiquitous imperative
 data structure, the hash table. In the typical implementation, an array
-acts as the \"spine\" of the table, with each element containing a list
+acts as the "spine" of the table, with each element containing a list
 of elements. To add an element to a hash table, we hash the element to
 find the array offset, and modify the list at that offset to add the
 element to it.
 
-If arrays aren\'t mutable, to updating a hash table, we must create a
+If arrays aren't mutable, to updating a hash table, we must create a
 new one. We copy the array, putting a new list at the offset indicated
-by the element\'s hash. We don\'t need to copy the lists at other
-offsets, but we\'ve already dealt performance a fatal blow simply by
+by the element's hash. We don't need to copy the lists at other
+offsets, but we've already dealt performance a fatal blow simply by
 having to copy the spine.
 
 At a single stroke, then, immutable arrays have eliminated *two*
@@ -1199,14 +1199,14 @@ Self-balancing structures, such as red-black trees, have struck fear
 into generations of undergraduate computer science students, because the
 balancing algorithms are notoriously hard to get right.
 
-Haskell\'s combination of algebraic data types, pattern matching, and
+Haskell's combination of algebraic data types, pattern matching, and
 guards reduce even the hairiest of balancing operations to a few lines
-of code. We\'ll bite back our enthusiasm for building trees, however,
-and focus on why they\'re particularly useful in a pure functional
+of code. We'll bite back our enthusiasm for building trees, however,
+and focus on why they're particularly useful in a pure functional
 language.
 
 The attraction of a tree to a functional programmer is *cheap
-modification*. We don\'t break the immutability rule: trees are
+modification*. We don't break the immutability rule: trees are
 immutable just like everything else. However, when we modify a tree,
 creating a new tree, we can share most of the structure of the tree
 between the old and new versions. For example, in a tree containing
@@ -1215,10 +1215,10 @@ about 9,985 elements when we add or remove one. In other words, the
 number of elements modified per update depends on the height of the
 tree, or the logarithm of the size of the tree.
 
-Haskell\'s standard libraries provide two collection types that are
+Haskell's standard libraries provide two collection types that are
 implemented using balanced trees behind the scenes: `Data.Map` for
-key/value pairs, and `Data.Set` for sets of values. As we\'ll be using
-`Data.Map` in the sections that follow, we\'ll give a quick introduction
+key/value pairs, and `Data.Set` for sets of values. As we'll be using
+`Data.Map` in the sections that follow, we'll give a quick introduction
 to it below. `Data.Set` is sufficiently similar that you should be able
 to pick it up quickly.
 
@@ -1242,24 +1242,24 @@ a size-balanced binary tree, the implementation is not visible to us.
 
 Map is strict in its keys, but non-strict in its values. In other words,
 the *spine*, or structure, of the map is always kept up to date, but
-values in the map aren\'t evaluated unless we force them to be.
+values in the map aren't evaluated unless we force them to be.
 
-It is very important to remember this, as map\'s laziness over values is
+It is very important to remember this, as map's laziness over values is
 a frequent source of space leaks among coders who are not expecting it.
 
 Because the `Data.Map` module contains a number of names that clash with
-`Prelude` names, it\'s usually imported in qualified form. Earlier in
+`Prelude` names, it's usually imported in qualified form. Earlier in
 this chapter, we imported it using the prefix `M`.
 
 1.  Type constraints
 
-    The `Map` type doesn\'t place any explicit constraints on its key
-    type, but most of the module\'s useful functions require that keys
-    be instances of `Ord`. This is noteworthy, as it\'s an example of a
+    The `Map` type doesn't place any explicit constraints on its key
+    type, but most of the module's useful functions require that keys
+    be instances of `Ord`. This is noteworthy, as it's an example of a
     common design pattern in Haskell code: type constraints are pushed
-    out to where they\'re actually needed, not necessarily applied at
-    the point where they\'d result in the least fingertyping for a
-    library\'s author.
+    out to where they're actually needed, not necessarily applied at
+    the point where they'd result in the least fingertyping for a
+    library's author.
 
     Neither the `Map` type nor any functions in the module constrain the
     types that can be used as values.
@@ -1275,7 +1275,7 @@ this chapter, we imported it using the prefix `M`.
 
 3.  Getting started with the API
 
-    The `Data.Map` module has a large \"surface area\": it exports
+    The `Data.Map` module has a large "surface area": it exports
     dozens of functions. Just a handful of these comprise the most
     frequently used core of the module.
 
@@ -1289,7 +1289,7 @@ this chapter, we imported it using the prefix `M`.
     fromList [("foo",True)]
     ```
 
-    Since the implementation is abstract, we can\'t pattern match on
+    Since the implementation is abstract, we can't pattern match on
     `Map` values. Instead, it provides a number of lookup functions, of
     which two are particularly widely used.
 
@@ -1309,7 +1309,7 @@ this chapter, we imported it using the prefix `M`.
     ```
 
     The `findWithDefault` function takes a value to return if the key
-    isn\'t in the map.
+    isn't in the map.
 
     :::: warning
     ::: title
@@ -1357,7 +1357,7 @@ this chapter, we imported it using the prefix `M`.
     As the module name suggests this version of `insertWith` evaluates
     the combining function strictly. This allows you to avoid space
     leaks. While there exists a lazy variant of `insertWith` in
-    `Data.Map` it\'s rarely what you actually want.
+    `Data.Map` it's rarely what you actually want.
 
     The `delete` function deletes the given key from the map. It returns
     the map unmodified if the key was not present.
@@ -1370,8 +1370,8 @@ this chapter, we imported it using the prefix `M`.
     ```
 
     Finally, there are several efficient functions for performing
-    set-like operations on maps. Of these, we\'ll be using `union`
-    below. This function is \"left biased\": if two maps contain the
+    set-like operations on maps. Of these, we'll be using `union`
+    below. This function is "left biased": if two maps contain the
     same key, the result will contain the value from the left map.
 
     ``` screen
@@ -1390,25 +1390,25 @@ this chapter, we imported it using the prefix `M`.
 ### Further reading
 
 The book \[[Okasaki99](bibliography.org::Okasaki99)\] gives a wonderful
-and thorough implementor\'s tour of many pure functional data
+and thorough implementor's tour of many pure functional data
 structures, including several kinds of balanced tree. It also provides
 valuable insight into reasoning about the performance of purely
 functional data structures and lazy evaluation.
 
-We recommend Okasaki\'s book as essential reading for functional
-programmers. If you\'re not convinced, Okasaki\'s PhD thesis,
+We recommend Okasaki's book as essential reading for functional
+programmers. If you're not convinced, Okasaki's PhD thesis,
 \[[Okasaki96](bibliography.org::Okasaki96)\], is a less complete and
 polished version of the book, and it is available for free online.
 
 ## Turning digit soup into an answer
 
-We\'ve got yet another problem to solve now. We have many candidates for
+We've got yet another problem to solve now. We have many candidates for
 the last twelve digits of the barcode. In addition, we need to use the
 parities of the first six digits to figure out what the first digit is.
-Finally, we need to ensure that our answer\'s check digit makes sense.
+Finally, we need to ensure that our answer's check digit makes sense.
 
 This seems quite challenging! We have a lot of uncertain data; what
-should we do? It\'s reasonable to ask if we could perform a brute force
+should we do? It's reasonable to ask if we could perform a brute force
 search. Given the candidates we saw in the `ghci` session above, how
 many combinations would we have to examine?
 
@@ -1417,13 +1417,13 @@ ghci> product . map length . candidateDigits $ input
 34012224
 ```
 
-So much for that idea. Once again, we\'ll initially focus on a
+So much for that idea. Once again, we'll initially focus on a
 subproblem that we know how to solve, and postpone worrying about the
 rest.
 
 ### Solving for check digits in parallel
 
-Let\'s abandon the idea of searching for now, and focus on computing a
+Let's abandon the idea of searching for now, and focus on computing a
 check digit. The check digit for a barcode can assume one of ten
 possible values. For a given parity digit, which input sequences can
 cause that digit to be computed?
@@ -1453,10 +1453,10 @@ type ParityMap = Map (Parity Digit)
 ```
 ::::
 
-We\'ll generically refer to these as \"solution maps\", because they
-show us the digit sequence that \"solves for\" each check digit.
+We'll generically refer to these as "solution maps", because they
+show us the digit sequence that "solves for" each check digit.
 
-Given a single digit, here\'s how we can update an existing solution
+Given a single digit, here's how we can update an existing solution
 map.
 
 :::: captioned-content
@@ -1483,14 +1483,14 @@ solves for it, and a new input digit, this function updates the map with
 the new sequence that leads to the new check digit.
 
 This might seem a bit much to digest, but an example will make it clear.
-Let\'s say the check digit we\'re looking at is `4`, the sequence
+Let's say the check digit we're looking at is `4`, the sequence
 leading to it is `[1,3]`, and the digit we want to add to the map is
 `8`. The sum of `4` and `8`, modulo 10, is `2`, so this is the key
-we\'ll be inserting into the map. The sequence that leads to the new
-check digit `2` is thus `[8,1,3]`, so this is what we\'ll insert as the
+we'll be inserting into the map. The sequence that leads to the new
+check digit `2` is thus `[8,1,3]`, so this is what we'll insert as the
 value.
 
-For each digit in a sequence, we\'ll generate a new solution map, using
+For each digit in a sequence, we'll generate a new solution map, using
 that digit and an older solution map.
 
 :::: captioned-content
@@ -1505,7 +1505,7 @@ useDigit old new digit =
 ```
 ::::
 
-Once again, let\'s illustrate what this code is doing using some
+Once again, let's illustrate what this code is doing using some
 examples.
 
 ``` screen
@@ -1556,22 +1556,22 @@ finalDigits = foldl' incorporateDigits (M.singleton 0 [])
 ::::
 
 (From the `checkDigit` function that we defined in [the section called
-\"EAN-13 encoding\"](12-barcode-recognition.org::*EAN-13 encoding) digit
+"EAN-13 encoding"](12-barcode-recognition.org::*EAN-13 encoding) digit
 computation requires that we multiply every other digit by `3`.)
 
-How long is the list with which we call `finalDigits`? We don\'t yet
-know what the first digit of our sequence is, so obviously we can\'t
-provide that. And we don\'t want to include our guess at the check
+How long is the list with which we call `finalDigits`? We don't yet
+know what the first digit of our sequence is, so obviously we can't
+provide that. And we don't want to include our guess at the check
 digit. So the list must be eleven elements long.
 
-Once we\'ve returned from `finalDigits`, our solution map is necessarily
-incomplete, because we haven\'t yet figured out what the first digit is.
+Once we've returned from `finalDigits`, our solution map is necessarily
+incomplete, because we haven't yet figured out what the first digit is.
 
 ### Completing the solution map with the first digit
 
-We haven\'t yet discussed how we should extract the value of the first
+We haven't yet discussed how we should extract the value of the first
 digit from the parities of the left group of digits. This is a
-straightforward matter of reusing code that we\'ve already written.
+straightforward matter of reusing code that we've already written.
 
 :::: captioned-content
 ::: caption
@@ -1648,7 +1648,7 @@ solve xs = catMaybes $ map (addCheckDigit m) checkDigits
 ```
 ::::
 
-Let\'s try this out on the row we picked from our photo, and see if we
+Let's try this out on the row we picked from our photo, and see if we
 get a sensible answer.
 
 ``` screen
@@ -1661,8 +1661,8 @@ photographed.
 
 ## Working with row data
 
-We\'ve mentioned repeatedly that we are taking a single row from our
-image. Here\'s how.
+We've mentioned repeatedly that we are taking a single row from our
+image. Here's how.
 
 :::: captioned-content
 ::: caption
@@ -1695,12 +1695,12 @@ row j a = ixmap (l,u) project a
 
 This function takes a bit of explaining. Whereas `fmap` transforms the
 *values* in an array, `ixmap` transforms the *indices* of an array.
-It\'s a very powerful function that lets us \"slice\" an array however
+It's a very powerful function that lets us "slice" an array however
 we please.
 
 The first argument to `ixmap` is the bounds of the new array. These
 bounds can be of a different dimension than the source array. In `row`,
-for example, we\'re extracting a one-dimensional array from a
+for example, we're extracting a one-dimensional array from a
 two-dimensional array.
 
 The second argument is a *projection* function. This takes an index from
@@ -1730,7 +1730,7 @@ findMatch = listToMaybe
 ```
 ::::
 
-Here, we\'re taking advantage of lazy evaluation. The call to `map` over
+Here, we're taking advantage of lazy evaluation. The call to `map` over
 `tails` will only be evaluated until it results in a non-empty list.
 
 Next, we choose a row from an image, and try to find a barcode in it.
@@ -1748,7 +1748,7 @@ findEAN13 pixmap = withRow center pixmap (fmap head . findMatch)
 ```
 ::::
 
-Finally, here\'s a very simple wrapper that prints barcodes from
+Finally, here's a very simple wrapper that prints barcodes from
 whatever netpbm image files we pass into our program on the command
 line.
 
@@ -1769,7 +1769,7 @@ main = do
 ```
 ::::
 
-Notice that, of the more than thirty functions we\'ve defined in this
+Notice that, of the more than thirty functions we've defined in this
 chapter, `main` is the only one that lives in `IO`.
 
 ## A few comments on development style
@@ -1777,27 +1777,27 @@ chapter, `main` is the only one that lives in `IO`.
 You may have noticed that many of the functions we presented in this
 chapter were short functions at the top level of the source file. This
 is no accident. As we mentioned earlier, when we started on this
-chapter, we didn\'t know what form our solution was going to take.
+chapter, we didn't know what form our solution was going to take.
 
 Quite often, then, we had to explore a problem space in order to figure
 out where we were going. To do this, we spent a lot of time fiddling
 about in `ghci`, performing tiny experiments on individual functions.
 This kind of exploration requires that a function be declared at the top
-level of a source file, as otherwise `ghci` won\'t be able to see it.
+level of a source file, as otherwise `ghci` won't be able to see it.
 
 Once we were satisfied that individual functions were behaving
 themselves, we started to glue them together, again investigating the
 consequences in `ghci`. This is where our devotion to writing type
 signatures paid back, as we immediately discovered when a particular
-composition of functions couldn\'t possibly work.
+composition of functions couldn't possibly work.
 
 At the end of this process, we were left with a large number of very
-small top-level functions, each with a type signature. This isn\'t the
+small top-level functions, each with a type signature. This isn't the
 most compact representation possible; we could have hoisted many of
 those functions into `let` or `where` blocks when we were done with
 them. However, we find that the added vertical space, small function
 bodies, and type signatures make the code far more readable, so we
-generally avoided \"golfing\" functions after we wrote them[^2].
+generally avoided "golfing" functions after we wrote them[^2].
 
 Working in a language with strong, static typing does not at all
 interfere with incrementally and fluidly developing a solution to a
@@ -1809,7 +1809,7 @@ writing good code quickly.
 
 [^1]: The formula originates in ITU-R Recommendation 601.
 
-[^2]: Our use of the word \"golf\" comes from a game originally played
+[^2]: Our use of the word "golf" comes from a game originally played
     by Perl hackers, in which programmers try to create the smallest
     piece of code for some purpose. The code with the fewest
     (key)strokes wins.

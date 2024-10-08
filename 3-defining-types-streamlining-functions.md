@@ -2,7 +2,7 @@
 
 ## Defining a new data type
 
-Although lists and tuples are useful, we\'ll often want to construct new
+Although lists and tuples are useful, we'll often want to construct new
 data types of our own. This allows us to add structure to the values in
 our programs. Instead of using an anonymous tuple, we can give a
 collection of related values a name and a distinct type. Defining our
@@ -10,9 +10,9 @@ own types also improves the type safety of our code: Haskell will not
 allow us to accidentally mix values of two types that are structurally
 similar but have different names.
 
-For motivation, we\'ll consider a few kinds of data that a small online
-bookstore might need to manage. We won\'t make any attempt at complete
-or realistic data definitions, but at least we\'re tying them to the
+For motivation, we'll consider a few kinds of data that a small online
+bookstore might need to manage. We won't make any attempt at complete
+or realistic data definitions, but at least we're tying them to the
 real world.
 
 We define a new data type using the `data` keyword.
@@ -30,28 +30,28 @@ data BookInfo = Book Int String [String]
 
 The `BookInfo` after the `data` keyword is the name of our new type. We
 call `BookInfo` a *type constructor*. Once we have defined a type, we
-will use its type constructor to refer to it. As we\'ve already
+will use its type constructor to refer to it. As we've already
 mentioned, a type name, and hence a type constructor, must start with a
 capital letter.
 
 The `Book` that follows is the name of the *value constructor*
 (sometimes called a data constructor). We use this to create a value of
-the `BookInfo` type. A value constructor\'s name must also start with a
+the `BookInfo` type. A value constructor's name must also start with a
 capital letter.
 
 After `Book`, the `Int`, `String`, and `[String]` that follow are the
 *components* of the type. A component serves the same purpose in Haskell
-as a field in a structure or class would in another language: it\'s a
-\"slot\" where we keep a value. (We\'ll often refer to components as
+as a field in a structure or class would in another language: it's a
+"slot" where we keep a value. (We'll often refer to components as
 fields.)
 
-In this example, the `Int` represents a book\'s identifier (e.g. in a
+In this example, the `Int` represents a book's identifier (e.g. in a
 stock database), `String` its title, and `[String]` the names of its
 authors.
 
-To make the link to a concept we\'ve already seen, the `BookInfo` Type
+To make the link to a concept we've already seen, the `BookInfo` Type
 contains the same components as a 3-tuple of type
-`(Int, String, [String])`, but it has a distinct type. We can\'t
+`(Int, String, [String])`, but it has a distinct type. We can't
 accidentally (or deliberately) use one in a context where the other is
 expected. For instance, a bookstore is also likely to carry magazines.
 
@@ -77,8 +77,8 @@ Note
 
 Deriving what?
 
-We\'ll explain the full meaning of `deriving (Show)` later, in [the
-section called \"Show\"](6-using-typeclasses.org::*Show) need to tack
+We'll explain the full meaning of `deriving (Show)` later, in [the
+section called "Show"](6-using-typeclasses.org::*Show) need to tack
 this onto a type declaration so that `ghci` will automatically know how
 to print a value of this type.
 ::::
@@ -133,7 +133,7 @@ Book 1 "Cosmicomics" ["Italo Calvino"] :: BookInfo
 ghci> cities = Book 173 "Use of Weapons" ["Iain M. Banks"]
 ```
 
-To find out more about a type, we can use some of `ghci`\'s browsing
+To find out more about a type, we can use some of `ghci`'s browsing
 capabilities. The `:info` command gets `ghci` to tell us everything it
 knows about a name.
 
@@ -162,7 +162,7 @@ the type constructor `BookInfo` a different name from the value
 constructor `Book`, purely to make it obvious which was which.
 
 However, in Haskell, the names of types and values are independent of
-each other. We only use a type constructor (i.e. the type\'s name) in a
+each other. We only use a type constructor (i.e. the type's name) in a
 type declaration or a type signature. We only use a value constructor in
 actual code. Because these uses are distinct, there is no ambiguity if
 we give a type constructor and a value constructor the same name. If we
@@ -186,14 +186,14 @@ This definition says that the type named `BookReview` has a value
 constructor that is also named `BookReview`.
 
 Not only is it *legal* for a value constructor to have the same name as
-its type constructor, it\'s *normal*: you\'ll see this all the time in
+its type constructor, it's *normal*: you'll see this all the time in
 regular Haskell code.
 
 ## Type synonyms
 
 We can introduce a *synonym* for an existing type at any time, to give a
 type a more descriptive name. For example, the `String` in our
-`BookReview` type doesn\'t tell us what the string is for, but we can
+`BookReview` type doesn't tell us what the string is for, but we can
 clarify this.
 
 :::: captioned-content
@@ -250,7 +250,7 @@ data Bool = False | True
 
 The `Bool` type has two value constructors, `True` and `False`. Each
 value constructor is separated in the definition by a `|` character,
-which we can read as \"or\": we can construct a `Bool` that has the
+which we can read as "or": we can construct a `Bool` that has the
 value `True`, or the value `False`. When a type has more than one value
 constructor, they are usually referred to as *alternatives* or *cases*.
 We can use any one of the alternatives to create a value of that type.
@@ -262,15 +262,15 @@ Note
 
 A note about naming
 
-Although the phrase \"algebraic data type\" is long, we\'re being
-careful to avoid using the acronym \"ADT\". That acronym is already
-widely understood to stand for \"*abstract* data type\". Since Haskell
-supports both algebraic and abstract data types, we\'ll be explicit and
+Although the phrase "algebraic data type" is long, we're being
+careful to avoid using the acronym "ADT". That acronym is already
+widely understood to stand for "*abstract* data type". Since Haskell
+supports both algebraic and abstract data types, we'll be explicit and
 avoid the acronym entirely.
 ::::
 
-Each of an algebraic data type\'s value constructors can take zero or
-more arguments. As an example, here\'s one way we might represent
+Each of an algebraic data type's value constructors can take zero or
+more arguments. As an example, here's one way we might represent
 billing information.
 
 :::: captioned-content
@@ -290,11 +290,11 @@ data BillingInfo = CreditCard CardNumber CardHolder Address
 ```
 ::::
 
-Here, we\'re saying that we support three ways to bill our customers. If
+Here, we're saying that we support three ways to bill our customers. If
 they want to pay by credit card, they must supply a card number, the
-holder\'s name, and the holder\'s billing address as arguments to the
+holder's name, and the holder's billing address as arguments to the
 `CreditCard` value constructor. Alternatively, they can pay the person
-who delivers their shipment. Since we don\'t need to store any extra
+who delivers their shipment. Since we don't need to store any extra
 information about this, we specify no arguments for the `CashOnDelivery`
 constructor. Finally, we can send an invoice to the specified customer,
 in which case we need their CustomerID as an argument to the `Invoice`
@@ -440,15 +440,15 @@ ghci> (1, 2) == (1, 2)
 True
 ```
 
-The type system can\'t rescue us here: as far as it\'s concerned, we\'re
+The type system can't rescue us here: as far as it's concerned, we're
 comparing two `(Double, Double)` pairs, which is a perfectly valid thing
 to do. Indeed, we cannot tell by inspection which of these values is
 supposed to be polar or cartesian, but `(1,2)` has a different meaning
 in each representation.
 
-There is no hard and fast rule for deciding when it\'s better to use a
-tuple or a distinct data type, but here\'s a rule of thumb to follow. If
-you\'re using compound values widely in your code (as almost all
+There is no hard and fast rule for deciding when it's better to use a
+tuple or a distinct data type, but here's a rule of thumb to follow. If
+you're using compound values widely in your code (as almost all
 non-trivial programs do), adding `data` declarations will benefit you in
 both type safety and readability. For smaller, localised uses, a tuple
 is usually fine.
@@ -466,7 +466,7 @@ types, and how they relate to concepts that might be more familiar.
     With just one constructor, an algebraic data type is similar to a
     tuple: it groups related values together into a compound value. It
     corresponds to a `struct` in C or C++, and its components correspond
-    to the fields of a `struct`. Here\'s a C equivalent of the
+    to the fields of a `struct`. Here's a C equivalent of the
     `BookInfo` type that we defined earlier.
 
     ``` {.c org-language="C"}
@@ -495,17 +495,17 @@ types, and how they relate to concepts that might be more familiar.
     field of the Haskell type, and the title is in the second. We refer
     to them by location, not by name.
 
-    In [the section called \"Pattern
-    matching\"](3-defining-types-streamlining-functions.org::*Pattern matching)
-    the fields of a `BookStore` value. In [the section called \"Record
-    syntax\"](3-defining-types-streamlining-functions.org::*Record syntax)
+    In [the section called "Pattern
+    matching"](3-defining-types-streamlining-functions.org::*Pattern matching)
+    the fields of a `BookStore` value. In [the section called "Record
+    syntax"](3-defining-types-streamlining-functions.org::*Record syntax)
     syntax for defining data types that looks a little more C-like.
 
 2.  The enumeration
 
-    Algebraic data types also serve where we\'d use an `enum` in C or
+    Algebraic data types also serve where we'd use an `enum` in C or
     C++, to represent a range of symbolic values. Such algebraic data
-    types are sometimes referred to as enumeration types. Here\'s an
+    types are sometimes referred to as enumeration types. Here's an
     example from C.
 
     ``` {.c org-language="C"}
@@ -520,7 +520,7 @@ types, and how they relate to concepts that might be more familiar.
     };
     ```
 
-    And here\'s a Haskell equivalent.
+    And here's a Haskell equivalent.
 
     :::: captioned-content
     ::: caption
@@ -575,9 +575,9 @@ types, and how they relate to concepts that might be more familiar.
 
     If an algebraic data type has multiple alternatives, we can think of
     it as similar to a `union` in C or C++. A big difference between the
-    two is that a union doesn\'t tell us which alternative is actually
+    two is that a union doesn't tell us which alternative is actually
     present; we have to explicitly and manually track which alternative
-    we\'re using, usually in another field of an enclosing struct. This
+    we're using, usually in another field of an enclosing struct. This
     means that unions can be sources of nasty bugs, where our notion of
     which alternative we should be using is incorrect.
 
@@ -630,9 +630,9 @@ types, and how they relate to concepts that might be more familiar.
 
     If we create a `Shape` value using the `Circle` constructor, the
     fact that we created a `Circle` is stored. When we later use a
-    `Circle`, we can\'t accidentally treat it as a `Square`. We will see
-    why in [the section called \"Pattern
-    matching\"](3-defining-types-streamlining-functions.org::*Pattern matching)
+    `Circle`, we can't accidentally treat it as a `Square`. We will see
+    why in [the section called "Pattern
+    matching"](3-defining-types-streamlining-functions.org::*Pattern matching)
 
     :::: tip
     ::: title
@@ -644,13 +644,13 @@ types, and how they relate to concepts that might be more familiar.
     From reading the preceding sections, it should now be clear that
     *all* of the data types that we define with the `data` keyword are
     algebraic data types. Some may have just one alternative, while
-    others have several, but they\'re all using the same machinery.
+    others have several, but they're all using the same machinery.
     ::::
 
 ## Pattern matching
 
-Now that we\'ve seen how to construct values with algebraic data types,
-let\'s discuss how we work with these values. If we have a value of some
+Now that we've seen how to construct values with algebraic data types,
+let's discuss how we work with these values. If we have a value of some
 type, there are two things we would like to be able to do.
 
 -   If the type has more than one value constructor, we need to be able
@@ -662,8 +662,8 @@ Haskell has a simple, but tremendously useful, *pattern matching*
 facility that lets us do both of these things.
 
 A pattern lets us look inside a value and bind variables to the data it
-contains. Here\'s an example of pattern matching in action on a `Bool`
-value: we\'re going to reproduce the `not` function.
+contains. Here's an example of pattern matching in action on a `Bool`
+value: we're going to reproduce the `not` function.
 
 :::: captioned-content
 ::: caption
@@ -682,7 +682,7 @@ are defining the behavior of the same function for different patterns of
 input. On each line, the patterns are the items following the function
 name, up until the `=` sign.
 
-To understand how pattern matching works, let\'s step through an
+To understand how pattern matching works, let's step through an
 example, say `myNot False`.
 
 When we apply `myNot`, the Haskell runtime checks the value we supply
@@ -708,13 +708,13 @@ sumList []     = 0
 Let us step through the evaluation of `sumList [1,2]`. The list notation
 `[1,2]` is shorthand for the expression `(1 : (2 : []))`. We begin by
 trying to match the pattern in the first equation of the definition of
-`sumList`. In the `(x : xs)` pattern, the \"`:`\" is the familiar list
+`sumList`. In the `(x : xs)` pattern, the "`:`" is the familiar list
 constructor, `(:)`. We are now using it to match against a value, not to
 construct one. The value `(1 : (2 : []))` was constructed with `(:)`, so
 the constructor in the value matches the constructor in the pattern. We
 say that the pattern *matches*, or that the match *succeeds*.
 
-The variables `x` and `xs` are now \"bound to\" the constructor\'s
+The variables `x` and `xs` are now "bound to" the constructor's
 arguments, so `x` is given the value `1`, and `xs` the value `2 : []`.
 
 The expression we are now evaluating is `1 + sumList (2 : [])`. We must
@@ -724,8 +724,8 @@ application of `sumList`, `x` is now bound to `2`, and `xs` to `[]`.
 
 We are now evaluating `1 + (2 + sumList [])`. In this recursive
 application of `sumList`, the value we are matching against is `[]`. The
-value\'s constructor does not match the constructor in the first
-pattern, so we skip this equation. Instead, we \"fall through\" to the
+value's constructor does not match the constructor in the first
+pattern, so we skip this equation. Instead, we "fall through" to the
 next pattern, which matches. The right hand side of this equation is
 thus chosen as the result of this application.
 
@@ -750,7 +750,7 @@ illustration.
 
 ### Construction and deconstruction
 
-Let\'s step back and take a look at the relationship between
+Let's step back and take a look at the relationship between
 constructing a value and pattern matching on it.
 
 We apply a value constructor to build a value. The expression
@@ -764,7 +764,7 @@ created using that constructor. If it was, we inspect it to obtain the
 individual values that we originally supplied to the constructor when we
 created the value.
 
-Let\'s consider what happens if we match the pattern
+Let's consider what happens if we match the pattern
 `(Book id name authors)` against our example expression.
 
 -   The match will succeed, because the constructor in the value matches
@@ -773,7 +773,7 @@ Let\'s consider what happens if we match the pattern
 -   The variable `name` will be bound to `"Close Calls"`.
 -   The variable `authors` will be bound to `["John Long"]`.
 
-Because pattern matching acts as the inverse of construction, it\'s
+Because pattern matching acts as the inverse of construction, it's
 sometimes referred to as /de/construction.
 
 :::: note
@@ -781,17 +781,17 @@ sometimes referred to as /de/construction.
 Note
 :::
 
-Deconstruction doesn\'t destroy anything
+Deconstruction doesn't destroy anything
 
-If you\'re steeped in object oriented programming jargon, don\'t confuse
+If you're steeped in object oriented programming jargon, don't confuse
 deconstruction with destruction! Matching a pattern has no effect on the
-value we\'re examining: it just lets us \"look inside\" it.
+value we're examining: it just lets us "look inside" it.
 ::::
 
 ### Further adventures
 
 The syntax for pattern matching on a tuple is similar to the syntax for
-constructing a tuple. Here\'s a function that returns the last element
+constructing a tuple. Here's a function that returns the last element
 of a 3-tuple.
 
 :::: captioned-content
@@ -804,7 +804,7 @@ third (a, b, c) = c
 ```
 ::::
 
-There\'s no limit on how \"deep\" within a value a pattern can look.
+There's no limit on how "deep" within a value a pattern can look.
 This definition looks both inside a tuple and inside a list within that
 tuple.
 
@@ -839,8 +839,8 @@ ghci> complicated (False, 1, [1,2,3], 5)
 ```
 
 For an explanation of this error message, skip forward a little, to [the
-section called \"Exhaustive patterns and wild
-cards\"](3-defining-types-streamlining-functions.org::*Exhaustive patterns and wild cards)
+section called "Exhaustive patterns and wild
+cards"](3-defining-types-streamlining-functions.org::*Exhaustive patterns and wild cards)
 
 We can pattern match on an algebraic data type using its value
 constructors. Recall the `BookInfo` type we defined earlier: we can
@@ -858,7 +858,7 @@ bookAuthors (Book id title authors) = authors
 ```
 ::::
 
-Let\'s see it in action.
+Let's see it in action.
 
 ``` screen
 ghci> bookID (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
@@ -870,7 +870,7 @@ ghci> bookAuthors (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
 ```
 
 The compiler can infer the types of the accessor functions based on the
-constructor we\'re using in our pattern.
+constructor we're using in our pattern.
 
 ``` screen
 ghci> :type bookID
@@ -882,7 +882,7 @@ bookAuthors :: BookInfo -> [String]
 ```
 
 If we use a literal value in a pattern, the corresponding part of the
-value we\'re matching against must contain an identical value. For
+value we're matching against must contain an identical value. For
 instance, the pattern `(3 : xs)` first of all checks that a value is a
 non-empty list, by matching against the `(:)` constructor. It also
 ensures that the head of the list has the exact value `3`. If both of
@@ -891,17 +891,17 @@ variable `xs`.
 
 ### Variable naming in patterns
 
-As you read functions that match on lists, you\'ll frequently find that
+As you read functions that match on lists, you'll frequently find that
 the names of the variables inside a pattern resemble `(x : xs)` or
 `(d : ds)`. This is a popular naming convention. The idea is that the
-name `xs` has an \"`s`\" on the end of its name as if it\'s the
-\"plural\" of `x`, because `x` contains the head of the list, and `xs`
+name `xs` has an "`s`" on the end of its name as if it's the
+"plural" of `x`, because `x` contains the head of the list, and `xs`
 the remaining elements.
 
 ### The wild card pattern
 
-We can indicate that we don\'t care what is present in part of a
-pattern. The notation for this is the underscore character \"`_`\",
+We can indicate that we don't care what is present in part of a
+pattern. The notation for this is the underscore character "`_`",
 which we call a *wild card*. We use it as follows.
 
 :::: captioned-content
@@ -917,28 +917,28 @@ nicerAuthors (Book _  _     authors) = authors
 ::::
 
 Here, we have tidier versions of the accessor functions we introduced
-earlier. Now, there\'s no question about which element we\'re using in
+earlier. Now, there's no question about which element we're using in
 each function.
 
-In a pattern, a wild card acts similarly to a variable, but it doesn\'t
+In a pattern, a wild card acts similarly to a variable, but it doesn't
 bind a new variable. As the examples above indicate, we can use more
 than one wild card in a single pattern.
 
 Another advantage of wild cards is that a Haskell compiler can warn us
 if we introduce a variable name in a pattern, but do not use it in a
-function\'s body. Defining a variable, but forgetting to use it, can
+function's body. Defining a variable, but forgetting to use it, can
 often indicate the presence of a bug, so this is a helpful feature. If
 we use a wild card instead of a variable that we do not intend to use,
-the compiler won\'t complain.
+the compiler won't complain.
 
 ### Exhaustive patterns and wild cards
 
-When writing a series of patterns, it\'s important to cover all of a
-type\'s constructors. For example, if we\'re inspecting a list, we
+When writing a series of patterns, it's important to cover all of a
+type's constructors. For example, if we're inspecting a list, we
 should have one equation that matches the non-empty constructor `(:)`,
 and one that matches the empty-list constructor `[]`.
 
-Let\'s see what happens if we fail to cover all the cases. Here, we
+Let's see what happens if we fail to cover all the cases. Here, we
 deliberately omit a check for the `[]` constructor.
 
 :::: captioned-content
@@ -951,7 +951,7 @@ badExample (x:xs) = x + badExample xs
 ```
 ::::
 
-If we apply this to a value that it cannot match, we\'ll get an error at
+If we apply this to a value that it cannot match, we'll get an error at
 runtime: our software has a bug!
 
 ``` screen
@@ -959,7 +959,7 @@ ghci> badExample []
 *** Exception: BadPattern.hs:4:0-36: Non-exhaustive patterns in function badExample
 ```
 
-In this example, no equation in the function\'s definition matches the
+In this example, no equation in the function's definition matches the
 value `[]`.
 
 :::: tip
@@ -971,10 +971,10 @@ Warning about incomplete patterns
 
 GHC provides a helpful compilation option, `-fwarn-incomplete-patterns`,
 that will cause it to print a warning during compilation if a sequence
-of patterns don\'t match all of a type\'s value constructors.
+of patterns don't match all of a type's value constructors.
 ::::
 
-If we need to provide a default behavior in cases where we don\'t care
+If we need to provide a default behavior in cases where we don't care
 about specific constructors, we can use a wild card pattern.
 
 :::: captioned-content
@@ -1000,7 +1000,7 @@ ghci> goodExample [1,2]
 
 ## Record syntax
 
-Writing accessor functions for each of a data type\'s components can be
+Writing accessor functions for each of a data type's components can be
 repetitive and tedious.
 
 :::: captioned-content
@@ -1016,7 +1016,7 @@ nicerAuthors (Book _  _     authors) = authors
 ::::
 
 We call this kind of code *boilerplate*: necessary, but bulky and
-irksome. Haskell programmers don\'t like boilerplate. Fortunately, the
+irksome. Haskell programmers don't like boilerplate. Fortunately, the
 language addresses this particular boilerplate problem: we can define a
 data type, and accessors for each of its components, simultaneously.
 (The positions of the commas here is a matter of preference. If you
@@ -1107,14 +1107,14 @@ Here, we have moved the name and address fields from their positions in
 the declaration of the type.
 
 When we define a type using record syntax, it also changes the way the
-type\'s values are printed.
+type's values are printed.
 
 ``` screen
 ghci> customer1
 Customer {customerID = 271828, customerName = "J.R. Hacker", customerAddress = ["255 Syntax Ct","Milpitas, CA 95134","USA"]}
 ```
 
-For comparison, let\'s look at a `BookInfo` value; we defined this type
+For comparison, let's look at a `BookInfo` value; we defined this type
 without record syntax.
 
 ``` screen
@@ -1122,7 +1122,7 @@ ghci> cities
 Book 173 "Use of Weapons" ["Iain M. Banks"]
 ```
 
-The accessor functions that we get \"for free\" when we use record
+The accessor functions that we get "for free" when we use record
 syntax really are normal Haskell functions.
 
 ``` screen
@@ -1133,7 +1133,7 @@ ghci> customerName customer1
 ```
 
 The standard `System.Time` module makes good use of record syntax.
-Here\'s a type defined in that module:
+Here's a type defined in that module:
 
 ``` haskell
 data CalendarTime = CalendarTime {
@@ -1155,7 +1155,7 @@ large structures.
 
 ## Parameterised types
 
-We\'ve repeatedly mentioned that the list type is polymorphic: the
+We've repeatedly mentioned that the list type is polymorphic: the
 elements of a list can be of any type. We can also add polymorphism to
 our own types. To do this, we introduce type variables into a type
 declaration. The prelude defines a type named `Maybe`: we can use this
@@ -1173,7 +1173,7 @@ data Maybe a = Just a
 ```
 ::::
 
-Here, the variable `a` is not a regular variable: it\'s a type variable.
+Here, the variable `a` is not a regular variable: it's a type variable.
 It indicates that the `Maybe` type takes another type as its parameter.
 This lets us use Maybe on values of any type.
 
@@ -1223,13 +1223,13 @@ parameterised types bear some resemblance to templates in C++, and to
 generics in Java. Just be aware that this is a shallow analogy.
 Templates and generics were added to their respective languages long
 after the languages were initially defined, and have an awkward feel.
-Haskell\'s parameterised types are simpler and easier to use, as the
+Haskell's parameterised types are simpler and easier to use, as the
 language was designed with them from the beginning.
 
 ## Recursive types
 
-The familiar list type is *recursive*: it\'s defined in terms of itself.
-To understand this, let\'s create our own list-like type. We\'ll use
+The familiar list type is *recursive*: it's defined in terms of itself.
+To understand this, let's create our own list-like type. We'll use
 `Cons` in place of the `(:)` constructor, and `Nil` in place of `[]`.
 
 ``` haskell
@@ -1240,9 +1240,9 @@ data List a = Cons a (List a)
 ```
 
 Because `List a` appears on both the left and the right of the `=` sign,
-the type\'s definition refers to itself. If we want to use the `Cons`
+the type's definition refers to itself. If we want to use the `Cons`
 constructor to create a new value, we must supply one value of type `a`,
-and another of type `List a`. Let\'s see where this leads us in
+and another of type `List a`. Let's see where this leads us in
 practice.
 
 The simplest value of type `List a` that we can create is `Nil`. Save
@@ -1299,7 +1299,7 @@ fromList []     = Nil
 ::::
 
 By inspection, this clearly substitutes a `Cons` for every `(:)`, and a
-`Nil` for each `[]`. This covers both of the built-in list type\'s
+`Nil` for each `[]`. This covers both of the built-in list type's
 constructors. The two types are *isomorphic*; they have the same shape.
 
 ``` screen
@@ -1328,8 +1328,8 @@ data Tree a = Node a (Tree a) (Tree a)
 A binary tree is either a node with two children, which are themselves
 binary trees, or an empty value.
 
-This time, let\'s search for insight by comparing our definition with
-one from a more familiar language. Here\'s a similar class definition in
+This time, let's search for insight by comparing our definition with
+one from a more familiar language. Here's a similar class definition in
 Java.
 
 ``` java
@@ -1349,8 +1349,8 @@ class Tree<A>
 ```
 
 The one significant difference is that Java lets us use the special
-value `null` anywhere to indicate \"nothing\", so we can use `null` to
-indicate that a node is missing a left or right child. Here\'s a small
+value `null` anywhere to indicate "nothing", so we can use `null` to
+indicate that a node is missing a left or right child. Here's a small
 function that constructs a tree with two leaves (a leaf, by convention,
 has no children).
 
@@ -1367,9 +1367,9 @@ class Example
 }
 ```
 
-In Haskell, we don\'t have an equivalent of `null`. We could use the
+In Haskell, we don't have an equivalent of `null`. We could use the
 `Maybe` type to provide a similar effect, but that bloats the pattern
-matching. Instead, we\'ve decided to use a no-argument `Empty`
+matching. Instead, we've decided to use a no-argument `Empty`
 constructor. Where the Java example provides `null` to the `Tree`
 constructor, we supply `Empty` in Haskell.
 
@@ -1390,7 +1390,7 @@ simpleTree = Node "parent" (Node "left child" Empty Empty)
     takes a List a and generates a `[a]`.
 2.  Define a tree type that has only one constructor, like our Java
     example. Instead of the `Empty` constructor, use the `Maybe` type to
-    refer to a node\'s children.
+    refer to a node's children.
 
 ## Reporting errors
 
@@ -1406,7 +1406,7 @@ normal function: instead, it *immediately aborts evaluation*, and prints
 the error message we give it.
 
 The `mySecond` function returns the second element of its input list,
-but fails if its input list isn\'t long enough.
+but fails if its input list isn't long enough.
 
 :::: captioned-content
 ::: caption
@@ -1436,7 +1436,7 @@ ghci> head (mySecond [[9]])
 Notice the third case above, where we try to use the result of the call
 to `mySecond` as the argument to another function. Evaluation still
 terminates and drops us back to the `ghci` prompt. This is the major
-weakness of using `error`: it doesn\'t let our caller distinguish
+weakness of using `error`: it doesn't let our caller distinguish
 between a recoverable error and a problem so severe that it really
 should terminate our program.
 
@@ -1456,7 +1456,7 @@ If we want to indicate that an operation has failed, we can use the
 `Nothing` constructor. Otherwise, we wrap our value with the `Just`
 constructor.
 
-Let\'s see how our `mySecond` function changes if we return a `Maybe`
+Let's see how our `mySecond` function changes if we return a `Maybe`
 value instead of calling `error`.
 
 :::: captioned-content
@@ -1474,7 +1474,7 @@ safeSecond xs = if null (tail xs)
 ```
 ::::
 
-If the list we\'re passed is too short, we return `Nothing` to our
+If the list we're passed is too short, we return `Nothing` to our
 caller. This lets them decide what to do, where a call to `error` would
 force a crash.
 
@@ -1507,7 +1507,7 @@ tidySecond _       = Nothing
 
 The first pattern only matches if the list is at least two elements long
 (it contains two list constructors), and it binds the variable `x` to
-the list\'s second element. The second pattern is matched if the first
+the list's second element. The second pattern is matched if the first
 fails.
 
 ## Introducing local variables
@@ -1546,32 +1546,32 @@ Special notes
 
 Let us re-emphasise our wording: a name in a `let` block is bound to an
 *expression*, not to a *value*. Because Haskell is a lazy language, the
-expression associated with a name won\'t actually be evaluated until
-it\'s needed. In the above example, we will not compute the value of
+expression associated with a name won't actually be evaluated until
+it's needed. In the above example, we will not compute the value of
 `newBalance` if we do not meet our reserve.
 
 When we define a variable in a `let` block, we refer to it as a
 *`let`-bound* variable. This simply means what it says: we have bound
 the variable in a `let` block.
 
-Also, our use of white space here is important. We\'ll talk in more
-detail about the layout rules in [the section called \"The offside rule
+Also, our use of white space here is important. We'll talk in more
+detail about the layout rules in [the section called "The offside rule
 and white space in an
-expression\"](3-defining-types-streamlining-functions.org::*The offside rule and white space in an expression)
+expression"](3-defining-types-streamlining-functions.org::*The offside rule and white space in an expression)
 ::::
 
 We can use the names of a variable in a `let` block both within the
 block of declarations and in the expression that follows the `in`
 keyword.
 
-In general, we\'ll refer to the places within our code where we can use
-a name as the name\'s *scope*. If we can use a name, it\'s *in scope*,
-otherwise it\'s *out of scope*. If a name is visible throughout a source
-file, we say it\'s at the *top level*.
+In general, we'll refer to the places within our code where we can use
+a name as the name's *scope*. If we can use a name, it's *in scope*,
+otherwise it's *out of scope*. If a name is visible throughout a source
+file, we say it's at the *top level*.
 
 ### Shadowing
 
-We can \"nest\" multiple `let` blocks inside each other in an
+We can "nest" multiple `let` blocks inside each other in an
 expression.
 
 :::: captioned-content
@@ -1586,7 +1586,7 @@ foo = let a = 1
 ```
 ::::
 
-It\'s perfectly legal, but not exactly wise, to repeat a variable name
+It's perfectly legal, but not exactly wise, to repeat a variable name
 in a nested `let` expression.
 
 :::: captioned-content
@@ -1608,7 +1608,7 @@ ghci> bar
 ("foo",1)
 ```
 
-We can also shadow a function\'s parameters, leading to even stranger
+We can also shadow a function's parameters, leading to even stranger
 results. What is the type of this function?
 
 :::: captioned-content
@@ -1622,7 +1622,7 @@ quux a = let a = "foo"
 ```
 ::::
 
-Because the function\'s argument `a` is never used in the body of the
+Because the function's argument `a` is never used in the body of the
 function, due to being shadowed by the `let`-bound `a`, the argument can
 have any type at all.
 
@@ -1647,7 +1647,7 @@ warning message any time we shadow a name.
 
 We can use another mechanism to introduce local variables: the `where`
 clause. The definitions in a `where` clause apply to the code that
-*precedes* it. Here\'s a similar function to `lend`, using `where`
+*precedes* it. Here's a similar function to `lend`, using `where`
 instead of `let`.
 
 :::: captioned-content
@@ -1665,19 +1665,19 @@ lend2 amount balance = if amount < reserve * 0.5
 ::::
 
 While a `where` clause may initially seem weird, it offers a wonderful
-aid to readability. It lets us direct our reader\'s focus to the
+aid to readability. It lets us direct our reader's focus to the
 important details of an expression, with the supporting definitions
 following afterwards. After a while, you may find yourself missing
 `where` clauses in languages that lack them.
 
 As with `let` expressions, white space is significant in `where`
 clauses. We will talk more about the layout rules shortly, in [the
-section called \"The offside rule and white space in an
-expression\"](3-defining-types-streamlining-functions.org::*The offside rule and white space in an expression)
+section called "The offside rule and white space in an
+expression"](3-defining-types-streamlining-functions.org::*The offside rule and white space in an expression)
 
 ### Local functions, global variables
 
-You\'ll have noticed that Haskell\'s syntax for defining a variable
+You'll have noticed that Haskell's syntax for defining a variable
 looks very similar to its syntax for defining a function. This symmetry
 is preserved in `let` and `where` blocks: we can define local
 *functions* just as easily as local *variables*.
@@ -1700,7 +1700,7 @@ We have defined a local function, `plural`, that consists of several
 equations. Local functions can freely use variables from the scopes that
 enclose them: here, we use `word` from the definition of the outer
 function `pluralise`. In the definition of `pluralise`, the `map`
-function (which we\'ll be revisiting in the next chapter) applies the
+function (which we'll be revisiting in the next chapter) applies the
 local function `plural` to every element of the `counts` list.
 
 We can also define variables, as well as functions, at the top level of
@@ -1730,7 +1730,7 @@ definition can start in any column, and the Haskell compiler or
 interpreter remembers that indentation level. Every subsequent top level
 declaration must have the same indentation.
 
-Here\'s an illustration of the top level indentation rule. Our first
+Here's an illustration of the top level indentation rule. Our first
 file, `GoodIndent.hs`, is well behaved.
 
 :::: captioned-content
@@ -1749,7 +1749,7 @@ GoodIndent.hs
 ```
 ::::
 
-Our second, `BadIndent.hs`, doesn\'t play by the rules.
+Our second, `BadIndent.hs`, doesn't play by the rules.
 
 :::: captioned-content
 ::: caption
@@ -1767,7 +1767,7 @@ BadIndent.hs
 ```
 ::::
 
-Here\'s what happens when we try to load the two files into `ghci`.
+Here's what happens when we try to load the two files into `ghci`.
 
 ``` screen
 ghci> :load GoodIndent.hs
@@ -1827,9 +1827,9 @@ bar = let b = 2
 ```
 ::::
 
-The name `a` is only visible within the inner `let` expression. It\'s
+The name `a` is only visible within the inner `let` expression. It's
 not visible in the outer `let`. If we try to use the name `a` there,
-we\'ll get a compilation error. The indentation gives both us and the
+we'll get a compilation error. The indentation gives both us and the
 compiler a visual cue as to what is currently in scope.
 
 :::: captioned-content
@@ -1860,7 +1860,7 @@ expressions using spaces.
 If you like tabs you can use them as long as you correctly align
 expressions. For the compiler a tab equals to eight spaces and uses this
 amount to determine if an indented expression is correctly aligned. In
-the next example you\'ll see the `b` aligned with the `a` only if the
+the next example you'll see the `b` aligned with the `a` only if the
 tab width equals eight in whichever app you are using to read this text.
 
 :::: captioned-content
@@ -1876,7 +1876,7 @@ x = let a = 1
 ::::
 
 We need the amount of characters before the `a` to be equal to eight or
-the `b` won\'t be aligned and won\'t compile. Totally impracticall. It
+the `b` won't be aligned and won't compile. Totally impracticall. It
 is better to break the expressions as below.
 
 :::: captioned-content
@@ -1920,12 +1920,12 @@ foo = let { a = 1;  b = 2;
 ```
 ::::
 
-When we use explicit structuring, the normal layout rules don\'t apply,
+When we use explicit structuring, the normal layout rules don't apply,
 which is why we can get away with unusual indentation in the second
 `let` expression.
 
-We can use explicit structuring anywhere that we\'d normally use layout.
-It\'s valid for `where` clauses, and even top-level declarations. Just
+We can use explicit structuring anywhere that we'd normally use layout.
+It's valid for `where` clauses, and even top-level declarations. Just
 remember that although the facility exists, explicit structuring is
 hardly ever actually *used* in Haskell programs.
 
@@ -1933,7 +1933,7 @@ hardly ever actually *used* in Haskell programs.
 
 Function definitions are not the only place where we can use pattern
 matching. The `case` construct lets us match patterns within an
-expression. Here\'s what it looks like. This function (defined for us in
+expression. Here's what it looks like. This function (defined for us in
 `Data.Maybe`) unwraps a `Maybe` value, using a default if the value is
 `Nothing`.
 
@@ -1961,8 +1961,8 @@ expressions must all have the same type. The result of the `case`
 expression is the result of the expression associated with the first
 pattern to match. Matches are attempted from top to bottom.
 
-To express \"here\'s the expression to evaluate if none of the other
-patterns match\", we just use the wild card pattern `_` as the last in
+To express "here's the expression to evaluate if none of the other
+patterns match", we just use the wild card pattern `_` as the last in
 our list of patterns. If a pattern match fails, we will get the same
 kind of runtime error as we saw earlier.
 
@@ -2027,7 +2027,7 @@ variable names and the wild card `_` are examples of irrefutable
 patterns.
 ::::
 
-Here\'s a corrected version of this function.
+Here's a corrected version of this function.
 
 :::: captioned-content
 ::: caption
@@ -2047,7 +2047,7 @@ and `"orange"`.
 ### Incorrectly trying to compare for equality
 
 What if we want to compare the values stored in two nodes of type Tree,
-and return one of them if they\'re equal? Here\'s an attempt.
+and return one of them if they're equal? Here's an attempt.
 
 :::: captioned-content
 ::: caption
@@ -2061,16 +2061,16 @@ bad_nodesAreSame _            _            = Nothing
 ::::
 
 A name can only appear once in a set of pattern bindings. We cannot
-place a variable in multiple positions to express the notion \"this
-value and that should be identical\". Instead, we\'ll solve this problem
+place a variable in multiple positions to express the notion "this
+value and that should be identical". Instead, we'll solve this problem
 using *guards*, another invaluable Haskell feature.
 
 ## Conditional evaluation with guards
 
-Pattern matching limites us to performing fixed tests of a value\'s
+Pattern matching limites us to performing fixed tests of a value's
 shape. Although this is useful, we will often want to make a more
-expressive check before evaluating a function\'s body. Haskell provides
-a feature, *guards*, that give us this ability. We\'ll introduce the
+expressive check before evaluating a function's body. Haskell provides
+a feature, *guards*, that give us this ability. We'll introduce the
 idea with a modification of the function we wrote to compare two nodes
 of a tree.
 
@@ -2091,7 +2091,7 @@ at values of the right shape, and a guard to compare pieces of them.
 
 A pattern can be followed by zero or more guards, each an expression of
 type `Bool`. A guard is introduced by a `|` symbol. This is followed by
-the guard expression, then an `=` symbol (or `->` if we\'re in a `case`
+the guard expression, then an `=` symbol (or `->` if we're in a `case`
 expression), then the body to use if the guard expression evaluates to
 `True`. If a pattern matches, each guard associated with that pattern is
 evaluated, in the order in which they are written. If a guard succeeds,
@@ -2124,8 +2124,8 @@ bound to the value `True`, to aid readability.
 We can use guards anywhere that we can use patterns. Writing a function
 as a series of equations using pattern matching and guards can make it
 much clearer. Remember the `myDrop` function we defined in [the section
-called \"Conditional
-evaluation\"](2-types-and-functions.org::*Conditional evaluation)
+called "Conditional
+evaluation"](2-types-and-functions.org::*Conditional evaluation)
 
 :::: captioned-content
 ::: caption
@@ -2223,7 +2223,7 @@ ghci> intersperse ',' ["foo","bar","baz","quux"]
     `[a,b,c]`, then the turn made by `[b,c,d]`, then `[c,d,e]`. Your
     function should return a list of `Direction`.
 5.  Using the code from the preceding three exercises, implement
-    Graham\'s scan algorithm for the convex hull of a set of 2D points.
+    Graham's scan algorithm for the convex hull of a set of 2D points.
     You can find good description of what a [convex
     hull](http://en.wikipedia.org/wiki/Convex_hull) is, and how the
     [Graham scan algorithm](http://en.wikipedia.org/wiki/Graham_scan)

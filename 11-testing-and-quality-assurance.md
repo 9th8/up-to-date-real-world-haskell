@@ -14,28 +14,28 @@ itself, is the expressive type-system, which allows for complicated
 invariants to be enforced statically--making it impossible to write code
 violating chosen constraints. In addition, purity and polymorphism
 encourage a style of code that is modular, refactorable and testable.
-This is the kind of code that just doesn\'t go wrong.
+This is the kind of code that just doesn't go wrong.
 
 Testing plays a key role in keeping code on the straight-and-narrow
 path. The main testing mechanisms in Haskell are traditional unit
 testing (via the HUnit library), and its more powerful descendant:
-type-based \"property\" testing, with QuickCheck, an open source testing
+type-based "property" testing, with QuickCheck, an open source testing
 framework for Haskell. Property-based testing encourages a high level
 approach to testing in the form of abstract invariants functions should
 satisfy universally, with the actual test data generated for the
 programmer by the testing library. In this way code can be hammered with
 thousands of tests that would be infeasible to write by hand, often
-uncovering subtle corner cases that wouldn\'t be found otherwise.
+uncovering subtle corner cases that wouldn't be found otherwise.
 
-In this chapter we\'ll look at how to use QuickCheck to establish
+In this chapter we'll look at how to use QuickCheck to establish
 invariants in code and then re-examine the pretty printer developed in
-previous chapters, testing it with QuickCheck. We\'ll also see how to
-guide the testing process with GHC\'s code coverage tool: HPC.
+previous chapters, testing it with QuickCheck. We'll also see how to
+guide the testing process with GHC's code coverage tool: HPC.
 
 ## QuickCheck: type-based testing
 
-To get an overview of how property-based testing works, we\'ll begin
-with a simple scenario: you\'ve written a specialised sorting function
+To get an overview of how property-based testing works, we'll begin
+with a simple scenario: you've written a specialised sorting function
 and want to test its behaviour.
 
 First, we import the QuickCheck library, and any other modules we need:
@@ -68,8 +68,8 @@ qsort (x:xs) = qsort lhs ++ [x] ++ qsort rhs
 ::::
 
 This is the classic Haskell sort implementation: a study in functional
-programming elegance, if not efficiency (this isn\'t an inplace sort).
-Now, we\'d like to check that this function obeys the basic rules a good
+programming elegance, if not efficiency (this isn't an inplace sort).
+Now, we'd like to check that this function obeys the basic rules a good
 sort should follow. One useful invariant to start with, and one that
 comes up in a lot of purely functional code, is /idempotency/--applying
 a function twice has the same result as applying it only once. For our
@@ -87,7 +87,7 @@ prop_idempotent xs = qsort (qsort xs) == qsort xs
 ```
 ::::
 
-We\'ll use the QuickCheck convention of prefixing test properties with
+We'll use the QuickCheck convention of prefixing test properties with
 `prop_` to distinguish them from normal code. This idempotency property
 is written simply as a Haskell function stating an equality that must
 hold for any input data that is sorted. We can check this makes sense
@@ -145,7 +145,7 @@ For the 100 different lists generated, our property held--great! When
 developing tests, it is often useful to see the actual data generated
 for each test. To do this, we would replace `quickCheck` with its
 sibling, `verboseCheck`, to see (verbose) output for each test. Now,
-let\'s look at more sophisticated properties that our function might
+let's look at more sophisticated properties that our function might
 satisfy.
 
 ### Testing for properties
@@ -154,7 +154,7 @@ Good libraries consist of a set of orthogonal primitives having sensible
 relationships to each other. We can use QuickCheck to specify the
 relationships between functions in our code, helping us find a good
 library interface by developing functions that are interrelated via
-useful properties. QuickCheck in this way acts as an API \"lint\"
+useful properties. QuickCheck in this way acts as an API "lint"
 tool--it provides machine support for ensuring our library API makes
 sense.
 
@@ -162,7 +162,7 @@ The list sorting function should certainly have a number of interesting
 properties that tie it to other list operations. For example: the first
 element in a sorted list should always be the smallest element of the
 input list. We might be tempted to specify this intuition in Haskell,
-using the `List` library\'s `minimum` function:
+using the `List` library's `minimum` function:
 
 :::: captioned-content
 ::: caption
@@ -182,7 +182,7 @@ ghci> quickCheck (prop_minimum :: [Integer] -> Bool)
 ```
 
 The property failed when sorting an empty list--for which `head` and
-`minimum` aren\'t defined, as we can see from their definition:
+`minimum` aren't defined, as we can see from their definition:
 
 :::: captioned-content
 ::: caption
@@ -203,7 +203,7 @@ minimum xs =  foldl1 min xs
 So this property will only hold for non-empty lists. QuickCheck,
 thankfully, comes with a full property writing embedded language, so we
 can specify more precisely our invariants, filtering out values we
-don\'t want to consider. For the empty list case, we really want to say:
+don't want to consider. For the empty list case, we really want to say:
 *if* the list is non-empty, *then* the first element of the sorted
 result is the minimum. This is done by using the `(==>)` implication
 function, which filters out invalid data before running the property:
@@ -298,7 +298,7 @@ ensuring it behaves as required.
 
 Testing individual functions for their natural properties is one of the
 basic building blocks that guides development of large systems in
-Haskell. We\'ll look now at a more complicated scenario: taking the
+Haskell. We'll look now at a more complicated scenario: taking the
 pretty printing library developed in earlier chapters, and building a
 test suite for it.
 
@@ -323,7 +323,7 @@ finished document to a string.
 
 QuickCheck encourages an approach to testing where the developer
 specifies invariants that should hold for any data we can throw at the
-code. To test the pretty printing library, then, we\'ll need a source of
+code. To test the pretty printing library, then, we'll need a source of
 input data. To do this, we take advantage of the small combinator suite
 for building random data that QuickCheck provides via the `Arbitrary`
 class. The class provides a function, `arbitrary`, to generate data of
@@ -338,13 +338,13 @@ class Arbitrary a where
 One thing to notice is that the generators run in a `Gen` environment,
 indicated by the type. This is a simple state-passing monad that is used
 to hide the random number generator state that is threaded through the
-code. We\'ll look thoroughly at monads in later chapters, but for now it
+code. We'll look thoroughly at monads in later chapters, but for now it
 suffices to know that, as `Gen` is defined as a monad, we can use `do`
 syntax to write new generators that access the implicit random number
 source. To actually write generators for our custom type we use any of a
 set of functions defined in the library for introducing new random
 values and gluing them together to build up data structures of the type
-we\'re interested in. The types of the key functions are:
+we're interested in. The types of the key functions are:
 
 ``` haskell
 elements :: [a] -> Gen a
@@ -354,7 +354,7 @@ oneof :: [Gen a] -> Gen a
 
 The function `elements`, for example, takes a list of values, and
 returns a generator of random values from that list. `choose` and
-`oneof` we\'ll use later. With this, we can start writing generators for
+`oneof` we'll use later. With this, we can start writing generators for
 simple data types. For example, if we define a new data type for ternary
 logic:
 
@@ -391,7 +391,7 @@ instance Arbitrary Ternary where
 
 Another approach to data generation is to generate values for one of the
 basic Haskell types and then translate those values into the type
-you\'re actually interested in. We could have written the `Ternary`
+you're actually interested in. We could have written the `Ternary`
 instance by generating integer values from 0 to 2 instead, using
 `choose`, and then mapping them onto the ternary values:
 
@@ -432,8 +432,8 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (a, b) where
 ```
 ::::
 
-So let\'s now write a generator for all the different variants of the
-`Doc` type. We\'ll start by breaking the problem down, first generating
+So let's now write a generator for all the different variants of the
+`Doc` type. We'll start by breaking the problem down, first generating
 random constructors for each type, then, depending on the result, the
 components of each field. We choose a random integer to represent which
 document variant to generate, and then dispatch based on the result. To
@@ -513,7 +513,7 @@ ghci> unGen arbitrary (mkQCGen 2) 10 :: [Doc]
 ```
 
 Looking at the output we see a good mix of simple, base cases, and some
-more complicated nested documents. We\'ll be generating hundreds of
+more complicated nested documents. We'll be generating hundreds of
 these each test run, so that should do a pretty good job. We can now
 write some generic properties for our document functions.
 
@@ -542,7 +542,7 @@ prop_empty_id x = empty <> x == x && x <> empty == x
 ```
 ::::
 
-Confirming that this is indeed true, we\'re now underway with our
+Confirming that this is indeed true, we're now underway with our
 testing:
 
 ``` screen
@@ -558,8 +558,8 @@ desirable.
 
 Other functions in the API are also simple enough to have their
 behaviour fully described via properties. By doing so we can maintain an
-external, checkable description of the function\'s behaviour, so later
-changes won\'t break these basic invariants.
+external, checkable description of the function's behaviour, so later
+changes won't break these basic invariants.
 
 :::: captioned-content
 ::: caption
@@ -639,7 +639,7 @@ Empty
 ```
 
 The pretty printing library optimises away redundant empty documents,
-something the model implementation doesn\'t, so we\'ll need to augment
+something the model implementation doesn't, so we'll need to augment
 our model to match reality. First, we can intersperse the punctuation
 text throughout the document list, then a little loop to clean up the
 `Empty` documents scattered through, like so:
@@ -662,7 +662,7 @@ prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
 
 Running this in GHCi, we can confirm the result. It is reassuring to
 have the test framework spot the flaws in our reasoning about the
-code--exactly what we\'re looking for:
+code--exactly what we're looking for:
 
 ``` screen
 ghci> quickCheck prop_punctuate'
@@ -672,7 +672,7 @@ ghci> quickCheck prop_punctuate'
 ### Putting it altogether
 
 We can put all these tests together in a single file, and run them
-simply by using one of QuickCheck\'s driver functions. Several exist,
+simply by using one of QuickCheck's driver functions. Several exist,
 including elaborate parallel ones. The basic batch driver is often good
 enough, however. All we need do is set up some default test parameters,
 and then list the functions we want to test:
@@ -715,7 +715,7 @@ main = do
 ```
 ::::
 
-We\'ve structured the code here as a separate, standalone test script,
+We've structured the code here as a separate, standalone test script,
 with instances and properties in their own file, separate to the library
 source. This is typical for library projects, where the tests are kept
 apart from the library itself, and import the library via the module
@@ -752,7 +752,7 @@ observe what parts of the code were actually executed during a given
 program run. This is useful in the context of testing, as it lets us
 observe precisely which functions, branches and expressions were
 evaluated. The result is precise knowledge about the percent of code
-tested, that\'s easy to obtain. HPC comes with a simple utility to
+tested, that's easy to obtain. HPC comes with a simple utility to
 generate useful graphs of program coverage, making it easy to zoom in on
 weak spots in the test suite.
 
@@ -783,7 +783,7 @@ files in the current directory. Afterwards, these files are used by the
 command line tool, `hpc`, to display various statistics about what
 happened. The basic interface is textual. To begin, we can get a summary
 of the code tested during the run using the `report` flag to `hpc`.
-We\'ll exclude the test programs themselves, (using the `--exclude`
+We'll exclude the test programs themselves, (using the `--exclude`
 flag), so as to concentrate only on code in the pretty printer library.
 Entering the following into the console:
 
@@ -803,7 +803,7 @@ we see that, on the last line, 30% of top level definitions were
 evaluated during the test run. Not too bad for a first attempt. As we
 test more and more functions from the library, this figure will rise.
 The textual version is useful for a quick summary, but to really see
-what\'s going on it is best to look at the marked up output. To generate
+what's going on it is best to look at the marked up output. To generate
 this, use the `markup` flag instead:
 
 ``` screen
@@ -818,7 +818,7 @@ see some pretty graphs of the code coverage:
 
 Not too bad. Clicking through to the `Prettify` module itself, we see
 the actual source of the program, marked up in bold yellow for code that
-wasn\'t tested, and code that was executed simply bold.
+wasn't tested, and code that was executed simply bold.
 
 It is important to remove the old .tix file after you make modifications
 or an error will occur as HPC tries to combine the statistics from
@@ -848,11 +848,11 @@ statistics improves to 52 percent of the code base:
 
 ![](figs/ch11-hpc-round2.png)
 
-HPC ensures that we\'re honest in our testing, as anything less than
+HPC ensures that we're honest in our testing, as anything less than
 100% coverage will be pointed out in glaring color. In particular, it
 ensures the programmer has to think about error cases, and complicated
 branches with obscure conditions, all forms of code smell. When combined
-with a saturating test generation system, like QuickCheck\'s, testing
+with a saturating test generation system, like QuickCheck's, testing
 becomes a rewarding activity, and a core part of Haskell development.
 
 ## Footnotes
