@@ -2,8 +2,8 @@
 
 ## Introduction
 
-In [Chapter 7, *I/O*](7-io.org) and [Chapter 14, Using
-Parsec](14-using-parsec.org) we talked about the `IO` and `GenParser`
+In [Chapter 7, *I/O*](7-io.md) and [Chapter 14, Using
+Parsec](14-using-parsec.md) we talked about the `IO` and `GenParser`
 monads respectively, but we intentionally kept the discussion narrowly
 focused on how to use them. We didn't discuss what a monad *is*.
 
@@ -19,7 +19,7 @@ show how easy it is.
 
 Let's take another look at the `parseP5` function that we wrote in
 [Chapter 10, *Code case study: parsing a binary data
-format*](10-parsing-a-binary-data-format.org).
+format*](10-parsing-a-binary-data-format.md).
 
 PNM.hs
 
@@ -248,16 +248,16 @@ their relationship are borrowed from a branch of mathematics called
 category theory which is a source of inspiration for a lot of Haskell
 design since Phillip Wadler, one of its authors, suggested in his paper
 [Comprehending
-monads](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/div-classtitlecomprehending-monadsa-hreffn01-ref-typefnspan-classsupspanadiv/8678CDA48EB1DF29B9C2C9943AF6BC29)
+monads](https://www.cambridge.md/core/journals/mathematical-structures-in-computer-science/article/div-classtitlecomprehending-monadsa-hreffn01-ref-typefnspan-classsupspanadiv/8678CDA48EB1DF29B9C2C9943AF6BC29)
 to follow Eugenio Moggi's idea of using monads to structure programs.
 
 Here, `(>>=)` is our chaining function. We've already been introduced
-to it in [the section called "Sequencing"](7-io.org::*Sequencing)
+to it in [the section called "Sequencing"](7-io.md::*Sequencing)
 referred to as "bind", as it binds the result of the computation on
 the left to the parameter of the one on the right.
 
 Our injection function is `return`. As we noted in [the section called
-"The True Nature of Return"](7-io.org::*The True Nature of Return)
+"The True Nature of Return"](7-io.md::*The True Nature of Return)
 name `return` is a little unfortunate. That name is widely used in
 imperative languages, where it has a fairly well understood meaning. In
 Haskell, its behaviour is much less constrained. In particular, calling
@@ -333,7 +333,7 @@ in its new context.
 
 To revisit the parser that we developed in [Chapter 10, *Code case
 study: parsing a binary data
-format*](10-parsing-a-binary-data-format.org), here is its `Monad`
+format*](10-parsing-a-binary-data-format.md), here is its `Monad`
 instance.
 
 Parse.hs
@@ -353,9 +353,9 @@ instance Monad Parse where
 ```
 
 We are going to see `liftM` in [the section called "Mixing pure and
-monadic code"](15-monads.org::*Mixing pure and monadic code) [the
+monadic code"](15-monads.md::*Mixing pure and monadic code) [the
 section called "Generalised
-lifting"](16-programming-with-monads.org::*Generalised lifting) they
+lifting"](16-programming-with-monads.md::*Generalised lifting) they
 are "aliases" to known functions.
 
 Notice that `pure` is defined as our `identity` function and `return` is
@@ -401,7 +401,7 @@ library to help with this.
 
 Recall the `globToRegex` function that we developed in [the section
 called "Translating a glob pattern into a regular
-expression"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Translating a glob pattern into a regular expression)
+expression"](8-efficient-file-processing-regular-expressions-and-file-name-matching.md::*Translating a glob pattern into a regular expression)
 We will modify it so that it keeps a record of each of the special
 pattern sequences that it translates. We are revisiting familiar
 territory for a reason: it lets us compare non-monadic and monadic
@@ -584,7 +584,7 @@ left. We know that the result of `record` will always be `()`, so
 there's no point in capturing it.
 
 We can use `do` notation, which we first encountered in [the section
-called "Sequencing"](7-io.org::*Sequencing)
+called "Sequencing"](7-io.md::*Sequencing)
 
 Logger.hs
 
@@ -600,7 +600,7 @@ functions is mostly a matter of taste, though almost everyone's taste
 is to use `do` notation for anything longer than about two lines. There
 is one significant difference between the two styles, though, which
 we'll return to in [the section called "Desugaring of do
-blocks"](15-monads.org::*Desugaring of do blocks)
+blocks"](15-monads.md::*Desugaring of do blocks)
 
 Parsing a character class mostly follows the same pattern that we've
 already seen.
@@ -659,7 +659,7 @@ function that calls `length` and rewraps the result using `return`.
 This need crops up often in Haskell code. We won't be surprised to
 learn that a shorthand already exists: we use the *lifting* technique
 that we introduced for functors in [the section called "Introducing
-functors"](10-parsing-a-binary-data-format.org::*Introducing functors)
+functors"](10-parsing-a-binary-data-format.md::*Introducing functors)
 into a functor usually involves unwrapping the value inside the functor,
 calling the function on it, and rewrapping the result with the same
 constructor.
@@ -863,7 +863,7 @@ Our `Logger` monad is a specialised version of the standard `Writer`
 monad, which can be found in the `Control.Monad.Writer` module of the
 `mtl` package. We will present a `Writer` example in [the section called
 "Using type
-classes"](16-programming-with-monads.org::*Using type classes)
+classes"](16-programming-with-monads.md::*Using type classes)
 
 ## The Maybe monad
 
@@ -994,7 +994,7 @@ variation2a person phoneMap carrierMap addressMap = do
 
 When we introduced maps, we mentioned in [the section called "Partial
 application
-awkwardness"](12-barcode-recognition.org::*Partial application awkwardness)
+awkwardness"](12-barcode-recognition.md::*Partial application awkwardness)
 signatures of functions in the `Data.Map` module often make them awkward
 to partially apply. The `lookup` function is a good example. If we
 `flip` its arguments, we can write the function body as a one-liner.
@@ -1352,7 +1352,7 @@ with the `let` keyword.
 ### Monads as a programmable semicolon
 
 Back in [the section called "The offside rule is not
-mandatory"](3-defining-types-streamlining-functions.org::*The offside rule is not mandatory)
+mandatory"](3-defining-types-streamlining-functions.md::*The offside rule is not mandatory)
 mentioned that layout is the norm in Haskell, but it's not *required*.
 We can write a `do` block using explicit structure instead of layout.
 
@@ -1416,7 +1416,7 @@ wordCount = print . length . words =<< getContents
 
 We discovered earlier in this chapter that the `Parse` from [Chapter 10,
 *Code case study: parsing a binary data
-format*](10-parsing-a-binary-data-format.org) was a monad. It has two
+format*](10-parsing-a-binary-data-format.md) was a monad. It has two
 logically distinct aspects. One is the idea of a parse failing, and
 providing a message with the details: we represented this using the
 `Either` type. The other involves carrying around a piece of implicit
@@ -1966,7 +1966,7 @@ ghci> join [[1],[2,3]]
 ## The monad laws, and good coding style
 
 In [the section called "Thinking more about
-functors"](10-parsing-a-binary-data-format.org::*Thinking more about functors)
+functors"](10-parsing-a-binary-data-format.md::*Thinking more about functors)
 introduced two rules for how functors should always behave.
 
 ``` haskell

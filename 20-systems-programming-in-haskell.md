@@ -73,7 +73,7 @@ current working directory, or create new directories. `System.Directory`
 is portable and works on any platform where GHC itself works.
 
 The [library reference for
-`System.Directory`](http://www.haskell.org/ghc/docs/latest/html/libraries/base/System-Directory.html)
+`System.Directory`](http://www.haskell.md/ghc/docs/latest/html/libraries/base/System-Directory.html)
 provides a comprehensive list of the functions available. Let's use
 `ghci` to demonstrate a few of them. Most of these functions are
 straightforward equivalents to C library calls or shell commands.
@@ -118,13 +118,13 @@ Tip
 For a more detailed discussion of filtering the results of
 `getDirectoryContents`, refer to [Chapter 8, *Efficient file processing,
 regular expressions, and file name
-matching*](8-efficient-file-processing-regular-expressions-and-file-name-matching.org).
+matching*](8-efficient-file-processing-regular-expressions-and-file-name-matching.md).
 
 Is the `` filter (`notElem` [".", ".."]) `` part confusing? That could
 got also be written as `filter (\c -> not $ elem c [".", ".."])`. The
 backticks in this case effectively let us pass the second argument to
 `notElem`; see [the section called "Infix
-functions"](4-functional-programming.org::*Infix functions)
+functions"](4-functional-programming.md::*Infix functions)
 
 You can also query the system about the location of certain directories.
 This query will ask the underlying operating system for the information.
@@ -308,7 +308,7 @@ local timezone, or to a `CalendarTime` representing UTC.
         declared as members of the `Enum` and `Bounded` type classes.
         For more information on these type classes, refer to [the
         section called "Important Built-In Type
-        Classes"](6-using-typeclasses.org::*Important%20Built-In%20Type%20Classes)
+        Classes"](6-using-typeclasses.md::*Important%20Built-In%20Type%20Classes)
 
         You can generate `CalendarTime` values several ways. You could
         start by converting a `ClockTime` to a `CalendarTime` such as
@@ -1341,7 +1341,7 @@ to optimizations present in HSH. HSH also comes with a larger set of
 utility functions and more capabilities, but the source code behind the
 library is much more complex and large. Some of the utility functions
 presented here, in fact, were copied verbatim from HSH. HSH is available
-from <http://software.complete.org/hsh>.
+from <http://software.complete.md/hsh>.
 
 ## Footnotes
 

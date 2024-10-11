@@ -391,7 +391,7 @@ plainHandler addr msg =
 
 For our `SyslogTypes` implementation, see [the section called "UDP
 Client Example:
-syslog"](27-sockets-and-syslog.org::*UDP Client Example: syslog)
+syslog"](27-sockets-and-syslog.md::*UDP Client Example: syslog)
 
 Let's look at this code. Our main loop is in `procRequests`, where we
 loop forever waiting for new connections from clients. The `accept` call

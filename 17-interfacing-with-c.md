@@ -278,7 +278,7 @@ Haskell binding to it, giving us useful regular expressions for Haskell.
 
 PCRE itself is a ubiquitous C library implementing Perl-style regular
 expressions. It is widely available, and preinstalled on many systems.
-If not, it can be found at <http://www.pcre.org/>. In the following
+If not, it can be found at <http://www.pcre.md/>. In the following
 sections we'll assume the PCRE library and headers are available on the
 machine.
 

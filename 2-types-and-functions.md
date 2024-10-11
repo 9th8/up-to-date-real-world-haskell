@@ -134,7 +134,7 @@ Static typing can occasionally make it difficult to write some useful
 kinds of code. In languages like Python, "duck typing" is common,
 where an object acts enough like another to be used as a substitute for
 it[^1]. Fortunately, Haskell's system of *type classes*, which we will
-cover in [Chapter 6, Using Type Classes](6-using-typeclasses.org),
+cover in [Chapter 6, Using Type Classes](6-using-typeclasses.md),
 provides almost all of the benefits of dynamic typing, in a safe and
 convenient form. Haskell has some support for programming with truly
 dynamic types, though it is not quite as easy as in a language that
@@ -214,7 +214,7 @@ than the sum of its parts.
 ## Some common basic types
 
 In [the section called "First steps with
-types"](1-getting-started.org::*First steps with types), we introduced
+types"](1-getting-started.md::*First steps with types), we introduced
 a few types. Here are several more of the most common base types.
 
 -   A `Char` value represents a Unicode character.
@@ -242,7 +242,7 @@ a few types. Here are several more of the most common base types.
 
 We have already briefly seen Haskell's notation for types in [the
 section called "First steps with
-types"](1-getting-started.org::*First steps with types). When we write
+types"](1-getting-started.md::*First steps with types). When we write
 a type explicitly, we use the notation `expression :: MyType` to say
 that `expression` has the type `MyType`. If we omit the `::` and the
 type that follows, a Haskell compiler will infer the type of the
@@ -328,7 +328,7 @@ composite data types in Haskell are lists and tuples.
 
 We've already seen the list type mentioned in [the section called
 "Strings and
-characters"](1-getting-started.org::*Strings and characters), where we
+characters"](1-getting-started.md::*Strings and characters), where we
 found that Haskell represents a text string as a list of `Char` values,
 and that the type "list of `Char`" is written `[Char]`.
 
@@ -405,7 +405,7 @@ traversing a list, either by recursing or using a function that recurses
 for us. Lists are the easiest stepping stone into the idea that we can
 use data to structure our program and its control flow. We'll be
 spending a lot more time discussing lists in [Chapter 4, *Functional
-programming*](4-functional-programming.org).
+programming*](4-functional-programming.md).
 
 A tuple is a fixed-size collection of values, where each value can have
 a different type. This distinguishes them from a list, which can have
@@ -1241,12 +1241,12 @@ conversion between integers and floating point numbers. Haskell
 deliberately avoids even this kind of simple automatic coercion.
 
 This is not the whole story of polymorphism in Haskell: we'll return to
-the subject in [Chapter 6, Using Type Classes](6-using-typeclasses.org).
+the subject in [Chapter 6, Using Type Classes](6-using-typeclasses.md).
 
 ### Reasoning about polymorphic functions
 
 In [the section called "Function types and
-purity"](2-types-and-functions.org::*Function types and purity), we
+purity"](2-types-and-functions.md::*Function types and purity), we
 talked about figuring out the behaviour of a function based on its type
 signature. We can apply the same kind of reasoning to polymorphic
 functions. Let's look again at `fst`.
@@ -1273,7 +1273,7 @@ the pair.
     function of type (a,b) -\> a must do exactly what `fst` does.
     Moreover, this line of reasoning extends to more complicated
     polymorphic functions. The paper
-    \[[Wadler89](bibliography.org::Wadler89)\] covers this procedure in
+    \[[Wadler89](bibliography.md::Wadler89)\] covers this procedure in
     depth.
 
 ## The type of a function of more than one argument
@@ -1307,7 +1307,7 @@ returns a list of the same type as its result.
 This is correct, but it's not easy to see what its consequences might
 be. We'll return to this topic in [the section called "Partial
 function application and
-currying"](4-functional-programming.org::*Partial function application and currying),
+currying"](4-functional-programming.md::*Partial function application and currying),
 once we've spent a bit of time writing functions. For now, we can treat
 the type following the last `->` as being the function's return type,
 and the preceding types to be those of the function's arguments.
@@ -1390,7 +1390,7 @@ evaluation.
 
 This all amounts to a lot of information to absorb. In [Chapter 3,
 *Defining Types, Streamlining
-Functions*](3-defining-types-streamlining-functions.org), we'll build
+Functions*](3-defining-types-streamlining-functions.md), we'll build
 on this basic knowledge to further enhance our understanding of Haskell.
 
 ## Footnotes
@@ -1403,10 +1403,10 @@ on this basic knowledge to further enhance our understanding of Haskell.
 
 [^3]: We'll talk more about polymorphism in [the section called
     "Polymorphism in
-    Haskell"](2-types-and-functions.org::*Polymorphism in Haskell).
+    Haskell"](2-types-and-functions.md::*Polymorphism in Haskell).
 
 [^4]: The environment in which `ghci` operates is called the IO monad.
-    In [Chapter 7, *I/O*](7-io.org), we will cover the IO monad in
+    In [Chapter 7, *I/O*](7-io.md), we will cover the IO monad in
     depth, and the seemingly arbitrary restrictions that `ghci` places
     on us will make more sense.
 

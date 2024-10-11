@@ -485,7 +485,7 @@ We've shown you a lot of ways to use that power. Here's a chance to
 really see that in action.
 
 Back in [the section called "Numeric
-Types"](6-using-typeclasses.org::*Numeric Types) type classes that come
+Types"](6-using-typeclasses.md::*Numeric Types) type classes that come
 with Haskell. Let's see what we can do by defining new types and
 utilizing the numeric type classes to integrate them with basic
 mathematics in Haskell.
@@ -1391,7 +1391,7 @@ Tip
 
 If we need compatibility with GHC prior to version 8.4 we can [write
 compatible
-code](https://prime.haskell.org/wiki/Libraries/Proposals/SemigroupMonoid#Writingcompatiblecode).
+code](https://prime.haskell.md/wiki/Libraries/Proposals/SemigroupMonoid#Writingcompatiblecode).
 
 Let's try our the methods of the `Monoid` type class in `ghci`.
 
@@ -1453,7 +1453,7 @@ A {unA = 7}
 
 We will have more to say about difference lists and their monoidal
 nature in [the section called "The writer monad and
-lists"](16-programming-with-monads.org::*The writer monad and lists)
+lists"](16-programming-with-monads.md::*The writer monad and lists)
 
 Tip
 

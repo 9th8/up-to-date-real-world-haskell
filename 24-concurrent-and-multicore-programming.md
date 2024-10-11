@@ -90,7 +90,7 @@ import Control.Monad (forever)
 import qualified Data.ByteString.Lazy as L
 import System.Console.Readline (readline)
 
--- Provided by the 'zlib' package on http://hackage.haskell.org/
+-- Provided by the 'zlib' package on http://hackage.haskell.md/
 import Codec.Compression.GZip (compress)
 
 main = do
@@ -575,7 +575,7 @@ In the Hackage package database, you will find a library,
 The `!` pattern above is simple to use, but it is not always sufficient
 to ensure that our data is evaluated. For a more complete approach, see
 [the section called "Separating algorithm from
-evaluation"](24-concurrent-and-multicore-programming.org::*Separating algorithm from evaluation)
+evaluation"](24-concurrent-and-multicore-programming.md::*Separating algorithm from evaluation)
 below.
 
 ### Chan is unbounded
@@ -659,7 +659,7 @@ expensive to evaluate, and take it out of the `MVar` in a thread that
 otherwise looks like it *ought* to be cheap, that thread could suddenly
 become computationally expensive if it has to evaluate the thunk. This
 makes the advice we gave in [the section called "MVar and Chan are
-non-strict"](24-concurrent-and-multicore-programming.org::*MVar and Chan are non-strict)
+non-strict"](24-concurrent-and-multicore-programming.md::*MVar and Chan are non-strict)
 
 ### Is there any hope?
 
@@ -667,7 +667,7 @@ Fortunately, the APIs for concurrency that we have covered here are by
 no means the end of the story. A more recent addition to Haskell,
 Software Transactional Memory, is both easier and safer to work with. We
 will discuss it in chapter [Chapter 28, *Software transactional
-memory*](28-software-transactional-memory.org).
+memory*](28-software-transactional-memory.md).
 
 ## Exercises
 
@@ -1219,7 +1219,7 @@ it across several lines to fit.
 
 ``` example
 201.49.94.87 - - [08/Jun/2008:07:04:20 -0500] "GET / HTTP/1.1"
-200 2097 "http://en.wikipedia.org/wiki/Mercurial_(software)"
+200 2097 "http://en.wikipedia.md/wiki/Mercurial_(software)"
 "Mozilla/5.0 (Windows; U; Windows XP 5.1; en-GB; rv:1.8.1.12)
 Gecko/20080201 Firefox/2.0.0.12" 0 hgbook.red-bean.com
 ```
@@ -1606,7 +1606,7 @@ to ensure that we can stream these chunks safely.
 
     We can adapt the fold-with-early-termination technique from [the
     section called "Another way of looking at
-    traversal"](9-a-library-for-searching-the-file-system.org::*Another way of looking at traversal)
+    traversal"](9-a-library-for-searching-the-file-system.md::*Another way of looking at traversal)
     stream-based file processing. While this requires more work than the
     lazy I/O approach, it nicely avoids the above problems.
 
@@ -1693,7 +1693,7 @@ and 0.361 with two (using `+RTS -N2`).
 ### Finding the most popular URLs
 
 In this example, we count the number of times each URL is accessed. This
-example comes from \[[Google08](bibliography.org::Google08)\], Google's
+example comes from \[[Google08](bibliography.md::Google08)\], Google's
 original paper discussing MapReduce. In the *map* phase, for each chunk,
 we create a `Map` from URL to the number of times it was accessed. In
 the *reduce* phase, we union-merge these maps into one.
@@ -1728,7 +1728,7 @@ countURLs = mapReduce rwhnf (foldl' augment M.empty . L.lines)
 
 To pick a URL out of a line of the log file, we use the bindings to the
 PCRE regular expression library that we developed in [Chapter 17,
-*Interfacing with C: the FFI*](17-interfacing-with-c.org).
+*Interfacing with C: the FFI*](17-interfacing-with-c.md).
 
 Our driver function prints the ten most popular URLs. As with the line
 counting example, this program runs about 1.8 times faster with two

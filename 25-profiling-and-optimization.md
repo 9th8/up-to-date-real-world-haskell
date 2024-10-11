@@ -94,7 +94,7 @@ control the number of OS threads with `-N`, or tweak the stack and heap
 sizes). We'll also use runtime flags to enable different varieties of
 profiling. The complete set of flags the Haskell runtime accepts is
 documented in the [GHC User's
-Guide](http://www.haskell.org/ghc/docs/latest/html/users_guide/):
+Guide](http://www.haskell.md/ghc/docs/latest/html/users_guide/):
 
 So let's run the program with statistic reporting enabled, via
 `+RTS -sstderr`, yielding this result.

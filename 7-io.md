@@ -136,7 +136,7 @@ You only need to use `do` if you have more than one action that you need
 to perform. The value of a `do` block is the value of the last action
 executed. For a complete description of `do` syntax, see [the section
 called "Desugaring of do
-blocks"](15-monads.org::*Desugaring of do blocks)
+blocks"](15-monads.md::*Desugaring of do blocks)
 
 Let's consider an example of calling pure code from within an I/O
 action:
@@ -205,8 +205,8 @@ is really imperative rather than pure, lazy, and functional. Some of
 these examples look like a sequence of actions to be followed in order.
 There's more to it than that, though. We'll discuss that question
 later in this chapter in [the section called "Is Haskell Really
-Imperative?"](7-io.org::*Is Haskell Really Imperative?) [the section
-called "Lazy I/O"](7-io.org::*Lazy I/O)
+Imperative?"](7-io.md::*Is Haskell Really Imperative?) [the section
+called "Lazy I/O"](7-io.md::*Lazy I/O)
 
 ### Pure vs. I/O
 
@@ -250,7 +250,7 @@ parallelism for the pure parts of your code--something of a holy grail
 for computing.
 
 For more discussion on this topic, refer to [the section called "Side
-Effects with Lazy I/O"](7-io.org::*Side Effects with Lazy I/O)
+Effects with Lazy I/O"](7-io.md::*Side Effects with Lazy I/O)
 
 ## Working With Files and Handles
 
@@ -323,7 +323,7 @@ must use `return` to wrap it in `IO`. As an example, if `7` is an `Int`,
 then `return 7` would create an action stored in a value of type
 `IO Int`. When executed, that action would produce the result `7`. For
 more details on `return`, see [the section called "The True Nature of
-Return"](7-io.org::*The True Nature of Return)
+Return"](7-io.md::*The True Nature of Return)
 
 Let's try running the program. We've got a file named `input.txt` that
 looks like this:
@@ -397,7 +397,7 @@ You've already seen that `hClose` is used to close file handles. Let's
 take a moment and think about why this is important.
 
 As you'll see in [the section called
-"Buffering"](7-io.org::*Buffering) Haskell maintains internal buffers
+"Buffering"](7-io.md::*Buffering) Haskell maintains internal buffers
 for files. This provides an important performance boost. However, it
 means that until you call `hClose` on a file that is open for writing,
 your data may not be flushed out to the operating system.
@@ -417,9 +417,9 @@ Haskell provides several tools for you to use to easily ensure this
 happens, regardless of whether errors are present. You can read about
 `finally` in [the section called "Extended Example: Functional I/O and
 Temporary
-Files"](7-io.org::*Extended Example: Functional I/O and Temporary Files)
+Files"](7-io.md::*Extended Example: Functional I/O and Temporary Files)
 and `bracket` in [the section called "The acquire-use-release
-cycle"](9-a-library-for-searching-the-file-system.org::*The acquire-use-release cycle)
+cycle"](9-a-library-for-searching-the-file-system.md::*The acquire-use-release cycle)
 
 ### Seek and Tell
 
@@ -449,7 +449,7 @@ of the file. `hSeek handle
 SeekFromEnd 0` will take you to the end of the file. For an example of
 `hSeek`, refer to [the section called "Extended Example: Functional I/O
 and Temporary
-Files"](7-io.org::*Extended Example: Functional I/O and Temporary Files)
+Files"](7-io.md::*Extended Example: Functional I/O and Temporary Files)
 
 Not all `Handle~s are seekable. A ~Handle` usually corresponds to a
 file, but it can also correspond to other things such as network
@@ -484,7 +484,7 @@ Tip
 
 We're using partial application here. If this isn't making sense,
 consult [the section called "Partial function application and
-currying"](4-functional-programming.org::*Partial function application and currying)
+currying"](4-functional-programming.md::*Partial function application and currying)
 a refresher.
 
 Earlier, we told you what the three standard file handles "normally"
@@ -532,13 +532,13 @@ it is removed before the rename takes place.
 Like many other functions that take a filename, if the "old" name
 doesn't exist, `renameFile` will raise an exception. More information
 on exception handling can be found in [Chapter 19, *Error
-handling*](19-error-handling.org).
+handling*](19-error-handling.md).
 
 There are many other functions in `System.Directory` for doing things
 such as creating and removing directories, finding lists of files in
 directories, and testing for file existence. These are discussed in [the
 section called "Directory and File
-Information"](20-systems-programming-in-haskell.org::*Directory and File Information)
+Information"](20-systems-programming-in-haskell.md::*Directory and File Information)
 
 ### Temporary Files
 
@@ -673,7 +673,7 @@ There is some exception handling going on to make the program more
 robust in the face of errors. You normally want the temporary files to
 be deleted after processing completes, even if something went wrong. So
 we make sure that happens. For more on exception handling, see
-[Chapter 19, *Error handling*](19-error-handling.org).
+[Chapter 19, *Error handling*](19-error-handling.md).
 
 Let's return to the start of the program. `main` is defined simply as
 `withTempFile "mytemp.txt" myAction`. `myAction`, then, will be invoked
@@ -763,7 +763,7 @@ looks like--and, really, is--a pure `String`, you can pass it to pure
 
 Let's take a quick look at an example. Back in [the section called
 "Working With Files and
-Handles"](7-io.org::*Working With Files and Handles) imperative program
+Handles"](7-io.md::*Working With Files and Handles) imperative program
 that converted the entire content of a file to uppercase. Its imperative
 algorithm was similar to what you'd see in many other languages. Here
 now is the much simpler algorithm that exploits lazy evaluation:
@@ -979,7 +979,7 @@ data as soon as they are received, run `runghc toupper-lazy4.hs` without
 any other command-line parameters. You should see each character echoed
 back out as soon as you type it, but in uppercase. Buffering may change
 this behavior; see [the section called
-"Buffering"](7-io.org::*Buffering) for more on buffering. If you see
+"Buffering"](7-io.md::*Buffering) for more on buffering. If you see
 each line echoed as soon as you type it, or even nothing at all for
 awhile, buffering is causing this behavior.
 
@@ -1001,7 +1001,7 @@ Tip
 
 If the use of the `.` operator is confusing, you might wish to refer to
 [the section called "Code reuse through
-composition"](4-functional-programming.org::*Code reuse through composition)
+composition"](4-functional-programming.md::*Code reuse through composition)
 
 Here we add a string at the beginning of the output. Can you spot the
 problem, though?
@@ -1048,9 +1048,9 @@ This moved the header outside of the `map`.
     Can you guess what these functions do just by looking at their
     types? If not, you can find them explained in [the section called
     "Warming up: portably splitting lines of
-    text"](4-functional-programming.org::*Warming up: portably splitting lines of text)
+    text"](4-functional-programming.md::*Warming up: portably splitting lines of text)
     and [the section called "Special string-handling
-    functions"](4-functional-programming.org::*Special string-handling functions)
+    functions"](4-functional-programming.md::*Special string-handling functions)
     frequently see `lines` and `unlines` used with I/O. Finally, `elem`
     takes a element and a list and returns `True` if that element occurs
     anywhere in the list.
@@ -1102,7 +1102,7 @@ Haskell is called *actions*. Actions resemble functions. They do nothing
 when they are defined, but perform some task when they are invoked. I/O
 actions are defined within the IO monad. Monads are a powerful way of
 chaining functions together purely and are covered in [Chapter 14,
-*Monads*](15-monads.org). It's not necessary to understand monads in
+*Monads*](15-monads.md). It's not necessary to understand monads in
 order to understand I/O. Just understand that the result type of actions
 is "tagged" with IO. Let's take a look at some types:
 
@@ -1302,7 +1302,7 @@ Tip
 
 Forgetting how to use `\` (lambda expressions)? See [the section called
 "Anonymous (lambda)
-functions"](4-functional-programming.org::*Anonymous (lambda) functions)
+functions"](4-functional-programming.md::*Anonymous (lambda) functions)
 
 ### The True Nature of Return
 
@@ -1501,7 +1501,7 @@ The `System.Console.GetOpt` module provides some tools for parsing
 command-line options. If you have a program with complex options, you
 may find it useful. You can find an example of its use in [the section
 called "Command line
-parsing"](28-software-transactional-memory.org::*Command line parsing)
+parsing"](28-software-transactional-memory.md::*Command line parsing)
 
 ## Environment Variables
 
@@ -1533,13 +1533,13 @@ setting is not defined for Windows.
 
 [^5]: For more information on interoperating with other programs with
     pipes, see [the section called "Extended Example:
-    Piping"](20-systems-programming-in-haskell.org::*Extended Example: Piping)
+    Piping"](20-systems-programming-in-haskell.md::*Extended Example: Piping)
 
 [^6]: POSIX programmers may be interested to know that this corresponds
     to `unlink()` in C.
 
 [^7]: `hGetContents` will be discussed in [the section called "Lazy
-    I/O"](7-io.org::*Lazy I/O)
+    I/O"](7-io.md::*Lazy I/O)
 
 [^8]: There is also a shortcut function `getContents` that operates on
     standard input.

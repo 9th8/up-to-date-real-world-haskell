@@ -216,12 +216,12 @@ simplicity, but wanted to point out that it exists.
 2.  Usage of the `Maybe` Monad
 
     Back in [the section called "Use of
-    Maybe"](19-error-handling.org::*Use of Maybe) program named
+    Maybe"](19-error-handling.md::*Use of Maybe) program named
     `divby2.hs`. This example didn't preserve laziness, but returned a
     value of type `Maybe [a]`. The exact same algorithm could be
     expressed using a monadic style. For more information and important
     background on monads, please refer to [Chapter 14,
-    *Monads*](15-monads.org). Here's our new monadic-style algorithm:
+    *Monads*](15-monads.md). Here's our new monadic-style algorithm:
 
     ``` example
     divBy :: Integral a => a -> [a] -> Maybe [a]
@@ -390,7 +390,7 @@ Left "divBy: division by 0"
 2.  Monadic Use of `Either`
 
     Back in [the section called "Usage of the Maybe
-    Monad"](19-error-handling.org::*Usage of the Maybe Monad) how to
+    Monad"](19-error-handling.md::*Usage of the Maybe Monad) how to
     use `Maybe` in a monad. `Either` can be used in a monad too, but can
     be slightly more complicated. The reason is that `fail` is
     hard-coded to accept only a `String` as the failure code, so we have
@@ -688,7 +688,7 @@ default. #+END~WARNING~
 
 Let's take a look at one approach to using exceptions in the I/O system
 to our benefit. Back in [the section called "Working With Files and
-Handles"](7-io.org::*Working With Files and Handles) program that used
+Handles"](7-io.md::*Working With Files and Handles) program that used
 an imperative style to read lines from a file one by one. Although we
 subsequently demonstrated more compact, "Haskelly" ways to solve that
 problem, let's revisit that example here. In the `mainloop` function,
@@ -768,7 +768,7 @@ This makes use of two little-used Haskell modules: `Data.Dynamic` and
 modules here, but will give you the tools you need to craft and use your
 own dynamic exception type.
 
-In [Chapter 21, *Using Databases*](21-using-databases.org), you will see
+In [Chapter 21, *Using Databases*](21-using-databases.md), you will see
 that the HDBC database library uses dynamic exceptions to indicate
 errors from SQL databases back to applications. Errors from database
 engines often have three components: an integer that represents an error
@@ -903,7 +903,7 @@ actually like.
 
 We defined a `MaybeT` transformer in [the section called "Understanding
 monad transformers by building
-one"](18-monad-transformers.org::*Understanding monad transformers by building one)
+one"](18-monad-transformers.md::*Understanding monad transformers by building one)
 but it is more useful as an aid to understanding than a programming
 tool. Fortunately, a dedicated---and more useful---monad transformer
 already exists: `ErrorT`, which is defined in the `Control.Monad.Error`
@@ -1082,11 +1082,11 @@ Right (Just '9',"a")
 
 [^2]: For an introduction to `Maybe`, refer to [the section called "A
     more controlled
-    approach"](3-defining-types-streamlining-functions.org::*A more controlled approach)
+    approach"](3-defining-types-streamlining-functions.md::*A more controlled approach)
 
 [^3]: For more information on `Either`, refer to [the section called
     "Handling errors through API
-    design"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Handling errors through API design)
+    design"](8-efficient-file-processing-regular-expressions-and-file-name-matching.md::*Handling errors through API design)
 
 [^4]: In some other languages, throwing an exception is referred to as
     *raising* it.

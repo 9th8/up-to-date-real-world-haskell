@@ -3,7 +3,7 @@
 The task of parsing a file, or data of various types, is a common one
 for programmers. We already learned about Haskell's support for regular
 expressions back in [the section called "Regular expressions in
-Haskell"](8-efficient-file-processing-regular-expressions-and-file-name-matching.org::*Regular expressions in Haskell)
+Haskell"](8-efficient-file-processing-regular-expressions-and-file-name-matching.md::*Regular expressions in Haskell)
 expressions are nice for many tasks, but they rapidly become unwieldy,
 or cannot be used at all, when dealing with a complex data format. For
 instance, we cannot use regular expressions to parse source code from
@@ -629,7 +629,7 @@ $ runhaskell csv7.hs < test.csv
 
 Parsec's `GenParser` monad is an instance of the `MonadPlus` type class
 that we introduced in [the section called "Looking for
-alternatives"](16-programming-with-monads.org::*Looking for alternatives)
+alternatives"](16-programming-with-monads.md::*Looking for alternatives)
 represents a parse failure, while `mplus` combines two alternative
 parses into one, using `(<|>)`.
 
@@ -643,7 +643,7 @@ instance MonadPlus (GenParser tok st) where
 
 When we introduced `application/x-www-form-urlencoded` text in [the
 section called "Golfing practice: association
-lists"](16-programming-with-monads.org::*Golfing%20practice:%20association%20lists),
+lists"](16-programming-with-monads.md::*Golfing%20practice:%20association%20lists),
 we mentioned that we'd write a parser for these strings. We can quickly
 and easily do this using Parsec.
 
@@ -1241,7 +1241,7 @@ basic denial of service attacks.
 
 3.  Add the ability to honour the `Transfer-Encoding`: chunked header if
     it is present. See [section 3.6.1 of RFC
-    2616](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1)
+    2616](https://www.w3.md/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1)
     for details.
 
 4.  Another popular attack is to open a connection and either leave it
@@ -1254,4 +1254,4 @@ basic denial of service attacks.
 
 [^1]: For information on dealing with choices that may consume some
     input before failing, see [the section called
-    "Lookahead"](14-using-parsec.org::*Lookahead)
+    "Lookahead"](14-using-parsec.md::*Lookahead)

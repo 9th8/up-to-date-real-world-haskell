@@ -82,7 +82,7 @@ introduces a block of *actions* that can cause effects in the real
 world, such as reading or writing a file. The `<-` operator is the
 equivalent of assignment inside a `do` block. This is enough explanation
 to get us started. We will talk in much more detail about these details
-of notation, and I/O in general, in [Chapter 7, *I/O*](7-io.org).
+of notation, and I/O in general, in [Chapter 7, *I/O*](7-io.md).
 
 When we want to test a function that cannot talk to the outside world,
 we simply replace the name `id` in the code above with the name of the
@@ -297,7 +297,7 @@ Linking FixLines ...
 
 If you are on a Windows system, find and download a text file that was
 created on a Unix system (for example
-[gpl-3.0.txt](http://www.gnu.org/licenses/gpl-3.0.txt)). Open it in the
+[gpl-3.0.txt](http://www.gnu.md/licenses/gpl-3.0.txt)). Open it in the
 standard Notepad text editor. The lines should all run together, making
 the file almost unreadable. Process the file using the `FixLines`
 command you just created, and open the output file in Notepad. The line
@@ -681,7 +681,7 @@ False
 
 The `take` function, which we already met in [the section called
 "Function
-application"](2-types-and-functions.org::*Function application)
+application"](2-types-and-functions.md::*Function application)
 consisting of the first *k* elements from a list. Its converse, `drop`,
 drops *k* elements from the start of the list.
 
@@ -729,7 +729,7 @@ ghci> dropWhile even [2,4,6,7,9,10,12]
 Just as `splitAt` "tuples up" the results of `take` and `drop`, the
 functions `break` (which we already saw in [the section called "Warming
 up: portably splitting lines of
-text"](4-functional-programming.org::*Warming up: portably splitting lines of text)
+text"](4-functional-programming.md::*Warming up: portably splitting lines of text)
 and `span` tuple up the results of `takeWhile` and `dropWhile`.
 
 Each function takes a predicate; `break` consumes its input while its
@@ -839,7 +839,7 @@ zip three lists together, we call `zip3` or `zipWith3`, and so on up to
 
 We've already encountered the standard `lines` function in [the section
 called "Warming up: portably splitting lines of
-text"](4-functional-programming.org::*Warming up: portably splitting lines of text)
+text"](4-functional-programming.md::*Warming up: portably splitting lines of text)
 and its standard counterpart, `unlines`. Notice that `unlines` always
 places a newline on the end of its result.
 
@@ -887,7 +887,7 @@ ghci> unwords ["jumps", "over", "the", "lazy", "dog"]
 
 3.  Using the command framework from [the section called "A simple
     command line
-    framework"](4-functional-programming.org::*A simple command line framework)
+    framework"](4-functional-programming.md::*A simple command line framework)
     program that prints the first word of each line of its input.
 
 4.  Write a program that transposes the text in a file. For instance, it
@@ -1283,7 +1283,7 @@ The `filter` function takes a predicate and applies it to every element
 in its input list, returning a list of only those for which the
 predicate evaluates to `True`. We'll revisit `filter` again soon, in
 [the section called "Folding from the
-right"](4-functional-programming.org::*Folding from the right)
+right"](4-functional-programming.md::*Folding from the right)
 
 ### Computing one answer over a collection
 
@@ -1502,7 +1502,7 @@ foldr _    zero []     = zero
 
 Let's follow the same manual evaluation process with
 `foldr (+) 0 [1,2,3]` as we did with `niceSum` in [the section called
-"The left fold"](4-functional-programming.org::*The left fold)
+"The left fold"](4-functional-programming.md::*The left fold)
 
 Fold.hs
 
@@ -1535,7 +1535,7 @@ At first glance, `foldr` might seem less useful than `foldl`: what use
 is a function that folds from the right? But consider the prelude's
 `filter` function, which we last encountered in [the section called
 "Selecting pieces of
-input"](4-functional-programming.org::*Selecting pieces of input)
+input"](4-functional-programming.md::*Selecting pieces of input)
 `filter` using explicit recursion, it will look something like this.
 
 Filter.hs
@@ -1610,7 +1610,7 @@ You will want to follow the same manual evaluation process as we
 outlined above to see what `foldl` and `foldr` were really doing. If you
 get stuck, you may find the task easier after reading [the section
 called "Partial function application and
-currying"](4-functional-programming.org::*Partial function application and currying)
+currying"](4-functional-programming.md::*Partial function application and currying)
 
 Returning to our earlier intuitive explanation of what `foldr` does,
 another useful way to think about it is that it *transforms* its input
@@ -1668,7 +1668,7 @@ end of our first list.
 As our extended treatment of folds should indicate, the `foldr` function
 is nearly as important a member of our list-programming toolbox as the
 more basic list functions we saw in [the section called "Working with
-lists"](4-functional-programming.org::*Working with lists) produce a
+lists"](4-functional-programming.md::*Working with lists) produce a
 list incrementally, which makes it useful for writing lazy data
 processing code.
 
@@ -1756,7 +1756,7 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
 1.  Use a fold (choosing the appropriate fold will make your code much
     simpler) to rewrite and improve upon the `asInt` function from [the
     section called "Explicit
-    recursion"](4-functional-programming.org::*Explicit recursion)
+    recursion"](4-functional-programming.md::*Explicit recursion)
 
     exercises.hs
 
@@ -1846,7 +1846,7 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
 
 ### Further reading
 
-The article \[[Hutton99](bibliography.org::Hutton99)\] is an excellent
+The article \[[Hutton99](bibliography.md::Hutton99)\] is an excellent
 and deep tutorial covering folds. It includes many examples of how to
 use simple, systematic calculation techniques to turn functions that use
 explicit recursion into folds.
@@ -2040,7 +2040,7 @@ ghci> zip3foobar [1,2]
 Partial function application lets us avoid writing tiresome throwaway
 functions. It's often more useful for this purpose than the anonymous
 functions we introduced in [the section called "Anonymous (lambda)
-functions"](4-functional-programming.org::*Anonymous (lambda) functions)
+functions"](4-functional-programming.md::*Anonymous (lambda) functions)
 the `isInAny` function we defined there, here's how we'd use a
 partially applied function instead of a named helper function or a
 lambda.
@@ -2062,7 +2062,7 @@ Haskell Curry (for whom the Haskell language is named).
 
 As another example of currying in use, let's return to the list-summing
 function we wrote in [the section called "The left
-fold"](4-functional-programming.org::*The left fold)
+fold"](4-functional-programming.md::*The left fold)
 
 Sum.hs
 
@@ -2221,7 +2221,7 @@ better?
 
 Recall the `init` function we introduced in [the section called
 "Working with
-lists"](4-functional-programming.org::*Working with lists) last element
+lists"](4-functional-programming.md::*Working with lists) last element
 of a list.
 
 SuffixTree.hs
@@ -2416,7 +2416,7 @@ ghci> (head . tail . words) "#define DLT_CHAOS    5"
 
 After warning against unsafe list functions in [the section called
 "Safely and sanely working with crashy
-functions"](4-functional-programming.org::*Safely and sanely working with crashy functions)
+functions"](4-functional-programming.md::*Safely and sanely working with crashy functions)
 here we are calling both `head` and `tail`, two of those unsafe list
 functions. What gives?
 
@@ -2638,7 +2638,7 @@ introduce new leaks.
 The best guides to whether `seq` is necessary, and how well it is
 working, are performance measurement and profiling, which we will cover
 in [Chapter 25, *Profiling and
-optimization*](25-profiling-and-optimization.org). From a base of
+optimization*](25-profiling-and-optimization.md). From a base of
 empirical measurement, you will develop a reliable sense of when `seq`
 is most useful.
 

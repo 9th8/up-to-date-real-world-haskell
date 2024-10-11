@@ -6,7 +6,7 @@
 \[Broder02\] Andrei Broder. Michael Mitzenmacher. "[Network
 applications of Bloom filters: a
 survey](http://www.eecs.harvard.edu/~michaelm/postscripts/im2005b.pdf)".
-[*Internet Mathematics*](http://www.internetmathematics.org/).
+[*Internet Mathematics*](http://www.internetmathematics.md/).
 
 1.  4\. 2005. 485-509.
 
@@ -18,11 +18,11 @@ survey](http://www.eecs.harvard.edu/~michaelm/postscripts/im2005b.pdf)".
 \[Google08\] Jeffrey Dean. Sanjay Ghemawat. "[MapReduce: simplified
 data processing on large
 clusters](http://labs.google.com/papers/mapreduce.html)".
-[*Communications of the ACM*](http://cacm.acm.org/).
+[*Communications of the ACM*](http://cacm.acm.md/).
 
 1.  1\. January 2008. 107-113.
 
-[Association for Computing Machinery](http://www.acm.org/). 0956-7968.
+[Association for Computing Machinery](http://www.acm.md/). 0956-7968.
 
 ```{=org}
 #+NAME: Hughes95
@@ -38,17 +38,17 @@ Techniques. Bastad, Sweden.
 \[Hutton99\] Graham Hutton. "[A tutorial on the universality and
 expressiveness of fold](http://www.cs.nott.ac.uk/~gmh/fold.pdf)".
 [*Journal of Functional
-Programming*](http://journals.cambridge.org/jid_JFP).
+Programming*](http://journals.cambridge.md/jid_JFP).
 
 1.  4\. July 1999. 355-372.
 
-[Cambridge University Press](http://www.cambridge.org/). 0956-7968.
+[Cambridge University Press](http://www.cambridge.md/). 0956-7968.
 
 ```{=org}
 #+NAME: Okasaki99
 ```
 \[Okasaki99\] Chris Okasaki. *Purely Functional Data Structures*.
-[Cambridge University Press](http://www.cambridge.org/). 0521663504.
+[Cambridge University Press](http://www.cambridge.md/). 0521663504.
 
 ```{=org}
 #+NAME: Okasaki96

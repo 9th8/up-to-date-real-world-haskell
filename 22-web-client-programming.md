@@ -45,7 +45,7 @@ based on code written for hpodder, an existing podcatcher written in
 Haskell. hpodder has many more features than the examples presented
 here, which make it too long and complex for coverage in this book. If
 you are interested in studying hpodder, its source code is freely
-available at <http://software.complete.org/hpodder>.
+available at <http://software.complete.md/hpodder>.
 
 We'll write the code for this chapter in pieces. Each piece will be its
 own Haskell module. You'll be able to play with each piece by itself in
@@ -97,11 +97,11 @@ Also, the first time the user runs the program, we'll need to create
 the database tables that we'll use to store our data.
 
 We'll use HDBC (see [Chapter 21, *Using
-Databases*](21-using-databases.org)) to interact with a Sqlite database.
+Databases*](21-using-databases.md)) to interact with a Sqlite database.
 Sqlite is lightweight and self-contained, which makes it perfect for
 this project. For information on installing HDBC and Sqlite, consult
 [the section called "Installing HDBC and
-Drivers"](21-using-databases.org::*Installing HDBC and Drivers)
+Drivers"](21-using-databases.md::*Installing HDBC and Drivers)
 
 PodDB.hs
 
@@ -273,14 +273,14 @@ ghci> :type dbh
 dbh :: Connection
 ghci> getTables dbh
 ["episodes","podcasts","sqlite_sequence"]
-ghci> let url = "http://feeds.thisamericanlife.org/talpodcast"
+ghci> let url = "http://feeds.thisamericanlife.md/talpodcast"
 ghci> pc <- addPodcast dbh (Podcast {castId=0, castURL=url})
-Podcast {castId = 1, castURL = "http://feeds.thisamericanlife.org/talpodcast"}
+Podcast {castId = 1, castURL = "http://feeds.thisamericanlife.md/talpodcast"}
 ghci> getPodcasts dbh
-[Podcast {castId = 1, castURL = "http://feeds.thisamericanlife.org/talpodcast"}]
+[Podcast {castId = 1, castURL = "http://feeds.thisamericanlife.md/talpodcast"}]
 ghci> addEpisode dbh (Episode {epId = 0, epCast = pc, epURL = "http://www.example.com/foo.mp3", epDone = False})
 ghci> getPodcastEpisodes dbh pc
-[Episode {epId = 1, epCast = Podcast {castId = 1, castURL = "http://feeds.thisamericanlife.org/talpodcast"}, epURL = "http://www.example.com/foo.mp3", epDone = False}]
+[Episode {epId = 1, epCast = Podcast {castId = 1, castURL = "http://feeds.thisamericanlife.md/talpodcast"}, epURL = "http://www.example.com/foo.mp3", epDone = False}]
 ghci> commit dbh
 ghci> disconnect dbh
 ```
@@ -476,7 +476,7 @@ and update our database. For the latter, we'll write the data out to a
 file on disk.
 
 We'll be downloading from HTTP servers, so we'll use a Haskell [HTTP
-library](http://www.haskell.org/http/). For downloading podcast feeds,
+library](http://www.haskell.md/http/). For downloading podcast feeds,
 we'll download the document, parse it, and update the database. For
 episode audio, we'll download the file, write it to disk, and mark it
 downloaded in the database. Here's the code:
@@ -642,7 +642,7 @@ ghc --make -O2 -o pod -package HTTP -package HaXml -package network
 
 Alternatively, you could use a Cabal file as documented in [the section
 called "Creating a
-package"](5-writing-a-library.org::*Creating a package)
+package"](5-writing-a-library.md::*Creating a package)
 
 pod.cabal
 

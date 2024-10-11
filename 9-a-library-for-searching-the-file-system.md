@@ -78,7 +78,7 @@ single list.
 ### Revisiting anonymous and named functions
 
 In [the section called "Anonymous (lambda)
-functions"](4-functional-programming.org::*Anonymous (lambda) functions)
+functions"](4-functional-programming.md::*Anonymous (lambda) functions)
 some reasons not to use anonymous functions, and yet here we are, using
 one as the body of a loop. This is one of the most common uses of
 anonymous functions in Haskell.
@@ -267,7 +267,7 @@ ghci> :m +System.Directory
 
     (If you cannot recall the special `ghci` variable `it`, take a look
     back at [the section called "First steps with
-    types"](1-getting-started.org::*First steps with types) A directory
+    types"](1-getting-started.md::*First steps with types) A directory
     will be `searchable` if we have permission to list its contents;
     files are never `searchable`.
 
@@ -974,7 +974,7 @@ its result in `Maybe`.
     their parent.
 3.  Take the predicates and combinators from [the section called
     "Gluing predicates
-    together"](9-a-library-for-searching-the-file-system.org::*Gluing predicates together)
+    together"](9-a-library-for-searching-the-file-system.md::*Gluing predicates together)
     work with our new `Info` type.
 4.  Write a wrapper for `traverseDirs` that lets you control traversal
     using one predicate, and filter results using another.
@@ -1248,7 +1248,7 @@ unambiguously. That said, some layout patterns are widely used.
 
 As we already mentioned in [the section called "A note about tabs
 versus
-spaces"](3-defining-types-streamlining-functions.org::*A note about tabs versus spaces)
+spaces"](3-defining-types-streamlining-functions.md::*A note about tabs versus spaces)
 to use spaces.
 
 The `in` keyword is usually aligned directly under the `let` keyword,

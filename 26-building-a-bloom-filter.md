@@ -58,7 +58,7 @@ the bit array. It is set, as is bit `3`, so we say that `"baz"` is
 present even though it is not. We have reported a false positive.
 
 For a survey of some of the uses of Bloom filters in networking, see
-\[[Broder02](bibliography.org::Broder02)\].
+\[[Broder02](bibliography.md::Broder02)\].
 
 ## Use cases and package layout
 
@@ -159,7 +159,7 @@ elements into each byte, so this type is perfect for our needs.
 ## The `ST` monad
 
 Back in [the section called "Modifying array
-elements"](12-barcode-recognition.org::*Modifying array elements)
+elements"](12-barcode-recognition.md::*Modifying array elements)
 mentioned that modifying an immutable array is prohibitively expensive,
 as it requires copying the entire array. Using a `UArray` does not
 change this, so what can we do to reduce the cost to bearable levels?
@@ -1447,7 +1447,7 @@ instance NFData (B.Bloom a) where
 
 We borrow the `rnf` function that we introduced in [the section called
 "Separating algorithm from
-evaluation"](24-concurrent-and-multicore-programming.org::*Separating algorithm from evaluation)
+evaluation"](24-concurrent-and-multicore-programming.md::*Separating algorithm from evaluation)
 develop a simple timing harness. Out `timed` action ensures that a value
 is evaluated to normal form in order to accurately capture the cost of
 evaluating it.

@@ -164,7 +164,7 @@ the same as `String`.
 
 We'll go into more detail on defining instances in [the section called
 "Declaring type class
-instances"](6-using-typeclasses.org::*Declaring type class instances)
+instances"](6-using-typeclasses.md::*Declaring type class instances)
 let's continue to look at ways to define type classes. In this example,
 a not-equal-to function might be useful. Here's what we might say to
 define a type class with two functions:
@@ -232,7 +232,7 @@ that type class.
 
 Recall our attempt to create a test for equality over a `Color` type
 back in [the section called "The need for type
-classes"](6-using-typeclasses.org::*The need for type classes) let's
+classes"](6-using-typeclasses.md::*The need for type classes) let's
 see how we could make that same `Color` type a member of the `BasicEq3`
 class.
 
@@ -250,13 +250,13 @@ instance BasicEq3 Color where
 
 Notice that we provide essentially the same function as we used back in
 [the section called "The need for type
-classes"](6-using-typeclasses.org::*The need for type classes) the
+classes"](6-using-typeclasses.md::*The need for type classes) the
 implementation is identical. However, in this case, we can use
 `isEqual3` on *any* type that we declare is an instance of `BasicEq3`,
 not just this one color type. We could define equality tests for
 anything from numbers to graphics using the same basic pattern. In fact,
 as you will see in [the section called "Equality, Ordering, and
-Comparisons"](6-using-typeclasses.org::*Equality, Ordering, and Comparisons)
+Comparisons"](6-using-typeclasses.md::*Equality, Ordering, and Comparisons)
 exactly how you can make Haskell's `==` operator work for your own
 custom types.
 
@@ -357,7 +357,7 @@ instance Show Color where
 
 This example defines an instance of `Show` for our type `Color` (see
 [the section called "The need for type
-classes"](6-using-typeclasses.org::*The need for type classes)
+classes"](6-using-typeclasses.md::*The need for type classes)
 implementation is simple: we define a function `show` and that's all
 that's needed.
 
@@ -513,7 +513,7 @@ Read is not widely used
 While it is possible to build sophisticated parsers using the `Read`
 type class, many people find it easier to do so using Parsec, and rely
 on `Read` only for simpler tasks. Parsec is covered in detail in
-[Chapter 16, *Using Parsec*](14-using-parsec.org).
+[Chapter 16, *Using Parsec*](14-using-parsec.md).
 
 ### Serialization with Read and Show
 
@@ -536,7 +536,7 @@ String handling in Haskell is normally lazy, so `read` and `show` can be
 used on quite large data structures without incident. The built-in
 `read` and `show` instances in Haskell are efficient and implemented in
 pure Haskell. For information on how to handle parsing exceptions, refer
-to [Chapter 19, *Error handling*](19-error-handling.org).
+to [Chapter 19, *Error handling*](19-error-handling.md).
 
 Let's try it out in `ghci`:
 
@@ -579,7 +579,7 @@ True
 Since so many different types are instances of `Read` and `Show` by
 default (and others can be made instances easily; see [the section
 called "Automatic
-Derivation"](6-using-typeclasses.org::*Automatic Derivation) some
+Derivation"](6-using-typeclasses.md::*Automatic Derivation) some
 really complex data structures. Here are a few examples of slightly more
 complex data structures:
 
@@ -730,7 +730,7 @@ information on converting between different types.
 
 For an extended example demonstrating the use of these numeric type
 classes, see [the section called "Extended example: Numeric
-Types"](13-data-structures.org::*Extended example: Numeric Types)
+Types"](13-data-structures.md::*Extended example: Numeric Types)
 
 ### Equality, Ordering, and Comparisons
 
@@ -835,7 +835,7 @@ data ThisWorks = ThisWorks OK
 
 The `JValue` type that we introduced in [the section called
 "Representing JSON data in
-Haskell"](5-writing-a-library.org::*Representing JSON data in Haskell)
+Haskell"](5-writing-a-library.md::*Representing JSON data in Haskell)
 especially easy to work with. Here is a truncated and tidied snippet of
 some real JSON data, produced by a well known search engine.
 
@@ -853,7 +853,7 @@ some real JSON data, produced by a well known search engine.
    {
     "title": "Haskell for C Programmers | Lambda the Ultimate",
     "snippet": "... the best job of all the tutorials I've read ...",
-    "url": "http://lambda-the-ultimate.org/node/724",
+    "url": "http://lambda-the-ultimate.md/node/724",
    }]
 }
 ```
@@ -1778,10 +1778,10 @@ automatically derive instances of certain type classes for your types.
     it is, users can implement one or both, as they see fit.
 
 [^2]: As you will see in [the section called "Lazy
-    I/O"](7-io.org::*Lazy I/O) doesn't actually read the entire file
+    I/O"](7-io.md::*Lazy I/O) doesn't actually read the entire file
     at this point. But for the purposes of this example, we can ignore
     that distinction.
 
 [^3]: If you simply *must* read the gory details, see [section
-    4.5.5](http://www.haskell.org/onlinereport/decls.html#sect4.5.5) of
+    4.5.5](http://www.haskell.md/onlinereport/decls.html#sect4.5.5) of
     the Haskell 98 Report.

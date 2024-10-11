@@ -5,7 +5,7 @@ will use this task for two purposes. Our first is indeed to talk a
 little about parsing, but our main goal is to talk about program
 organisation, refactoring, and "boilerplate removal". We will
 demonstrate how you can tidy up repetitious code, and set the stage for
-our discussion of monads in [Chapter 14, Monads](15-monads.org).
+our discussion of monads in [Chapter 14, Monads](15-monads.md).
 
 The file formats that we will work with come from the netpbm suite, an
 ancient and venerable collection of programs and file formats for
@@ -254,7 +254,7 @@ boilerplate `case` expressions, we've made the code easier to follow.
 
 While we warned against overuse of anonymous functions in [the section
 called "Anonymous (lambda)
-functions"](4-functional-programming.org::*Anonymous (lambda) functions)
+functions"](4-functional-programming.md::*Anonymous (lambda) functions)
 in our chain of functions here. Because these functions are so small, we
 wouldn't improve readability by giving them names.
 
@@ -672,7 +672,7 @@ class Functor f where
 
 We can think of `fmap` as a kind of *lifting* function, as we introduced
 in [the section called "Avoiding boilerplate with
-lifting"](9-a-library-for-searching-the-file-system.org::*Avoiding boilerplate with lifting)
+lifting"](9-a-library-for-searching-the-file-system.md::*Avoiding boilerplate with lifting)
 function over ordinary values `a -> b` and lifts it to become a function
 over a type whose constructor takes one type parameter `f a -> f b`,
 where `f` is the type.
@@ -1157,8 +1157,8 @@ Along the way, we introduced the notion of a functor, which offers a
 generalised way to map over a parameterised type.
 
 We will revisit parsing in [Chapter 16, *Using
-Parsec*](14-using-parsec.org), to discuss Parsec, a widely used and
-flexible parsing library. And in [Chapter 14, Monads](15-monads.org), we
+Parsec*](14-using-parsec.md), to discuss Parsec, a widely used and
+flexible parsing library. And in [Chapter 14, Monads](15-monads.md), we
 will return to our theme of abstraction, where we will find that much of
 the code that we have developed in this chapter can be further
 simplified by the use of monads.

@@ -67,7 +67,7 @@ Note
 Deriving what?
 
 We'll explain the full meaning of `deriving (Show)` later, in [the
-section called "Show"](6-using-typeclasses.org::*Show) need to tack
+section called "Show"](6-using-typeclasses.md::*Show) need to tack
 this onto a type declaration so that `ghci` will automatically know how
 to print a value of this type.
 
@@ -436,9 +436,9 @@ types, and how they relate to concepts that might be more familiar.
     to them by location, not by name.
 
     In [the section called "Pattern
-    matching"](3-defining-types-streamlining-functions.org::*Pattern matching)
+    matching"](3-defining-types-streamlining-functions.md::*Pattern matching)
     the fields of a `BookStore` value. In [the section called "Record
-    syntax"](3-defining-types-streamlining-functions.org::*Record syntax)
+    syntax"](3-defining-types-streamlining-functions.md::*Record syntax)
     syntax for defining data types that looks a little more C-like.
 
 2.  The enumeration
@@ -564,7 +564,7 @@ types, and how they relate to concepts that might be more familiar.
     fact that we created a `Circle` is stored. When we later use a
     `Circle`, we can't accidentally treat it as a `Square`. We will see
     why in [the section called "Pattern
-    matching"](3-defining-types-streamlining-functions.org::*Pattern matching)
+    matching"](3-defining-types-streamlining-functions.md::*Pattern matching)
 
     Tip
 
@@ -744,7 +744,7 @@ ghci> complicated (False, 1, [1,2,3], 5)
 
 For an explanation of this error message, skip forward a little, to [the
 section called "Exhaustive patterns and wild
-cards"](3-defining-types-streamlining-functions.org::*Exhaustive patterns and wild cards)
+cards"](3-defining-types-streamlining-functions.md::*Exhaustive patterns and wild cards)
 
 We can pattern match on an algebraic data type using its value
 constructors. Recall the `BookInfo` type we defined earlier: we can
@@ -1374,7 +1374,7 @@ the variable in a `let` block.
 Also, our use of white space here is important. We'll talk in more
 detail about the layout rules in [the section called "The offside rule
 and white space in an
-expression"](3-defining-types-streamlining-functions.org::*The offside rule and white space in an expression)
+expression"](3-defining-types-streamlining-functions.md::*The offside rule and white space in an expression)
 
 We can use the names of a variable in a `let` block both within the
 block of declarations and in the expression that follows the `in`
@@ -1469,7 +1469,7 @@ following afterwards. After a while, you may find yourself missing
 As with `let` expressions, white space is significant in `where`
 clauses. We will talk more about the layout rules shortly, in [the
 section called "The offside rule and white space in an
-expression"](3-defining-types-streamlining-functions.org::*The offside rule and white space in an expression)
+expression"](3-defining-types-streamlining-functions.md::*The offside rule and white space in an expression)
 
 ### Local functions, global variables
 
@@ -1510,7 +1510,7 @@ In our definitions of `lend` and `lend2`, the left margin of our text
 wandered around quite a bit. This was not an accident: normally in
 Haskell white space has meaning: it uses the code layout [as defined in
 the
-report](https://www.haskell.org/onlinereport/haskell2010/haskellch10.html#x17-17800010.3)
+report](https://www.haskell.md/onlinereport/haskell2010/haskellch10.html#x17-17800010.3)
 as a cue to parse it. This is sometimes called the *offside rule*.
 
 At the beginning of a source file, the first top level declaration or
@@ -1849,7 +1849,7 @@ We can use guards anywhere that we can use patterns. Writing a function
 as a series of equations using pattern matching and guards can make it
 much clearer. Remember the `myDrop` function we defined in [the section
 called "Conditional
-evaluation"](2-types-and-functions.org::*Conditional evaluation)
+evaluation"](2-types-and-functions.md::*Conditional evaluation)
 
 myDrop.hs
 
@@ -1937,9 +1937,9 @@ ghci> intersperse ',' ["foo","bar","baz","quux"]
 5.  Using the code from the preceding three exercises, implement
     Graham's scan algorithm for the convex hull of a set of 2D points.
     You can find good description of what a [convex
-    hull](http://en.wikipedia.org/wiki/Convex_hull) is, and how the
-    [Graham scan algorithm](http://en.wikipedia.org/wiki/Graham_scan)
-    should work, on [Wikipedia](http://en.wikipedia.org/).
+    hull](http://en.wikipedia.md/wiki/Convex_hull) is, and how the
+    [Graham scan algorithm](http://en.wikipedia.md/wiki/Graham_scan)
+    should work, on [Wikipedia](http://en.wikipedia.md/).
 
 ## Footnotes
 

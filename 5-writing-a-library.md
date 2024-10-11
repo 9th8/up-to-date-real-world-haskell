@@ -10,8 +10,8 @@ The JSON (JavaScript Object Notation) language is a small, simple
 representation for storing and transmitting structured data, for example
 over a network connection. It is most commonly used to transfer data
 from a web service to a browser-based JavaScript application. The JSON
-format is described at [www.json.org](http://www.json.org/), and in
-greater detail by [RFC 4627](http://www.ietf.org/rfc/rfc4627.txt).
+format is described at [www.json.md](http://www.json.md/), and in
+greater detail by [RFC 4627](http://www.ietf.md/rfc/rfc4627.txt).
 
 JSON supports four basic types of value: strings, numbers, booleans, and
 a special value named `null`.
@@ -971,7 +971,7 @@ as we will see in a number of places throughout this book.
 
 Our `hcat` and `fsep` functions concatenate a list of `Doc` values into
 one. In [the section called
-"Exercises"](4-functional-programming.org::*Exercises) could define
+"Exercises"](4-functional-programming.md::*Exercises) could define
 concatenation for lists using `foldr`.
 
 Concat.hs
@@ -1337,7 +1337,7 @@ synopsis:    My pretty printing library, with JSON support
 description: A simple pretty printing library that illustrates how to
              develop a Haskell library.
 author:      Real World Haskell
-maintainer:  nobody@realworldhaskell.org
+maintainer:  nobody@realworldhaskell.md
 ```
 
 As the `description` field indicates, a field can span multiple lines,
@@ -1485,14 +1485,14 @@ example, but a much richer and more useful set of pretty printing
 functions. We recommend using it, rather than writing your own.
 
 The design of the `HughesPJ` pretty printer was introduced by John
-Hughes in \[[Hughes95](bibliography.org::Hughes95)\]. The library was
+Hughes in \[[Hughes95](bibliography.md::Hughes95)\]. The library was
 subsequently improved by Simon Peyton Jones, hence the name. Hughes's
 paper is long, but well worth reading for his discussion of how to
 design a library in Haskell.
 
 In this chapter, our pretty printing library is based on a simpler
 system described by Philip Wadler in
-\[[Wadler98](bibliography.org::Wadler98)\]. His library was extended by
+\[[Wadler98](bibliography.md::Wadler98)\]. His library was extended by
 Daan Leijen; this version is available for download from Hackage as
 `wl-pprint`. If you use the `cabal` command line tool, you can download,
 build, and install it in one step with `cabal install wl-pprint`.

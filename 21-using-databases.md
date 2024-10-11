@@ -14,7 +14,7 @@ important as well. In this chapter, we will introduce you to one of the
 Haskell frameworks for working with databases. We will also use this
 framework to begin building a podcast downloader, which we will further
 develop in [Chapter 22, *Extended Example: Web Client
-Programming*](22-web-client-programming.org).
+Programming*](22-web-client-programming.md).
 
 ## Overview of HDBC
 
@@ -55,25 +55,25 @@ data from the database.
 To connect to a given database with HDBC, you need at least two
 packages: the generic interface, and a driver for your specific
 database. You can obtain the generic HDBC package, and all of the other
-drivers, from [Hackage](http://hackage.haskell.org/)[^3]. For this
+drivers, from [Hackage](http://hackage.haskell.md/)[^3]. For this
 chapter, we will use HDBC version 1.1.3 for examples.
 
 You'll also need a database backend and backend driver. For this
 chapter, we'll use Sqlite version 3. Sqlite is an embedded database, so
 it doesn't require a separate server and is easy to set up. Many
 operating systems already ship with Sqlite version 3. If yours doesn't,
-you can download it from <http://www.sqlite.org/>. The HDBC homepage has
+you can download it from <http://www.sqlite.md/>. The HDBC homepage has
 a link to known HDBC backend drivers. The specific driver for Sqlite
 version 3 can be obtained from Hackage.
 
 If you want to use HDBC with other databases, check out the HDBC Known
-Drivers page at <http://software.complete.org/hdbc/wiki/KnownDrivers>.
+Drivers page at <http://software.complete.md/hdbc/wiki/KnownDrivers>.
 There you will find a link to the ODBC binding, which lets you connect
 to virtually any database on virtually any platform (Windows, POSIX, and
 others). You will also find a PostgreSQL binding. MySQL is supported via
 the ODBC binding, and specific information for MySQL users can be found
 in the [HDBC-ODBC API
-documentation](http://software.complete.org/static/hdbc-odbc/doc/HDBC-odbc/).
+documentation](http://software.complete.md/static/hdbc-odbc/doc/HDBC-odbc/).
 
 ## Connecting to Databases
 
@@ -426,7 +426,7 @@ ghci> query 2
 ### Reading with Statements
 
 As we discussed in [the section called "Prepared
-Statements"](21-using-databases.org::*Prepared Statements) you can use
+Statements"](21-using-databases.md::*Prepared Statements) you can use
 statements for reading. There are a number of ways of reading data from
 statements that can be useful in certain situations. Like `run`,
 `quickQuery'` is a convenience function that in fact uses statements to
@@ -442,7 +442,7 @@ to a `Maybe String` before returning it. Finally, there is
 `fetchAllRowsAL'`, which returns `(String, SqlValue)` pairs for each
 column. The `String` is the column name as returned by the database; see
 [the section called "Database
-Metadata"](21-using-databases.org::*Database Metadata)
+Metadata"](21-using-databases.md::*Database Metadata)
 
 You can also read data one row at a time by calling `fetchRow`, which
 returns `IO (Maybe [SqlValue])`. It will be `Nothing` if all the results
@@ -450,7 +450,7 @@ have already been read, or one row otherwise.
 
 ### Lazy Reading
 
-Back in [the section called "Lazy I/O"](7-io.org::*Lazy I/O) from
+Back in [the section called "Lazy I/O"](7-io.md::*Lazy I/O) from
 files. It is also possible to read data lazily from databases. This can
 be particularly useful when dealing with queries that return an
 exceptionally large amount of data. By reading data lazily, you can
@@ -591,7 +591,7 @@ programmers make it a standard practice to start their programs with
 There are also `catchSql` and `handleSql~—similar to the standard
 ~catch` and `handle` functions. `catchSql` and `handleSql` will
 intercept only HDBC errors. For more information on error handling,
-refer to [Chapter 19, *Error handling*](19-error-handling.org).
+refer to [Chapter 19, *Error handling*](19-error-handling.md).
 
 ## Footnotes
 
@@ -602,7 +602,7 @@ refer to [Chapter 19, *Error handling*](19-error-handling.org).
 
 [^3]: For more information on installing Haskell software, please refer
     to [the section called "Installing Haskell
-    software"](installing-ghc-and-haskell-libraries.org::*Installing Haskell software)
+    software"](installing-ghc-and-haskell-libraries.md::*Installing Haskell software)
 
 [^4]: HDBC emulates this behavior for databases that do not provide it,
     providing programmers a unified API for running queries repeatedly.

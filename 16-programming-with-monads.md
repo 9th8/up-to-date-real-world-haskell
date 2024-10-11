@@ -33,7 +33,7 @@ above string as the following Haskell value.
 ```
 
 In [the section called "Parsing an URL-encoded query
-string"](14-using-parsec.org::*Parsing an URL-encoded query string)
+string"](14-using-parsec.md::*Parsing an URL-encoded query string)
 parsed an `application/x-www-form-urlencoded` string, and represented
 the result as an alist of `[(String, Maybe String)]`. Let's say we want
 to use one of these alists to fill out a data structure.
@@ -96,7 +96,7 @@ Although this is much tidier, we're still repeating ourselves. We can
 take advantage of the fact that the `MovieReview` constructor acts as a
 normal, pure function by *lifting* it into the monad, as we discussed in
 [the section called "Mixing pure and monadic
-code"](15-monads.org::*Mixing pure and monadic code)
+code"](15-monads.md::*Mixing pure and monadic code)
 
 MovieReview.hs
 
@@ -174,7 +174,7 @@ ghci> :type ap
 ap :: Monad m => m (a -> b) -> m a -> m b
 ```
 
-And that's why, as we saw in [Chapter 15, Monads](15-monads.org), they
+And that's why, as we saw in [Chapter 15, Monads](15-monads.md), they
 are synonyms.
 
 ## Looking for alternatives
@@ -369,7 +369,7 @@ v >> mzero == mzero
 ### Failing safely with `MonadPlus`
 
 When we introduced the `fail` function in [the section called "The
-Monad type class"](15-monads.org::*The Monad type class) warn against
+Monad type class"](15-monads.md::*The Monad type class) warn against
 its use: in many monads, it's implemented as a call to `error`, which
 has unpleasant consequences.
 
@@ -402,7 +402,7 @@ x `zeroMod` n = guard ((x `mod` n) == 0) >> return x
 ## Adventures in hiding the plumbing
 
 In [the section called "Using the state monad: generating random
-values"](15-monads.org::*Using the state monad: generating random values)
+values"](15-monads.md::*Using the state monad: generating random values)
 we showed how to use the `State` monad to give ourselves access to
 random numbers in a way that is easy to use.
 
@@ -696,7 +696,7 @@ ghci> second odd ('a',1)
 
 (Indeed, we already encountered `second`, in [the section called "JSON
 type classes without overlapping
-instances"](6-using-typeclasses.org::*JSON type classes without overlapping instances)
+instances"](6-using-typeclasses.md::*JSON type classes without overlapping instances)
 We can use `first` to golf our definition of `randomsIO`, turning it
 into a one-liner.
 
@@ -966,7 +966,7 @@ monad's plumbing, intermediate functions that don't care about the
 configuration information don't need to see it.
 
 The clearest motivation for the `Reader` monad will come in [Chapter 18,
-*Monad transformers*](18-monad-transformers.org), when we discuss
+*Monad transformers*](18-monad-transformers.md), when we discuss
 combining several monads to build a new monad. There, we'll see how to
 gain finer control over state, so that our code can modify some values
 via the `State` monad, while other values remain immutable, courtesy of
@@ -1093,7 +1093,7 @@ While the separation of interface and implementation that we've
 discussed above is appealing for its architectural cleanliness, it has
 important practical applications that will become clearer later. When we
 start combining monads in [Chapter 18, *Monad
-transformers*](18-monad-transformers.org), we will save a lot of effort
+transformers*](18-monad-transformers.md), we will save a lot of effort
 through the use of `GeneralizedNewtypeDeriving` and type classes.
 
 ## Hiding the `IO` monad
@@ -1405,7 +1405,7 @@ data Event = Open FilePath IOMode
 
 Although we already developed a `Logger` type in [the section called
 "Using a new monad: show your
-work!"](15-monads.org::*Using a new monad: show your work!) we'll use
+work!"](15-monads.md::*Using a new monad: show your work!) we'll use
 the standard, and more general, `Writer` monad. Like other `mtl` monads,
 the API provided by `Writer` is defined in a type class, in this case
 `MonadWriter`. Its most useful method is `tell`, which logs a value.
@@ -1476,13 +1476,13 @@ In production code, if you want to use the `Writer` monad and you need
 list-like behaviour, use a type with better append characteristics. One
 such type is the difference list, which we introduced in [the section
 called "Taking advantage of functions as
-data"](13-data-structures.org::*Taking advantage of functions as data)
+data"](13-data-structures.md::*Taking advantage of functions as data)
 You don't need to roll your own difference list implementation: a well
 tuned library is available for download from Hackage, the Haskell
 package database. Alternatively, you can use the `Seq` type from the
 `Data.Sequence` module, which we introduced in [the section called
 "General purpose
-sequences"](13-data-structures.org::*General purpose sequences)
+sequences"](13-data-structures.md::*General purpose sequences)
 
 ### Arbitrary I/O revisited
 

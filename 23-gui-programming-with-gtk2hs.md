@@ -14,9 +14,9 @@ development environment, Glade, and gtk2hs. The specifics of doing so
 vary by distribution.
 
 Windows and Mac developers should consult the gtk2hs downloads site at
-<http://www.haskell.org/gtk2hs/download/>. Begin by downloading gtk2hs
+<http://www.haskell.md/gtk2hs/download/>. Begin by downloading gtk2hs
 from there. Then you will also need Glade version 3. Mac developers can
-find this at <http://www.macports.org/>, while Windows developers should
+find this at <http://www.macports.md/>, while Windows developers should
 consult <http://sourceforge.net/projects/gladewin32>.
 
 ## Overview of the GTK+ Stack
@@ -39,7 +39,7 @@ bindings available for GTK+.
 
 In this chapter, we are going to develop a GUI for the podcast
 downloader we first developed in [Chapter 22, *Extended Example: Web
-Client Programming*](22-web-client-programming.org). Our first task is
+Client Programming*](22-web-client-programming.md). Our first task is
 to design the user interface in Glade. Once we have accomplished that,
 we will write the Haskell code to integrate it with the application.
 
@@ -49,13 +49,13 @@ interface design with Glade, you may wish to refer to one of these
 resources:
 
 -   The Glade homepage, which contains documentation for Glade.
-    <http://glade.gnome.org/>
+    <http://glade.gnome.md/>
 -   The GTK+ homepage contains information about the different widgets.
     Refer to the documentation section, then the stable GTK
-    documentation area. <http://www.gtk.org/>
+    documentation area. <http://www.gtk.md/>
 -   The gtk2hs homepage also has a useful documentation section, which
     contains an API reference to gtk2hs as well as a glade tutorial.
-    <http://www.haskell.org/gtk2hs/documentation/>
+    <http://www.haskell.md/gtk2hs/documentation/>
 
 ### Glade Concepts
 
@@ -124,7 +124,7 @@ wouldn't be processed in a timely manner.
 Therefore, we will be using multithreading to handle these long-running
 tasks. More information on multithreading can be found in [Chapter 24,
 *Concurrent and multicore
-programming*](24-concurrent-and-multicore-programming.org). For now,
+programming*](24-concurrent-and-multicore-programming.md). For now,
 just know that we will use `forkIO` to create new threads for
 long-running tasks such as downloading podcast feeds and episodes. For
 very quick tasks, such as adding a new podcast to the database, we will
@@ -135,7 +135,7 @@ user will never notice.
 
 Our first steps are going to involve initializing the GUI for our
 program. For reasons that we'll explain in [the section called "Using
-Cabal"](23-gui-programming-with-gtk2hs.org::*Using Cabal) file called
+Cabal"](23-gui-programming-with-gtk2hs.md::*Using Cabal) file called
 `PodLocalMain.hs` that loads `PodMain` and passes to it the path to
 `podresources.glade`, the XML file saved by Glade that gives the
 information about our GUI widgets.
@@ -153,7 +153,7 @@ main = PodMainGUI.main "podresources.glade"
 Now, let's consider `PodMainGUI.hs`. This file is the only Haskell
 source file that we had to modify from the example in [Chapter 22,
 *Extended Example: Web Client
-Programming*](22-web-client-programming.org) to make it work as a GUI.
+Programming*](22-web-client-programming.md) to make it work as a GUI.
 Let's start by looking at the start of our new `PodMainGUI.hs`
 file---we've renamed it from `PodMain.hs` for clarity.
 
@@ -565,7 +565,7 @@ Here's what the final result looks like after running an update:
 
 We presented a Cabal file to build this project for the command-line
 version in [the section called "Main
-Program"](22-web-client-programming.org::*Main Program) for it to work
+Program"](22-web-client-programming.md::*Main Program) for it to work
 with our GUI version. First, there's the obvious need to add the gtk2hs
 packages to the list of build dependencies. There is also the matter of
 the Glade XML file.

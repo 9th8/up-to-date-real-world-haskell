@@ -29,7 +29,7 @@ If we are talking about a specific command, we will mention `ghc`,
 
 In this book, we assume that you're using at least version 8.2.2 of
 GHC, which was released in 2017. To obtain a copy of GHC visit [the GHC
-download page](http://www.haskell.org/downloads), and look for the list
+download page](http://www.haskell.md/downloads), and look for the list
 of binary packages and installers.
 
 Many Linux distributors, and providers of BSD and other Unix variants,
@@ -38,7 +38,7 @@ specifically for each environment, they are much easier to install and
 use than the generic binary packages that are available from the GHC
 download page. You can find a list of distributions that custom-build
 GHC at the GHC [distribution
-packages](http://www.haskell.org/ghc/distribution_packages.html) page.
+packages](http://www.haskell.md/ghc/distribution_packages.html) page.
 
 For more detailed information about how to install GHC on a variety of
 popular platforms, we've provided some instructions in [Appendix A,
@@ -67,7 +67,7 @@ Windows, it's available via the Start Menu. For example, if you
 installed using the GHC installer on Windows, you should go to
 "Programs", then "GHC"; you will then see `ghci` in the list. (See
 [the section called
-"Windows"](installing-ghc-and-haskell-libraries.org::*Windows)
+"Windows"](installing-ghc-and-haskell-libraries.md::*Windows)
 screenshot.)
 
 When we run `ghci`, it displays a startup banner, followed by a
@@ -75,7 +75,7 @@ When we run `ghci`, it displays a startup banner, followed by a
 
 ```
 $ ghci
-GHCi, version 8.2.2: http://www.haskell.org/ghc/  :? for help
+GHCi, version 8.2.2: http://www.haskell.md/ghc/  :? for help
 Prelude>
 ```
 
@@ -461,7 +461,7 @@ This syntax is ghci-specific
 The syntax for `let` that `ghci` accepts is not the same as we would use
 at the "top level" of a normal Haskell program. We will see the normal
 syntax in [the section called "Introducing local
-variables"](3-defining-types-streamlining-functions.org::*Introducing local variables)
+variables"](3-defining-types-streamlining-functions.md::*Introducing local variables)
 
 ### Dealing with precedence and associativity rules
 
@@ -650,7 +650,7 @@ follow the widely used conventions established by the C language. For
 example, `'\n'` denotes a newline character, and `'\t'` is a tab
 character. For complete details, see [Appendix B, *Characters, strings,
 and escaping
-rules*](appendix-characters-strings-and-escaping-rules.org).
+rules*](appendix-characters-strings-and-escaping-rules.md).
 
 ```
 ghci> putStrLn "Here's a newline -->\n<-- See?"
@@ -890,7 +890,7 @@ value, and it defaults to `Integer`. In the second case, we ask `ghci`
 to print the type of the expression without actually evaluating it, so
 it does not have to be so specific. It answers, in effect, "its type is
 numeric". We will see more of this style of type annotation in
-[Chapter 6, Using Type Classes](6-using-typeclasses.org).
+[Chapter 6, Using Type Classes](6-using-typeclasses.md).
 
 ## A simple program
 

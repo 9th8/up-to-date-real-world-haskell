@@ -2,7 +2,7 @@
 
 In this chapter, we'll make use of the image parsing library we
 developed in [Chapter 10, *Code case study: parsing a binary data
-format*](10-parsing-a-binary-data-format.org) to build a barcode
+format*](10-parsing-a-binary-data-format.md) to build a barcode
 recognition application. Given a picture of the back of a book taken
 with a camera phone, we could use this to extract its ISBN number.
 
@@ -254,7 +254,7 @@ ghci> a ! 4
 Haskell also provides strict arrays, which behave differently. We will
 discuss the tradeoffs between the two kinds of array much later, in [the
 section called "Unboxing, lifting, and
-bottom"](26-building-a-bloom-filter.org::*Unboxing, lifting, and bottom)
+bottom"](26-building-a-bloom-filter.md::*Unboxing, lifting, and bottom)
 
 ### Folding over arrays
 
@@ -323,7 +323,7 @@ Don't lose hope
 It *is* in fact possible to modify an array efficiently in Haskell,
 using the `ST` monad. This is a subject that we will return to later, in
 [Chapter 26, *Advanced library design: building a Bloom
-filter*](26-building-a-bloom-filter.org).
+filter*](26-building-a-bloom-filter.md).
 
 ### Exercises
 
@@ -397,7 +397,7 @@ Phone cameras and webcams generally output JPEG images, but writing a
 JPEG decoder would take us several chapters. We'll simplify our parsing
 problem by handling the netpbm file format. We will use the parsing
 combinators we developed earlier, in [Chapter 10, *Code case study:
-parsing a binary data format*](10-parsing-a-binary-data-format.org).
+parsing a binary data format*](10-parsing-a-binary-data-format.md).
 
 We'd like to deal with real images from the kinds of cheap, fixed-focus
 cameras that come with low-end cell phones. These images tend to be out
@@ -472,7 +472,7 @@ pixel is either black or white.
 As we mentioned earlier, we'll work with netpbm images. The netpbm
 colour image format is only slightly more complicated than the greyscale
 image format that we parsed in [Chapter 10, *Code case study: parsing a
-binary data format*](10-parsing-a-binary-data-format.org). The
+binary data format*](10-parsing-a-binary-data-format.md). The
 identifying string in a header is "P6", with the rest of the header
 layout identical to the greyscale format. In the body of an image, each
 pixel is represented as three bytes, one each for red, green and blue.
@@ -502,7 +502,7 @@ dimensions of the image explicitly, since we can extract them using the
 
 The actual parser is mercifully short, thanks to the combinators we
 developed in [Chapter 10, *Code case study: parsing a binary data
-format*](10-parsing-a-binary-data-format.org).
+format*](10-parsing-a-binary-data-format.md).
 
 Barcode.hs
 
@@ -622,7 +622,7 @@ and computes a "pivot" value. Then for each value in the array, if
 that value is less than the pivot, the result is `Zero`, otherwise
 `One`. Notice that we use one of the folding functions that we wrote in
 [the section called "Folding over
-arrays"](12-barcode-recognition.org::*Folding over arrays)
+arrays"](12-barcode-recognition.md::*Folding over arrays)
 
 ## What have we done to our image?
 
@@ -730,7 +730,7 @@ The bit patterns above aren't random; they're the left outer guard and
 first encoded digit of a row from our captured image. If we drop the
 guard bars, we're left with the run lengths `[2,6,4,4]`. How do we find
 matches for these in the encoding tables we wrote in [the section called
-"Introducing arrays"](12-barcode-recognition.org::*Introducing arrays)
+"Introducing arrays"](12-barcode-recognition.md::*Introducing arrays)
 
 ### Scaling run lengths, and finding approximate matches
 
@@ -1070,7 +1070,7 @@ in an imperative language is usually mutable; we can change an element
 of an array whenever it suits us.
 
 As we mentioned in [the section called "Modifying array
-elements"](12-barcode-recognition.org::*Modifying array elements)
+elements"](12-barcode-recognition.md::*Modifying array elements)
 Haskell arrays are *not* mutable. This means that to "modify" a single
 array element, a copy of the entire array is made, with that single
 element set to its new value. Clearly, this approach is not a winner for
@@ -1283,13 +1283,13 @@ this chapter, we imported it using the prefix `M`.
 
     We have barely covered ten percent of the `Data.Map` API. We will
     cover maps and similar data structures in greater detail in
-    [Chapter 13, *Data Structures*](13-data-structures.org). For further
+    [Chapter 13, *Data Structures*](13-data-structures.md). For further
     inspiration, we encourage you to browse the module documentation.
     The module is impressively thorough.
 
 ### Further reading
 
-The book \[[Okasaki99](bibliography.org::Okasaki99)\] gives a wonderful
+The book \[[Okasaki99](bibliography.md::Okasaki99)\] gives a wonderful
 and thorough implementor's tour of many pure functional data
 structures, including several kinds of balanced tree. It also provides
 valuable insight into reasoning about the performance of purely
@@ -1297,7 +1297,7 @@ functional data structures and lazy evaluation.
 
 We recommend Okasaki's book as essential reading for functional
 programmers. If you're not convinced, Okasaki's PhD thesis,
-\[[Okasaki96](bibliography.org::Okasaki96)\], is a less complete and
+\[[Okasaki96](bibliography.md::Okasaki96)\], is a less complete and
 polished version of the book, and it is available for free online.
 
 ## Turning digit soup into an answer
@@ -1432,7 +1432,7 @@ finalDigits = foldl' incorporateDigits (M.singleton 0 [])
 ```
 
 (From the `checkDigit` function that we defined in [the section called
-"EAN-13 encoding"](12-barcode-recognition.org::*EAN-13 encoding) digit
+"EAN-13 encoding"](12-barcode-recognition.md::*EAN-13 encoding) digit
 computation requires that we multiply every other digit by `3`.)
 
 How long is the list with which we call `finalDigits`? We don't yet

@@ -1025,7 +1025,7 @@ catch an exception.
 We won't have anything more to say about exception handling here.
 There's plenty more to cover, though, so we'll be returning to the
 subject of exceptions in chapter [Chapter 19, *Error
-handling*](19-error-handling.org).
+handling*](19-error-handling.md).
 
 ### Exercises
 
