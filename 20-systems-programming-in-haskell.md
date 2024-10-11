@@ -26,7 +26,7 @@ suggest using `rawSystem` from the `System.Cmd` module. This will invoke
 a specified program, with the specified arguments, and return the exit
 code from that program. You can play with it in `ghci`:
 
-``` screen
+```
 ghci> :module System.Cmd
 ghci> rawSystem "ls" ["-l", "/usr"]
 Loading package old-locale-1.0.0.0 ... linking ... done.
@@ -56,7 +56,7 @@ wildcards.[^1] Instead, it expects every argument to be contained in a
 list. If you don't want to pass any arguments, you can simply pass an
 empty list like this:
 
-``` screen
+```
 ghci> rawSystem "ls" []
 calendartime.ghci  modtime.ghci    rp.ghci    RunProcessSimple.hs
 cmd.ghci       posixtime.hs    rps.ghci   timediff.ghci
@@ -78,7 +78,7 @@ provides a comprehensive list of the functions available. Let's use
 `ghci` to demonstrate a few of them. Most of these functions are
 straightforward equivalents to C library calls or shell commands.
 
-``` screen
+```
 ghci> :module System.Directory
 ghci> setCurrentDirectory "/etc"
 Loading package old-locale-1.0.0.0 ... linking ... done.
@@ -96,7 +96,7 @@ Here we saw commands to change the current working directory and obtain
 the current working directory from the system. These are similar to the
 `cd` and `pwd` commands in the POSIX shell.
 
-``` screen
+```
 ghci> getDirectoryContents "/"
 [".","..","lost+found","boot","etc","media","initrd.img","var","usr","bin","dev","home","lib","mnt","proc","root","sbin","tmp","sys","lib64","srv","opt","initrd","vmlinuz",".rnd","www","ultra60","emul",".fonts.cache-1","selinux","razor-agent.log",".svn","initrd.img.old","vmlinuz.old","ugid-survey.bulkdata","ugid-survey.brief"]
 ```
@@ -106,7 +106,7 @@ directory. Note that on POSIX systems, this list normally includes the
 special values `"."` and `".."`. You will usually want to filter these
 out when processing the content of the directory, perhaps like this:
 
-``` screen
+```
 ghci> getDirectoryContents "/" >>= return . filter (`notElem` [".", ".."])
 ["lost+found","boot","etc","media","initrd.img","var","usr","bin","dev","home","lib","mnt","proc","root","sbin","tmp","sys","lib64","srv","opt","initrd","vmlinuz",".rnd","www","ultra60","emul",".fonts.cache-1","selinux","razor-agent.log",".svn","initrd.img.old","vmlinuz.old","ugid-survey.bulkdata","ugid-survey.brief"]
 ```
@@ -133,7 +133,7 @@ functions"](4-functional-programming.org::*Infix functions)
 You can also query the system about the location of certain directories.
 This query will ask the underlying operating system for the information.
 
-``` screen
+```
 ghci> getHomeDirectory
 "/home/bos"
 ghci> getAppUserDataDirectory "myApp"
@@ -231,7 +231,7 @@ local timezone, or to a `CalendarTime` representing UTC.
     `getClockTime` function that returns the current time according to
     the system's clock.
 
-    ``` screen
+    ```
     ghci> :module System.Time
     ghci> getClockTime
     Loading package old-locale-1.0.0.0 ... linking ... done.
@@ -245,7 +245,7 @@ local timezone, or to a `CalendarTime` representing UTC.
     That's due to the `Show` instance for `ClockTime`. Let's look at
     the `ClockTime` at a lower level:
 
-    ``` screen
+    ```
     ghci> TOD 1000 0
     Wed Dec 31 18
     ghci> getClockTime >>= (\(TOD sec _) -> return sec)
@@ -261,7 +261,7 @@ local timezone, or to a `CalendarTime` representing UTC.
     The second example shows us pulling the number of seconds out of the
     value returned by `getClockTime`. We can now manipulate it, like so:
 
-    ``` screen
+    ```
     ghci> getClockTime >>= (\(TOD sec _) -> return (TOD (sec + 86400) 0))
     Tue Aug 19 12
     ```
@@ -318,7 +318,7 @@ local timezone, or to a `CalendarTime` representing UTC.
         start by converting a `ClockTime` to a `CalendarTime` such as
         this:
 
-        ``` screen
+        ```
         ghci> :module System.Time
         ghci> now <- getClockTime
         Loading package old-locale-1.0.0.0 ... linking ... done.
@@ -347,7 +347,7 @@ local timezone, or to a `CalendarTime` representing UTC.
 
         It's easy to modify a `CalendarTime` value:
 
-        ``` screen
+        ```
         ghci> nowCal {ctYear = 1960}
         CalendarTime {ctYear = 1960, ctMonth = August, ctDay = 18, ctHour = 12, ctMin = 10, ctSec = 35, ctPicosec = 804267000000, ctWDay = Monday, ctYDay = 230, ctTZName = "CDT", ctTZ = -18000, ctIsDST = True}
         ghci> (\(TOD sec _) -> sec) (toClockTime nowCal)
@@ -367,7 +367,7 @@ local timezone, or to a `CalendarTime` representing UTC.
 
         You can also create `CalendarTime` values manually:
 
-        ``` screen
+        ```
         ghci> let newCT = CalendarTime 2010 January 15 12 30 0 0 Sunday 0 "UTC" 0 False
         ghci> newCT
         CalendarTime {ctYear = 2010, ctMonth = January, ctDay = 15, ctHour = 12, ctMin = 30, ctSec = 0, ctPicosec = 0, ctWDay = Sunday, ctYDay = 0, ctTZName = "UTC", ctTZ = 0, ctIsDST = False}
@@ -381,7 +381,7 @@ local timezone, or to a `CalendarTime` representing UTC.
         then back to a `CalendarTime`, you'll find those fields
         properly filled in:
 
-        ``` screen
+        ```
         ghci> toUTCTime . toClockTime $ newCT
         CalendarTime {ctYear = 2010, ctMonth = January, ctDay = 15, ctHour = 12, ctMin = 30, ctSec = 0, ctPicosec = 0, ctWDay = Friday, ctYDay = 14, ctTZName = "UTC", ctTZ = 0, ctIsDST = False}
         ```
@@ -411,7 +411,7 @@ local timezone, or to a `CalendarTime` representing UTC.
 
     Let's see how it works:
 
-    ``` screen
+    ```
     ghci> :module System.Time
     ghci> let feb5 = toClockTime $ CalendarTime 2008 February 5 0 0 0 0 Sunday 0 "UTC" 0 False
     Loading package old-locale-1.0.0.0 ... linking ... done.
@@ -467,7 +467,7 @@ cross-platform `getModificationTime` function. It takes a filename and
 returns a `ClockTime` representing the time the file was last modified.
 For instance:
 
-``` screen
+```
 ghci> :module System.Directory
 ghci> getModificationTime "/etc/passwd"
 Loading package old-locale-1.0.0.0 ... linking ... done.
@@ -535,7 +535,7 @@ program's output normally goes to the terminal, or it could go to a
 file. Here's an example session with the POSIX shell to illustrate
 piping:
 
-``` screen
+```
 $ ls /etc | grep 'm.*ap' | tr a-z A-Z
 IDMAPD.CONF
 MAILCAP
@@ -795,7 +795,7 @@ runIO cmd =
 Let's experiment with this in `ghci` a bit before looking at how it
 works.
 
-``` screen
+```
 ghci> :load RunProcessSimple.hs
 
 RunProcessSimple.hs
@@ -1261,7 +1261,7 @@ Let's try out the new shell features. First, let's make sure that the
 command we used in the previous example still works. Then, let's try it
 using a more shell-like syntax.
 
-``` screen
+```
 ghci> :load RunProcess.hs
 
 RunProcess.hs
@@ -1288,7 +1288,7 @@ That was a lot easier to type. Let's try substituting our native
 Haskell implementation of `grep` and try out some other new features as
 well:
 
-``` screen
+```
 ghci> runIO $ "ls /etc" -|- grep "m.*ap" -|- "tr a-z A-Z"
 
 <interactive>

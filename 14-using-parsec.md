@@ -168,7 +168,7 @@ error; otherwise, it will be `Right` with the result.
 Now that we understand this code, let's play with it a bit and see what
 it does.
 
-``` screen
+```
 ghci> :l csv1.hs
 [1 of 1] Compiling Main             ( csv1.hs, interpreted )
 Ok, modules loaded: Main.
@@ -179,7 +179,7 @@ Right []
 That makes sense: parsing the empty string returns an empty list. Let's
 try parsing a single cell.
 
-``` screen
+```
 ghci> parseCSV "hi"
 Left "(unknown)" (line 1, column 3):
 unexpected end of input
@@ -192,7 +192,7 @@ helpfully indicated the line number and column number of the problem,
 and even told us what it was expecting! Let's give it an end-of-line
 character and continue experimenting.
 
-``` screen
+```
 ghci> parseCSV "hi\n"
 Right [["hi"]]
 ghci> parseCSV "line1\nline2\nline3\n"
@@ -301,7 +301,7 @@ left alternative first. Looking for the single character `\n` will match
 both types of line endings, so it will look to the system that the
 following line begins with `\r`. Not what we want. Try it in `ghci`:
 
-``` screen
+```
 ghci> :l csv3.hs
 ghci> parse eol "" "\n"
 Right "\n"
@@ -314,7 +314,7 @@ looking at it this way, we can't tell. If it left something un-parsed,
 we don't know, because we're not trying to consume anything else from
 the input. So let's look for the end-of-file after our end of line:
 
-``` screen
+```
 ghci> parse (eol >> eof) "" "\n\r"
 Left (line 2, column 1):
 unexpected '\r'
@@ -345,7 +345,7 @@ the right if the option on the left consumed no input. But by the time
 we are able to see if there is a `\r` after the `\n`, we've already
 consumed the `\n`. This time, we fail on the other case in `ghci`:
 
-``` screen
+```
 ghci> :l csv4.hs
 ghci> parse (eol >> eof) "" "\n\r"
 Right ()
@@ -384,7 +384,7 @@ attempting to parse anything. Parsec has a function `option` that can
 also express this idiom as `option '\n' (char '\r')`. Let's test this
 with `ghci`.
 
-``` screen
+```
 ghci> :l csv5.hs
 [1 of 1] Compiling Main             ( csv5.hs, interpreted )
 Ok, one module loaded.
@@ -438,7 +438,7 @@ wouldn't have altered any behavior since they look at only one
 character anyway. We can load this up and test the `eol` function in
 `ghci`.
 
-``` screen
+```
 ghci> :l csv6.hs
 [1 of 1] Compiling Main             ( csv6.hs, interpreted )
 Ok, one module loaded.
@@ -455,7 +455,7 @@ Right ()
 All four endings were handled properly. You can also test the full CSV
 parser with some different endings like this:
 
-``` screen
+```
 ghci> parseCSV "line1\r\nline2\nline3\n\rline4\rline5\n"
 Right [["line1"],["line2"],["line3"],["line4"],["line5"]]
 ```
@@ -474,7 +474,7 @@ custom error messages in the event of parse failures.
 Let's look at what happens when our current CSV parser encounters an
 error:
 
-``` screen
+```
 ghci> parseCSV "line1"
 Left "(unknown)" (line 1, column 6):
 unexpected end of input
@@ -496,7 +496,7 @@ csv6.hs
 
 Under `ghci`, we can see the result:
 
-``` screen
+```
 ghci> :r
 [1 of 1] Compiling Main             ( csv7.hs, interpreted )
 Ok, one module loaded.
@@ -526,7 +526,7 @@ csv6.hs
 
 Now, when you generate an error, you'll get more helpful output:
 
-``` screen
+```
 ghci> :r
 [1 of 1] Compiling Main             ( csv8.hs, interpreted )
 Ok, one module loaded.
@@ -631,7 +631,7 @@ remarkable tool in Parsec.
 
 We can test this program with `ghci` over some quoted cells.
 
-``` screen
+```
 ghci> :l csv7.hs
 [1 of 1] Compiling Main             ( csv9.hs, interpreted )
 Ok, one module loaded.
@@ -656,7 +656,7 @@ spreadsheet program:
 
 Now, we can run this under our test program and watch:
 
-``` screen
+```
 $ runhaskell csv7.hs < test.csv
 ["Product","Price"]
 ["O'Reilly Socks","10"]
@@ -764,7 +764,7 @@ specially, using a `+` character. Other characters must be encoded as a
 `%` character followed by two hexadecimal digits. The `Numeric`
 module's `readHex` parses a hex string as a number.
 
-``` screen
+```
 ghci> parseTest p_query "foo=bar&a%21=b+c"
 [("foo",Just "bar"),("a!",Just "b c")]
 ```
@@ -847,7 +847,7 @@ The `pure` function lifts a value into an applicative functor and `<*>`
 is like `fmap` but the function to be applied is in a functor so `<*>`
 takes care of applying it.
 
-``` screen
+```
 ghci> :type fmap
 fmap :: Functor f => (a -> b) -> f a -> f b
 ghci> :type (<*>)
@@ -931,7 +931,7 @@ the result on its left.
 
 Parsec's `hexDigit` parser parses a single hexadecimal digit.
 
-``` screen
+```
 ghci> :type hexDigit
 hexDigit :: (Stream s m Char) => ParsecT s u m Char
 ```
@@ -939,7 +939,7 @@ hexDigit :: (Stream s m Char) => ParsecT s u m Char
 Therefore, `char '%' *> hexDigit` has the same type, since `(*>)`
 returns the result on its right.
 
-``` screen
+```
 ghci> :type char '%' *> hexDigit
 char '%' *> hexDigit :: (Stream s m Char) => ParsecT s u m Char
 ```
@@ -948,7 +948,7 @@ The expression `hexify <$> (char '%' *> hexDigit)` is a parser that
 matches a "%" character followed by hex digit, and whose result is a
 function.
 
-``` screen
+```
 ghci> :l FormApp.hs
 [1 of 1] Compiling Main             ( FormApp.hs, interpreted )
 Ok, one module loaded.
@@ -1315,7 +1315,7 @@ parser so that we can decide whether it will succeed or fail using only
 a single token of input. In this case, the two parsers consume the same
 initial tokens, so we turn them into a single parser.
 
-``` screen
+```
 ghci> :set -XFlexibleContexts
 ghci> :m Text.ParserCombinators.Parsec
 ghci> parser = (++) <$> string "HT" <*> (string "TP" <|> string "ML")
@@ -1328,7 +1328,7 @@ ghci> parseTest parser "HTML"
 Even better, Parsec gives us an improved error message if we feed it
 non-matching input.
 
-``` screen
+```
 ghci> parseTest parser "HTXY"
 parse error at (line 1, column 3):
 unexpected "X"

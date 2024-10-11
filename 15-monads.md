@@ -184,7 +184,7 @@ payloads.
 Next, we'll examine the chaining functions that we wrote for the two
 types.
 
-``` screen
+```
 ghci> :l Parse.hs
 [1 of 2] Compiling PNM              ( PNM.hs, interpreted )
 [2 of 2] Compiling Parse            ( Parse.hs, interpreted )
@@ -311,7 +311,7 @@ though, that we defined a `(==>&)` combinator earlier to express exactly
 this. Alternatively, consider a function like `print`, which provides a
 placeholder result that we do not need to inspect.
 
-``` screen
+```
 ghci> :type print "foo"
 print "foo" :: IO ()
 ```
@@ -319,7 +319,7 @@ print "foo" :: IO ()
 If we use plain `(>>=)`, we have to provide as its right hand side a
 function that ignores its argument.
 
-``` screen
+```
 ghci> print "foo" >>= \_ -> print "bar"
 "foo"
 "bar"
@@ -327,7 +327,7 @@ ghci> print "foo" >>= \_ -> print "bar"
 
 But if we use `(>>)`, we can omit the needless function.
 
-``` screen
+```
 ghci> print "baz" >> print "quux"
 "baz"
 "quux"
@@ -565,7 +565,7 @@ to use this monad.
 
 Here is a preview, in `ghci`, of how our monad will behave.
 
-``` screen
+```
 ghci> simple = return True :: Logger Bool
 ghci> runLogger simple
 (True,[])
@@ -576,7 +576,7 @@ first element is the result of our code; the second is the list of items
 logged while the action executed. We haven't logged anything, so the
 list is empty. Let's fix that.
 
-``` screen
+```
 ghci> runLogger (record "hi mom!" >> return 3.1337)
 (3.1337,["hi mom!"])
 ```
@@ -610,7 +610,7 @@ right. The function on the right must, in turn, wrap *its* result with
 the `Logger` wrapper. This is exactly what `return` does: it takes a
 pure value, and wraps it in the monad's type constructor.
 
-``` screen
+```
 ghci> :type (>>=)
 (>>=) :: Monad m => m a -> (a -> m b) -> m b
 ghci> :type (globToRegex "" >>=)
@@ -705,14 +705,14 @@ monadic wrapper. Here's a simple illustration of the apparent problem.
 Let's say we have a trivial piece of code that runs in the `Logger`
 monad and returns a string.
 
-``` screen
+```
 ghci> m = return "foo" :: Logger String
 ```
 
 If we want to find out the length of that string, we can't simply call
 `length`: the string is wrapped, so the types don't match up.
 
-``` screen
+```
 ghci> length m
 
 <interactive>:1:7: error:
@@ -724,7 +724,7 @@ ghci> length m
 What we've done so far to work around this is something like the
 following.
 
-``` screen
+```
 ghci> :type m >>= \s -> return (length s)
 m >>= \s -> return (length s) :: Logger Int
 ```
@@ -1191,7 +1191,7 @@ If we perform the same substitution trick on the type of `(>>=)` as we
 did with `return`, we discover that it should have the type
 `[a] -> (a -> [b]) -> [b]`. This seems close to the type of `map`.
 
-``` screen
+```
 ghci> :type (>>=)
 (>>=) :: Monad m => m a -> (a -> m b) -> m b
 ghci> :type map
@@ -1201,7 +1201,7 @@ map :: (a -> b) -> [a] -> [b]
 The ordering of the types in `map`'s arguments doesn't match, but
 that's easy to fix.
 
-``` screen
+```
 ghci> :type (>>=)
 (>>=) :: Monad m => m a -> (a -> m b) -> m b
 ghci> :type flip map
@@ -1219,7 +1219,7 @@ we substitute `[b]` for `b` in both places where it appears in
 `a -> (a -> [b]) -> [[b]]`. In other words, if we map a function that
 returns a list over a list, we get a list of lists back.
 
-``` screen
+```
 ghci> flip map [1,2,3] (\a -> [a,a+100])
 [[1,101],[2,102],[3,103]]
 ```
@@ -1233,7 +1233,7 @@ to the end. However, our juggling wasn't in vain: we now need a
 function that takes a `[[b]]` and returns a `[b]`, and one readily
 suggests itself in the form of `concat`.
 
-``` screen
+```
 ghci> :type concat
 :: Foldable t => t [a] -> [a]
 ```
@@ -1242,7 +1242,7 @@ A list is `Foldable`, i.e. it supports `foldr` so we can interpret the
 type as `[[a]] -> [a]`. It suggest that we should flip the arguments to
 `map`, then `concat` the results to give a single list.
 
-``` screen
+```
 ghci> :type \xs f -> concat (map f xs)
 \xs f -> concat (map f xs) :: [a1] -> (a1 -> [a2]) -> [a2]
 ```
@@ -1315,7 +1315,7 @@ the end of the sequence of expressions, instead of the beginning as in
 the list comprehension. Also, the results of the two functions are
 identical.
 
-``` screen
+```
 ghci> comprehensive [1,2] "bar"
 [(1,'b'),(1,'a'),(1,'r'),(2,'b'),(2,'a'),(2,'r')]
 ghci> comprehensive [1,2] "bar" == monadic [1,2] "bar"
@@ -1408,7 +1408,7 @@ multiplyTo n = do
 
 Let's try this in `ghci`.
 
-``` screen
+```
 ghci> multiplyTo 8
 [(1,8),(2,4)]
 ghci> multiplyTo 100
@@ -1500,7 +1500,7 @@ The `fail` implementation in the `Maybe` monad simply returns `Nothing`.
 If the pattern match in the above function fails, we thus get `Nothing`
 as our result.
 
-``` screen
+```
 ghci> robust [1,2,3]
 Just 2
 ghci> robust [1]
@@ -1572,7 +1572,7 @@ in a single function.
 The `(=<<)` function shows up frequently whether or not we use `do`
 notation. It is a flipped version of `(>>=)`.
 
-``` screen
+```
 ghci> :type (>>=)
 (>>=) :: Monad m => m a -> (a -> m b) -> m b
 ghci> :type (=<<)
@@ -1944,7 +1944,7 @@ twoBadRandoms gen = (fst $ random gen, fst $ random gen)
 
 Needless to say, this has unpleasant consequences.
 
-``` screen
+```
 ghci> twoBadRandoms `fmap` getStdGen
 (945769311181683171,945769311181683171)
 ```
@@ -2230,7 +2230,7 @@ join x = x >>= id
 
 Here are some examples of what it does.
 
-``` screen
+```
 ghci> join (Just (Just 1))
 Just 1
 ghci> join Nothing

@@ -149,7 +149,7 @@ The character-oriented `bytestring` modules provide useful functions for
 text processing. Here is a file that contains monthly stock prices for a
 well-known Internet company from mid-2008.
 
-``` screen
+```
 ghci> putStr =<< readFile "prices.csv"
 Date,Open,High,Low,Close,Volume,Adj Close
 2008-08-01,20.09,20.12,19.53,19.80,19777000,19.80
@@ -204,7 +204,7 @@ highestCloseFrom path = do
 We use one trick to work around the fact that we cannot supply an empty
 list to the `maximum` function.
 
-``` screen
+```
 ghci> maximum [3,6,2,9]
 9
 ghci> maximum []
@@ -215,7 +215,7 @@ Since we do not want our code to throw an exception if we have no stock
 data, the `(Nothing:)` expression ensures that the list of Maybe `Int`
 values that we supply to `maximum` will never be empty.
 
-``` screen
+```
 ghci> maximum [Nothing, Just 1]
 Just 1
 ghci> maximum [Nothing]
@@ -224,7 +224,7 @@ Nothing
 
 Does our function work?
 
-``` screen
+```
 ghci> :load HighestClose
 [1 of 1] Compiling Main             ( HighestClose.hs, interpreted )
 Ok, one module loaded.
@@ -235,7 +235,7 @@ Just 2741
 Since we have separated our I/O from our logic, we can test the no-data
 case without having to create an empty file.
 
-``` screen
+```
 ghci> highestClose L.empty
 Nothing
 ```
@@ -318,7 +318,7 @@ way to explore this module is by interacting with it via `ghci`.
 
 ### TODO: Explain how to install regex-posix with Cabal or Stack
 
-``` screen
+```
 ghci> :module +Text.Regex.Posix
 ```
 
@@ -349,7 +349,7 @@ When `ghci` can't infer the `target` type, we tell it what we'd like
 the type to be. If we want a result of type `Bool`, we'll get a
 pass/fail answer.
 
-``` screen
+```
 ghci> "my left foot" =~ "foo" :: Bool
 True
 ghci> "your right hand" =~ "bar" :: Bool
@@ -365,7 +365,7 @@ base library defines many instances of this type class for us. The
 result. Another such instance is `Int`, which gives us a count of the
 number of times the regexp matches.
 
-``` screen
+```
 ghci> "a star called henry" =~ "planet" :: Int
 0
 ghci> "honorificabilitudinitatibus" =~ "[aeiou]" :: Int
@@ -375,7 +375,7 @@ ghci> "honorificabilitudinitatibus" =~ "[aeiou]" :: Int
 If we ask for a `String` result, we'll get the first substring that
 matches, or an empty string if nothing matches.
 
-``` screen
+```
 ghci> "I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)" :: String
 "ii"
 ghci> "hi ludi, F. Baconis nati, tuiti orbi" =~ "Shakespeare" :: String
@@ -385,7 +385,7 @@ ghci> "hi ludi, F. Baconis nati, tuiti orbi" =~ "Shakespeare" :: String
 Another valid type of result is `[String]`, which returns a list of
 *all* matching strings when using with the `getAllTextMatches` function.
 
-``` screen
+```
 ghci> getAllTextMatches ("I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)") :: [String]
 ["ii","uu"]
 ```
@@ -409,7 +409,7 @@ means finished. Before we continue, let's use a single pattern for our
 remaining examples. We can define this pattern as a variable in `ghci`,
 to save a little typing.
 
-``` screen
+```
 ghci> pat = "(foo[a-z]*bar|quux)"
 ```
 
@@ -418,7 +418,7 @@ match occurs. If we ask for a `(String, String, String)` tuple, we'll
 get back the text *before* the first match, the text *of* that match,
 and the text that *follows* it.
 
-``` screen
+```
 ghci> "before foodiebar after" =~ pat :: (String,String,String)
 ("before ","foodiebar"," after")
 ```
@@ -426,7 +426,7 @@ ghci> "before foodiebar after" =~ pat :: (String,String,String)
 If the match fails, the entire text is returned as the "before"
 element of the tuple, with the other two elements left empty.
 
-``` screen
+```
 ghci> "no match here" =~ pat :: (String,String,String)
 ("no match here","","")
 ```
@@ -434,7 +434,7 @@ ghci> "no match here" =~ pat :: (String,String,String)
 Asking for a four-element tuple gives us a fourth element that's a list
 of all groups in the pattern that matched.
 
-``` screen
+```
 ghci> "before foodiebar after" =~ pat :: (String,String,String,[String])
 ("before ","foodiebar"," after",["foodiebar"])
 ```
@@ -444,7 +444,7 @@ gives us the starting offset of the first match, and its length. If we
 ask for a list of these pairs using the `getAllMatches` function we'll
 get this information for all matches.
 
-``` screen
+```
 ghci> "before foodiebar after" =~ pat :: (Int,Int)
 (7,9)
 ghci> getAllMatches ("i foobarbar a quux" =~ pat) :: [(Int,Int)]
@@ -455,7 +455,7 @@ A failed match is represented by the value `-1` as the first element of
 the tuple (the match offset) if we've asked for a single tuple, or an
 empty list if we've asked for a list of tuples.
 
-``` screen
+```
 ghci> "eleemosynary" =~ pat :: (Int,Int)
 (-1,0)
 ghci> getAllMatches ("mondegreen" =~ pat) :: [(Int,Int)]
@@ -478,7 +478,7 @@ argument types and its return type. We can use either `String` or strict
 `ByteString` values for both the regular expression and the text to
 match against.
 
-``` screen
+```
 ghci> :module +Data.ByteString.Char8
 ghci> :type pack "foo"
 pack "foo" :: ByteString
@@ -487,7 +487,7 @@ pack "foo" :: ByteString
 We can then try using different combinations of `String` and
 `ByteString`.
 
-``` screen
+```
 ghci> pack "foo" =~ "bar" :: Bool
 False
 ghci> "foo" =~ pack "bar" :: Int
@@ -500,7 +500,7 @@ However, we need to be aware that if we want a string value in the
 result of a match, the text we're matching against must be the same
 type of string. Let's see what this means in practice.
 
-``` screen
+```
 ghci> getAllTextMatches (pack "good food" =~ ".ood") :: [ByteString]
 ["good","food"]
 ```
@@ -510,7 +510,7 @@ In the above example, we've used the `pack` to turn a `String` into a
 in the result type. But if we try getting a `String` out, that *won't*
 work.
 
-``` screen
+```
 ghci> getAllTextMatches ("good food" =~ ".ood") :: [ByteString]
 
 <interactive>:1:1: error:
@@ -528,7 +528,7 @@ ghci> getAllTextMatches ("good food" =~ ".ood") :: [ByteString]
 We can easily fix this problem by making the string types of the left
 hand side and the result match once again.
 
-``` screen
+```
 ghci> getAllTextMatches ("good food" =~ ".ood") :: [String]
 ["good","food"]
 ```
@@ -679,7 +679,7 @@ matchesGlob = undefined
 Now that we've finished defining `globToRegex` and its helpers, let's
 load it into `ghci` and try it out.
 
-``` screen
+```
 ghci> :load GlobRegex.hs
 [1 of 1] Compiling GlobRegex        ( GlobRegex.hs, interpreted )
 Ok, one module loaded.
@@ -688,7 +688,7 @@ Ok, one module loaded.
 Sure enough, that looks like a reasonable regexp. Can we use it to match
 against a string?
 
-``` screen
+```
 ghci> "foo.c" =~ globToRegex "f??.c" :: Bool
 True
 ghci> "test.c" =~ globToRegex "t[ea]s*" :: Bool
@@ -702,7 +702,7 @@ temporary definition for `fnmatch` and try it out.
 
 ### [TODO]{.todo .TODO} Explain -XFlexibleContexts {#explain--xflexiblecontexts}
 
-``` screen
+```
 ghci> :set -XFlexibleContexts
 ghci> fnmatch pat name = name =~ globToRegex pat :: Bool
 ghci> :type fnmatch
@@ -828,7 +828,7 @@ The `System.FilePath` module abstracts the details of an operating
 system's path name conventions. The `(</>)` function joins two path
 components.
 
-``` screen
+```
 ghci> :m +System.FilePath
 ghci> "foo" </> "bar"
 "foo/bar"
@@ -837,14 +837,14 @@ ghci> "foo" </> "bar"
 The name of the `dropTrailingPathSeparator` function is perfectly
 descriptive.
 
-``` screen
+```
 ghci> dropTrailingPathSeparator "foo/"
 "foo"
 ```
 
 The `splitFileName` function splits a path at the last slash.
 
-``` screen
+```
 ghci> splitFileName "foo/bar/Quux.hs"
 ("foo/bar/","Quux.hs")
 ghci> splitFileName "zippity"
@@ -931,7 +931,7 @@ The `System.FilePath` module can be a little tricky. Above is a case in
 point; the `splitFileName` function leaves a trailing slash on the end
 of the directory name that it returns.
 
-``` screen
+```
 ghci> :module +System.FilePath
 ghci> splitFileName "foo/bar"
 ("foo/","bar")
@@ -941,7 +941,7 @@ If we didn't remember (or know enough) to remove that slash, we'd
 recurse endlessly in `namesMatching`, because of the following behaviour
 of `splitFileName`.
 
-``` screen
+```
 ghci> splitFileName "foo/"
 ("foo/","")
 ```
@@ -1012,7 +1012,7 @@ the `Control.Exception` module; as that import implies, this gives us
 our first taste of exception handling in Haskell. Let's drop into
 `ghci` and see what we can find out.
 
-``` screen
+```
 ghci> :module +Control.Exception
 ghci> :type handle
 handle :: Exception e => (e -> IO a) -> IO a -> IO a
@@ -1032,7 +1032,7 @@ case, return a list of `Strings`.
 The `const` function takes two arguments; it always returns its first
 argument, no matter what its second argument is.
 
-``` screen
+```
 ghci> :type const
 const :: a -> b -> a
 ghci> :type return []

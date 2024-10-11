@@ -52,7 +52,7 @@ In Haskell, a thread is an `IO` action that executes independently from
 other threads. To create a thread, we import the `Control.Concurrent`
 module and use the `forkIO` function.
 
-``` screen
+```
 ghci> :m +Control.Concurrent
 ghci> :t forkIO
 forkIO :: IO () -> IO ThreadId
@@ -137,7 +137,7 @@ An `MVar` acts like a single-element box: it can be either full or
 empty. We can put something into the box, making it full, or take
 something out, making it empty.
 
-``` screen
+```
 ghci> :t putMVar
 putMVar :: MVar a -> a -> IO ()
 ghci> :t takeMVar
@@ -170,7 +170,7 @@ communicate = do
 The `newEmptyMVar` function has a descriptive name. To create an `MVar`
 that starts out non-empty, we'd use `newMVar`.
 
-``` screen
+```
 ghci> :t newEmptyMVar
 newEmptyMVar :: IO (MVar a)
 ghci> :t newMVar
@@ -179,7 +179,7 @@ newMVar :: a -> IO (MVar a)
 
 Let's run our example in `ghci`.
 
-``` screen
+```
 ghci> :load MVarExample
 [1 of 1] Compiling Main             ( MVarExample.hs, interpreted )
 Ok, modules loaded: Main.
@@ -317,7 +317,7 @@ forkManaged (Mgr mgr) body =
 The `modifyMVar` function that we used in `forkManaged` above is very
 useful: it's a safe combination of `takeMVar` and `putMVar`.
 
-``` screen
+```
 ghci> :t modifyMVar
 ved "wake up!"
 modifyMVar :: MVar a -> (a -> IO (a, b)) -> IO b
@@ -416,7 +416,7 @@ indicates why the thread terminated, *and* stops managing the thread.
 If the `tryTakeMVar` function finds that the `MVar` is empty, it returns
 `Nothing` immediately instead of blocking.
 
-``` screen
+```
 ghci> :t tryTakeMVar
 tryTakeMVar :: MVar a -> IO (Maybe a)
 ```
@@ -448,7 +448,7 @@ It first extracts the `MVar` that holds the thread's state, if it
 exists. The `Map` type's `updateLookupWithKey` function is useful: it
 combines looking up a key with modifying or removing the value.
 
-``` screen
+```
 ghci> :m +Data.Map
 ghci> :t updateLookupWithKey
 updateLookupWithKey :: (Ord k) =>
@@ -485,7 +485,7 @@ Sure enough, we can apply a function that we came across earlier to
 eliminate this duplication. The function in question is `join`, from the
 `Control.Monad` module.
 
-``` screen
+```
 ghci> :m +Control.Monad
 ghci> :t join
 join :: (Monad m) => m (m a) -> m a
@@ -818,7 +818,7 @@ If we compile and run the above program, we can see that the options to
 the runtime system are not visible to the program, but that it can see
 how many cores it can run on.
 
-``` screen
+```
 $ ghc -c NumCapabilities.hs
 $ ghc -threaded -o NumCapabilities NumCapabilities.o
 $ ./NumCapabilities +RTS -N4 -RTS foo
@@ -1150,7 +1150,7 @@ specifically work to avoid in our driver program.
 When we build the program, we enable optimization and GHC's threaded
 runtime.
 
-``` screen
+```
 $ ghc -threaded -O2 --make SortMain
 [1 of 2] Compiling Sorting          ( Sorting.hs, Sorting.o )
 [2 of 2] Compiling Main             ( SortMain.hs, SortMain.o )
@@ -1161,7 +1161,7 @@ When we run the program, we must tell GHC's runtime how many cores to
 use. Initially, we try the original `sort`, to establish a performance
 baseline.
 
-``` screen
+```
 $ ./Sorting +RTS -N1 -RTS 700000
 We have 700000 elements to sort.
 Sorted all 700000 elements.
@@ -1170,7 +1170,7 @@ Sorted all 700000 elements.
 
 Enabling a second core ought to have no effect on performance.
 
-``` screen
+```
 $ ./Sorting +RTS -N2 -RTS 700000
 We have 700000 elements to sort.
 Sorted all 700000 elements.
@@ -1180,7 +1180,7 @@ Sorted all 700000 elements.
 If we recompile and test the performance of `parSort`, the results are
 less than stellar.
 
-``` screen
+```
 $ ./Sorting +RTS -N1 -RTS 700000
 We have 700000 elements to sort.
 Sorted all 700000 elements.
@@ -1216,7 +1216,7 @@ We also drop the use of `force`, so compared to our original `sort`, we
 should only be measuring the cost of using `pseq`. What effect does
 `pseq` alone have on performance?
 
-``` screen
+```
 $ ./Sorting +RTS -N1 -RTS 700000
 We have 700000 elements to sort.
 Sorted all 700000 elements.
@@ -1258,7 +1258,7 @@ controllable depth. If we knew the size of the data we were dealing
 with, we could stop subdividing and switch to the non-parallel code once
 we reached a sufficiently small amount of remaining work.
 
-``` screen
+```
 $ ./Sorting +RTS -N2 -RTS 700000
 We have 700000 elements to sort.
 Sorted all 700000 elements.

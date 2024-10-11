@@ -27,7 +27,7 @@ with one built-in function called `Data.List.lookup` to look up data in
 an association list. Its type is `Eq a => a -> [(a, b)] -> Maybe b`. Can
 you guess how it works from that type? Let's take a look in `ghci`.
 
-``` screen
+```
 ghci> al = [(1, "one"), (2, "two"), (3, "three"), (4, "four")]
 ghci> lookup 1 al
 Just "one"
@@ -207,7 +207,7 @@ in the `mapFold` example. Or, you can chain together calls to
 `Map.insert` as in the `mapManual` example. Let's use `ghci` to verify
 that all of these maps are as expected:
 
-``` screen
+```
 ghci> :l buildmap.hs
 [1 of 1] Compiling Main             ( buildmap.hs, interpreted )
 Ok, one module loaded.
@@ -277,7 +277,7 @@ has no field to store the color in, yet that value somehow becomes part
 of the function itself. This is called a *closure*. Let's play with
 this a bit:
 
-``` screen
+```
 ghci> :l funcrecs.hs
 [1 of 1] Compiling Main             ( funcrecs.hs, interpreted )
 Ok, one module loaded.
@@ -326,7 +326,7 @@ another function as parameters, and returns a new `FuncRec` record.
 Notice how both parameters to `mkFuncRec` are used in multiple places.
 Let's try it out:
 
-``` screen
+```
 ghci> :l funcrecs2.hs
 [1 of 1] Compiling Main             ( funcrecs2.hs, interpreted )
 Ok, one module loaded.
@@ -521,7 +521,7 @@ precedence. Perhaps we could create a function called `prettyShow` to do
 that. We'll show you how to write it in a bit, but first we'll look at
 how we might use it.
 
-``` screen
+```
 ghci> :l num.hs
 [1 of 1] Compiling Main             ( num.hs, interpreted )
 Ok, one module loaded.
@@ -537,7 +537,7 @@ That looks nice, but it wasn't all that smart. We could easily simplify
 out the `1 *` part of the expression. How about a function to do some
 very basic simplification?
 
-``` screen
+```
 ghci> prettyShow $ simplify $ 5 + 1 * 3
 "5+3"
 ```
@@ -548,7 +548,7 @@ commonly found on HP calculators. RPN is a stack-based notation. We push
 numbers onto the stack, and when we enter operations, they pop the most
 recent numbers off the stack and place the result on the stack.
 
-``` screen
+```
 ghci> rpnShow $ 5 + 1 * 3
 "5 1 3 * +"
 ghci> rpnShow $ simplify $ 5 + 1 * 3
@@ -558,7 +558,7 @@ ghci> rpnShow $ simplify $ 5 + 1 * 3
 Maybe it would be nice to be able to represent simple expressions with
 symbols for the unknowns.
 
-``` screen
+```
 ghci> prettyShow $ 5 + (Symbol "x") * 3
 "5+(x*3)"
 ```
@@ -569,7 +569,7 @@ numbers. For instance, when you see the number 5, does it mean 5 meters,
 system ought to be able to figure out the appropriate units. Moreover,
 it should stop you from adding 2 seconds to 5 meters.
 
-``` screen
+```
 ghci> 5 / 2
 2.5
 ghci> (units 5 "m") / (units 2 "s")
@@ -591,7 +591,7 @@ we should be able to calculate the result, or render the expression. For
 instance, if we define `test` to have type `Num a => a`, and say
 `test = 2 * 5 + 3`, then we ought to be able to do this:
 
-``` screen
+```
 ghci> test
 13
 ghci> rpnShow test
@@ -610,7 +610,7 @@ Since we have units, we should be able to handle some basic trigonometry
 as well. Many of these operations operate on angles. Let's make sure
 that we can handle both degrees and radians.
 
-``` screen
+```
 ghci> sin (pi / 2)
 1.0
 ghci> sin (units (pi / 2) "rad")
@@ -624,7 +624,7 @@ ghci> (units 50 "m") * sin (units 90 "deg")
 Finally, we ought to be able to put all this together and combine
 different kinds of expressions together.
 
-``` screen
+```
 ghci> ((units 50 "m") * sin (units 90 "deg")) :: Units (SymbolicManip Double)
 50.0*sin(((2.0*pi)*90.0)/360.0)_m
 ghci> prettyShow $ dropUnits $ (units 50 "m") * sin (units 90 "deg")
@@ -696,7 +696,7 @@ which is perfectly legal in Haskell. `Arith` creates a `SymbolicManip`
 out of an `Op` and two other `SymbolicManip` items. Let's look at an
 example:
 
-``` screen
+```
 ghci> :l numsimple.hs
 [1 of 1] Compiling Main             ( numsimple.hs, interpreted )
 Ok, modules loaded: Main.
@@ -1193,7 +1193,7 @@ proportional to the *square* of the length of the final list.
 To understand this, let's dig in a little. The `(++)` operator is right
 associative.
 
-``` screen
+```
 ghci> :info (++)
 (++) :: [a] -> [a] -> [a]     -- Defined in GHC.Base
 infixr 5 ++
@@ -1221,7 +1221,7 @@ angle.
 The expression `("a"++)` is a section, a partially applied function.
 What is its type?
 
-``` screen
+```
 ghci> :type ("a" ++)
 ("a" ++) :: [Char] -> [Char]
 ```
@@ -1229,7 +1229,7 @@ ghci> :type ("a" ++)
 Since this is a function, we can use the `(.)` operator to compose it
 with another section, let's say `("b"++)`.
 
-``` screen
+```
 ghci> :type ("a" ++) . ("b" ++)
 ("a" ++) . ("b" ++) :: [Char] -> [Char]
 ```
@@ -1238,7 +1238,7 @@ Our new function has the same type. What happens if we stop composing
 functions, and instead provide a `String` to the function we've
 created?
 
-``` screen
+```
 ghci> f = ("a" ++) . ("b" ++)
 ghci> f []
 "ab"
@@ -1527,7 +1527,7 @@ code](https://prime.haskell.org/wiki/Libraries/Proposals/SemigroupMonoid#Writing
 
 Let's try our the methods of the `Monoid` type class in `ghci`.
 
-``` screen
+```
 ghci> "foo" `mappend` "bar"
 "foobar"
 ghci> toList (fromList [1,2] `mappend` fromList [3,4])
@@ -1583,7 +1583,7 @@ instance Monoid MInt where
 
 We'll then get different behaviour depending on the type we use.
 
-``` screen
+```
 ghci> 2 `mappend` 5 :: MInt
 M {unM = 10}
 ghci> 2 `mappend` 5 :: AInt
@@ -1631,7 +1631,7 @@ import qualified Data.Sequence as Seq
 We can construct an empty `Seq` using `empty`, and a single-element
 container using `singleton`.
 
-``` screen
+```
 ghci> :l DataSequence.hs
 [1 of 1] Compiling Main             ( DataSequence.hs, interpreted )
 Ok, one module loaded.
@@ -1643,7 +1643,7 @@ fromList [1]
 
 We can create a `Seq` from a list using `fromList`.
 
-``` screen
+```
 ghci> a = Seq.fromList [1,2,3]
 ```
 
@@ -1651,7 +1651,7 @@ The `Data.Sequence` module provides some constructor functions in the
 form of operators. When we perform a qualified import, we must qualify
 the name of an operator in our code, which is ugly.
 
-``` screen
+```
 ghci> 1 Seq.<| Seq.singleton 2
 fromList [1,2]
 ```
@@ -1672,7 +1672,7 @@ import Data.Sequence ((><), (<|), (|>))
 By removing the qualification from the operator, we improve the
 readability of our code.
 
-``` screen
+```
 ghci> Seq.singleton 1 |> 2
 fromList [1,2]
 ```
@@ -1687,7 +1687,7 @@ operations. Appending two \~Seq\~s is also cheap, occurring in time
 proportional to the logarithm of whichever is shorter. To append, we use
 the `(><)` operator.
 
-``` screen
+```
 ghci> left = Seq.fromList [1,3,3]
 ghci> right = Seq.fromList [7,1]
 ghci> left >< right
@@ -1709,7 +1709,7 @@ import qualified Data.Foldable as Foldable
 
 This module defines a type class, `Foldable`, which `Seq` implements.
 
-``` screen
+```
 ghci> Foldable.toList (Seq.fromList [1,2,3])
 [1,2,3]
 ```
@@ -1717,7 +1717,7 @@ ghci> Foldable.toList (Seq.fromList [1,2,3])
 If we want to fold over a `Seq`, we use the fold functions from the
 `Data.Foldable` module.
 
-``` screen
+```
 ghci> Foldable.foldl' (+) 0 (Seq.fromList [1,2,3])
 6
 ```

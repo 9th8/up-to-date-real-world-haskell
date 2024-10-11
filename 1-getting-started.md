@@ -81,7 +81,7 @@ screenshot.)
 When we run `ghci`, it displays a startup banner, followed by a
 `Prelude>` prompt. Here, we're showing version 8.2.2.
 
-``` screen
+```
 $ ghci
 GHCi, version 8.2.2: http://www.haskell.org/ghc/  :? for help
 Prelude>
@@ -123,7 +123,7 @@ throughout this book with the prompt string `ghci>`.
 If you want to do this yourself, use `ghci`'s `:set prompt` directive,
 as follows.
 
-``` screen
+```
 Prelude> :set prompt "ghci> "
 ghci>
 ```
@@ -134,7 +134,7 @@ actions to use the types, values, or functions it defines. To use
 definitions from other modules, we must load them into `ghci`, using the
 `:module` command.
 
-``` screen
+```
 ghci> :module + Data.Ratio
 ```
 
@@ -157,7 +157,7 @@ do with them. Basic arithmetic works similarly to languages like C and
 Python: we write expressions in *infix* form, where an operator appears
 between its operands.
 
-``` screen
+```
 ghci> 2 + 2
 4
 ghci> 31337 * 101
@@ -170,7 +170,7 @@ The infix style of writing an expression is just a convenience: we can
 also write an expression in *prefix* form, where the operator precedes
 its arguments. To do this, we must enclose the operator in parentheses.
 
-``` screen
+```
 ghci> 2 + 2
 4
 ghci> (+) 2 2
@@ -181,7 +181,7 @@ As the expressions above imply, Haskell has a notion of integers and
 floating point numbers. Integers can be arbitrarily large. Here, `(^)`
 provides integer exponentiation.
 
-``` screen
+```
 ghci> 313 ^ 15
 27112218957718876716220410905036741257
 ```
@@ -194,7 +194,7 @@ affects us as soon as we move beyond the simplest expressions.
 
 We'll start by writing a negative number.
 
-``` screen
+```
 ghci> -3
 -3
 ```
@@ -204,7 +204,7 @@ single number "-3"; we wrote the number "3", and applied the
 operator `-` to it. The `-` operator is Haskell's only unary operator,
 and we cannot mix it with infix operators.
 
-``` screen
+```
 ghci> 2 + -3
 
 <interactive>:1:1: error:
@@ -215,7 +215,7 @@ ghci> 2 + -3
 If we want to use the unary minus near an infix operator, we must wrap
 the expression it applies to in parentheses.
 
-``` screen
+```
 ghci> 2 + (-3)
 -1
 ghci> 3 + (-(13 * 37))
@@ -233,7 +233,7 @@ number `3` from the variable `f`".
 as space and tab) from expressions, and Haskell will parse them as we
 intended. But not always. Here is an expression that works:
 
-``` screen
+```
 ghci> 2*3
 6
 ```
@@ -241,7 +241,7 @@ ghci> 2*3
 And here is one that seems similar to the problematic negative number
 example above, but results in a different error message.
 
-``` screen
+```
 ghci> 2*-3
 
 <interactive>:1:1: error:
@@ -256,7 +256,7 @@ Haskell lets us define new operators (a subject that we will return to
 later), but we haven't defined `*-`. Once again, a few parentheses get
 us and `ghci` looking at the expression in the same way.
 
-``` screen
+```
 ghci> 2*(-3)
 -6
 ```
@@ -276,7 +276,7 @@ capitalization of these names is important. The language uses
 C-influenced operators for working with Boolean values: `(&&)` is
 logical "and", and `(||)` is logical "or".
 
-``` screen
+```
 ghci> True && False
 False
 ghci> False || True
@@ -287,7 +287,7 @@ While some programming languages treat the number zero as synonymous
 with `False`, Haskell does not, nor does it consider a non-zero value to
 be `True`.
 
-``` screen
+```
 ghci> True && 1
 
 <interactive>:1:9: error:
@@ -336,7 +336,7 @@ working may come as something of a shock. Bear with us.
 Most of Haskell's comparison operators are similar to those used in C
 and the many languages it has influenced.
 
-``` screen
+```
 ghci> 1 == 1
 True
 ghci> 2 < 3
@@ -349,7 +349,7 @@ One operator that differs from its C counterpart is "is not equal to".
 In C, this is written as `!=`. In Haskell, we write `(/=)`, which
 resembles the ≠ notation used in mathematics.
 
-``` screen
+```
 ghci> 2 /= 3
 True
 ```
@@ -357,7 +357,7 @@ True
 Also, where C-like languages often use `!` for logical negation, Haskell
 uses the `not` function.
 
-``` screen
+```
 ghci> not True
 False
 ```
@@ -371,7 +371,7 @@ allows us to omit a few parentheses. For example, the multiplication
 operator has a higher precedence than the addition operator, so Haskell
 treats the following two expressions as equivalent.
 
-``` screen
+```
 ghci> 1 + (4 * 4)
 17
 ghci> 1 + 4 * 4
@@ -384,7 +384,7 @@ applied before a lower-precedence operator. We can use `ghci` to inspect
 the precedence levels of individual operators, using its `:info`
 command.
 
-``` screen
+```
 ghci> :info (+)
 class (Eq a, Show a) => Num a where
   (+) :: a -> a -> a
@@ -414,7 +414,7 @@ operators are left associative, which is represented as `infixl` in the
 `ghci` output above. A right associative operator is displayed with
 `infixr`.
 
-``` screen
+```
 ghci> :info (^)
 (^) :: (Num a, Integral b) => a -> b -> a  -- Defined in GHC.Real
 infixr 8 ^
@@ -428,7 +428,7 @@ referred to as *fixity* rules.
 Haskell's prelude, the standard library we mentioned earlier, defines
 at least one well-known mathematical constant for us.
 
-``` screen
+```
 ghci> pi
 3.141592653589793
 ```
@@ -436,7 +436,7 @@ ghci> pi
 But its coverage of mathematical constants is not comprehensive, as we
 can quickly see. Let us look for Euler's number, `e`.
 
-``` screen
+```
 ghci> e
 
 <interactive>:1:1: error: Variable not in scope: e
@@ -459,7 +459,7 @@ name `e`.
 Using `ghci`'s `let` construct, we can make a temporary definition of
 `e` ourselves.
 
-``` screen
+```
 ghci> e = exp 1
 ```
 
@@ -473,7 +473,7 @@ exponentiation operator that we introduced earlier can only raise a
 number to an integer power. To use a floating point number as the
 exponent, we use the `(**)` exponentiation operator.
 
-``` screen
+```
 ghci> (e ** pi) - pi
 19.99909997918947
 ```
@@ -537,7 +537,7 @@ under the hood, which is
 A list is surrounded by square brackets; the elements are separated by
 commas.
 
-``` screen
+```
 ghci> [1, 2, 3]
 [1,2,3]
 ```
@@ -557,7 +557,7 @@ get a parse error.
 
 A list can be of any length. The empty list is written `[]`.
 
-``` screen
+```
 ghci> []
 []
 ghci> ["foo", "bar", "baz", "quux", "fnord", "xyzzy"]
@@ -567,7 +567,7 @@ ghci> ["foo", "bar", "baz", "quux", "fnord", "xyzzy"]
 All elements of a list must be of the same type. Here, we violate this
 rule: our list starts with two Bool values, but ends with a string.
 
-``` screen
+```
 ghci> [True, False, "testing"]
 
 <interactive>:1:15: error:
@@ -584,7 +584,7 @@ list expression isn't properly typed.
 If we write a series of elements using *enumeration notation*, Haskell
 will fill in the contents of the list for us.
 
-``` screen
+```
 ghci> [1..10]
 [1,2,3,4,5,6,7,8,9,10]
 ```
@@ -601,7 +601,7 @@ When we write an enumeration, we can optionally specify the size of the
 step to use by providing the first two elements, followed by the value
 at which to stop generating the enumeration.
 
-``` screen
+```
 ghci> [1.0,1.25..2.0]
 [1.0,1.25,1.5,1.75,2.0]
 ghci> [1,4..15]
@@ -631,7 +631,7 @@ Beware enumerating floating point numbers
 
 Here's a non-intuitive bit of behaviour.
 
-``` screen
+```
 ghci> [1.0..1.8]
 [1.0,2.0]
 ```
@@ -650,7 +650,7 @@ unique to Haskell here.
 There are two ubiquitous operators for working with lists. We
 concatenate two lists using the `(++)` operator.
 
-``` screen
+```
 ghci> [3,1,3] ++ [3,7]
 [3,1,3,3,7]
 ghci> [] ++ [False,True] ++ [True]
@@ -660,7 +660,7 @@ ghci> [] ++ [False,True] ++ [True]
 More basic is the `(:)` operator, which adds an element to the front of
 a list. This is pronounced "cons" (short for "construct").
 
-``` screen
+```
 ghci> 1 : [2,3]
 [1,2,3]
 ghci> 1 : []
@@ -679,7 +679,7 @@ for strings familiar.
 
 A text string is surrounded by double quotes.
 
-``` screen
+```
 ghci> "This is a string."
 "This is a string."
 ```
@@ -692,7 +692,7 @@ character. For complete details, see [Appendix B, *Characters, strings,
 and escaping
 rules*](appendix-characters-strings-and-escaping-rules.org).
 
-``` screen
+```
 ghci> putStrLn "Here's a newline -->\n<-- See?"
 Here's a newline -->
 <-- See?
@@ -701,7 +701,7 @@ Here's a newline -->
 Haskell makes a distinction between single characters and text strings.
 A single character is enclosed in single quotes.
 
-``` screen
+```
 ghci> 'a'
 'a'
 ```
@@ -710,7 +710,7 @@ In fact, a text string is simply a list of individual characters.
 Here's a painful way to write a short string, which `ghci` gives back
 to us in a more familiar form.
 
-``` screen
+```
 ghci> a = ['l', 'o', 't', 's', ' ', 'o', 'f', ' ', 'w', 'o', 'r', 'k']
 ghci> a
 "lots of work"
@@ -720,7 +720,7 @@ True
 
 The empty string is written `""`, and is a synonym for `[]`.
 
-``` screen
+```
 ghci> "" == []
 True
 ```
@@ -728,7 +728,7 @@ True
 Since a string is a list of characters, we can use the regular list
 operators to construct new strings.
 
-``` screen
+```
 ghci> 'a':"bc"
 "abc"
 ghci> "foo" ++ "bar"
@@ -751,7 +751,7 @@ get `ghci` to tell us more about what it's doing. `ghci` has a command,
 `:set`, that lets us change a few of its default behaviours. We can tell
 it to print more type information as follows.
 
-``` screen
+```
 ghci> :set +t
 ghci> 'c'
 'c'
@@ -785,7 +785,7 @@ The joy of "it"
 That `it` variable is a handy `ghci` shortcut. It lets us use the result
 of the expression we just evaluated in a new expression.
 
-``` screen
+```
 ghci> "foo"
 "foo"
 it :: [Char]
@@ -798,7 +798,7 @@ When evaluating an expression, `ghci` won't change the value of `it` if
 the evaluation fails. This lets you write potentially bogus expressions
 with something of a safety net.
 
-``` screen
+```
 ghci> it
 "foobar"
 it :: [Char]
@@ -827,7 +827,7 @@ language!
 Here are a few more of Haskell's names for types, from expressions of
 the sort we've already seen.
 
-``` screen
+```
 ghci> 7 ^ 80
 40536215597144386832065866109016673800875222251012083746192454448001
 it :: Integer
@@ -840,7 +840,7 @@ Rational numbers don't look quite the same as integers. To construct a
 rational number, we use the `(%)` operator. The numerator is on the
 left, the denominator on the right.
 
-``` screen
+```
 ghci> :m +Data.Ratio
 ghci> 11 % 29
 11%29
@@ -856,7 +856,7 @@ values of type Integer as both numerator and denominator. Sure enough,
 if we try to construct a `Ratio` where the numerator and denominator are
 of different types, or of the same non-integral type, `ghci` complains.
 
-``` screen
+```
 ghci> 3.14 % 8
 
 <interactive>:1:1: error:
@@ -893,7 +893,7 @@ quickly outgrow. After a while, we will often know what type we expect
 an expression to have. We can turn off the extra type information at any
 time, using the `:unset` command.
 
-``` screen
+```
 ghci> :unset +t
 ghci> 2
 2
@@ -902,7 +902,7 @@ ghci> 2
 Even with this facility turned off, we can still get that type
 information easily when we need it, using another `ghci` command.
 
-``` screen
+```
 ghci> :type 'a'
 'a' :: Char
 ghci> "foo"
@@ -917,7 +917,7 @@ the expression; it only checks its type and prints that.
 
 Why are the types reported for these two expressions different?
 
-``` screen
+```
 ghci> 3 + 2
 5
 ghci> :type it
@@ -958,7 +958,7 @@ main = interact wordCount
 
 Find or create a text file; let's call it `quux.txt`[^1].
 
-``` screen
+```
 $ cat quux.txt
 Teignmouth, England
 Paris, France
@@ -971,7 +971,7 @@ Ryazan, Russia
 
 From a shell or command prompt, run the following command.
 
-``` screen
+```
 $ runghc wc < quux.txt
 7
 ```

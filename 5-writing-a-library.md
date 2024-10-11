@@ -60,7 +60,7 @@ constructor.
 To start experimenting with this code, save the file `SimpleJSON.hs` in
 your editor, switch to a `ghci` window, and load the file into `ghci`.
 
-``` screen
+```
 ghci> :load SimpleJSON
 [1 of 1] Compiling SimpleJSON       ( SimpleJSON.hs, interpreted )
 Ok, one module loaded.
@@ -95,7 +95,7 @@ When we save the modified source file, we can reload it in `ghci` and
 try the new definition. (The `:reload` command remembers the last source
 file we loaded, so we do not need to name it explicitly.)
 
-``` screen
+```
 ghci> :reload
 Ok, one module loaded.
 ghci> getString (JString "hello")
@@ -141,7 +141,7 @@ isNull v = v == JNull
 The `truncate` function turns a floating point or rational number into
 an integer by dropping the digits after the decimal point.
 
-``` screen
+```
 ghci> truncate 5.8
 5
 ghci> :module +Data.Ratio
@@ -238,7 +238,7 @@ with `ghc`.
 To compile a source file, we first open a terminal or command prompt
 window, then invoke `ghc` with the name of the source file to compile.
 
-``` screen
+```
 ghc -c SimpleJSON.hs
 ```
 
@@ -286,7 +286,7 @@ create an executable, `ghc` expects a module named `Main` that contains
 a function named `main`. The `main` function is the one that will be
 called when we run the program once we've built it.
 
-``` screen
+```
 ghc -o simple Main.hs
 ```
 
@@ -431,7 +431,7 @@ camelCase xs = concat (map upcaseFirst (words xs))
 When we try to compile this code or load it into `ghci`, we won't
 necessarily get an obvious error message.
 
-``` screen
+```
 ghci> :load Trouble
 [1 of 1] Compiling Main             ( Trouble.hs, interpreted )
 
@@ -595,7 +595,7 @@ The special value `undefined` has the type `a`, so it always
 type-checks, no matter where we use it. If we attempt to evaluate it, it
 will cause our program to crash.
 
-``` screen
+```
 ghci> :type undefined
 undefined :: a
 ghci> undefined
@@ -734,7 +734,7 @@ The `simpleEscapes` value is a list of pairs. We call a list of pairs an
 *association list*, or *alist* for short. Each element of our alist
 associates a character with its escaped representation.
 
-``` screen
+```
 ghci> take 4 simpleEscapes
 [('\b',"\\b"),('\n',"\\n"),('\f',"\\f"),('\r',"\\r")]
 ```
@@ -768,7 +768,7 @@ The `showHex` function comes from the `Numeric` library (you will need
 to import this at the beginning of `Prettify.hs`), and returns a
 hexadecimal representation of a number.
 
-``` screen
+```
 ghci> showHex 114111 ""
 "1bdbf"
 ```
@@ -776,7 +776,7 @@ ghci> showHex 114111 ""
 The `replicate` function is provided by the `Prelude`, and builds a
 fixed-length repeating list of its argument.
 
-``` screen
+```
 ghci> replicate 5 "foo"
 ["foo","foo","foo","foo","foo"]
 ```
@@ -805,7 +805,7 @@ The `shiftR` function comes from the `Data.Bits` module, and shifts a
 number to the right. The `(.&.)` function, also from `Data.Bits`,
 performs a bit-level *and* of two values.
 
-``` screen
+```
 ghci> 0x10000 `shiftR` 4   :: Int
 4096
 ghci> 7 .&. 2   :: Int
@@ -1089,7 +1089,7 @@ We pattern match against `Empty` so that concatenating a `Doc` value
 with `Empty` on the left or right will have no effect. This keeps us
 from bloating the tree with useless values.
 
-``` screen
+```
 ghci> text "foo" <> text "bar"
 Concat (Text "foo") (Text "bar")
 ghci> text "foo" <> empty
@@ -1253,7 +1253,7 @@ and adds its right element to the stack.
 We have now fleshed out enough of our original skeletal definitions that
 we can try out our `compact` function in `ghci`.
 
-``` screen
+```
 ghci> let value = renderJValue (JObject [("f", JNumber 1), ("q", JBool True)])
 ghci> :type value
 value :: Doc
@@ -1266,7 +1266,7 @@ ghci> putStrLn (compact value)
 To better understand how the code works, let's look at a simpler
 example in more detail.
 
-``` screen
+```
 ghci> char 'f' <> text "oo"
 Concat (Char 'f') (Text "oo")
 ghci> compact (char 'f' <> text "oo")
@@ -1396,7 +1396,7 @@ w `fits` (c:cs)    = (w - 1) `fits` cs
 In order to understand how this code works, let's first consider a
 simple `Doc` value.
 
-``` screen
+```
 ghci> empty </> char 'a'
 Concat (Union (Char ' ') Line) (Char 'a')
 ```
@@ -1420,7 +1420,7 @@ substitution. The values of `width` and `col` are 0 and 2, respectively,
 so `least` is 0, and `width - least` is 2. We quickly evaluate
 `` 2 `fits` " a" `` in `ghci`.
 
-``` screen
+```
 ghci> 2 `fits` " a"
 True
 ```
@@ -1432,7 +1432,7 @@ If we apply our `pretty` function to the same JSON data as earlier, we
 can see that it produces different output depending on the width that we
 give it.
 
-``` screen
+```
 ghci> putStrLn (pretty 10 value)
 {"f": 1.0,
 "q": true
@@ -1582,7 +1582,7 @@ we depend on. If we try to build our package without a `build-depends`
 field, compilation will fail with a useful error message. Here's an
 example where we commented out the dependency on the `base` package.
 
-``` screen
+```
 $ runghc Setup build
 Preprocessing library mypretty-0.1...
 Building mypretty-0.1...
@@ -1642,7 +1642,7 @@ steps left.
 To instruct Cabal how to build and where to install a package, we run a
 simple command.
 
-``` screen
+```
 $ runghc Setup configure
 ```
 
@@ -1654,13 +1654,13 @@ our package in the system-wide package database. To install it into our
 home directory and our personal package database, we must provide a
 little more information.
 
-``` screen
+```
 $ runghc Setup configure --prefix=$HOME --user
 ```
 
 Following the `configure` step, we build the package.
 
-``` screen
+```
 $ runghc Setup build
 ```
 
@@ -1669,7 +1669,7 @@ where to install to: Cabal will use the settings we provided in the
 `configure` step. It will install to our own directory and update GHC's
 per-user package database.
 
-``` screen
+```
 $ runghc Setup install
 ```
 

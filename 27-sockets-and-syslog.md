@@ -189,7 +189,7 @@ will display received messages.
 If you were sending a message to a syslog server on the local system,
 you might use a command such as this:
 
-``` screen
+```
 ghci> :load syslogclient.hs
 [1 of 2] Compiling SyslogTypes      ( SyslogTypes.hs, interpreted )
 [2 of 2] Compiling Main             ( syslogclient.hs, interpreted )
@@ -422,7 +422,7 @@ use the `telnet` program to connect to this server. Each line of text
 you send to it will be printed on the display by the server. Let's try
 it out:
 
-``` screen
+```
 ghci> :load syslogtcpserver.hs
 [1 of 1] Compiling Main             ( syslogtcpserver.hs, interpreted )
 Ok, modules loaded: Main.
@@ -435,7 +435,7 @@ At this point, the server will begin listening for connections at port
 10514. It will not appear to be doing anything until a client connects.
 We could use telnet to connect to the server:
 
-``` screen
+```
 ~$ telnet localhost 10514
 Trying 127.0.0.1...
 Connected to localhost.
@@ -449,7 +449,7 @@ Connection closed.
 Meanwhile, in our other terminal running the TCP server, you'll see
 something like this:
 
-``` screen
+```
 From 127.0.0.1:38790: syslogtcpserver.hs: client connected
 From 127.0.0.1:38790: Test message
 From 127.0.0.1:38790: syslogtcpserver.hs: client disconnected
@@ -543,7 +543,7 @@ makeCode fac pri =
 We can try it out under `ghci`. If you still have the TCP server running
 from earlier, your session might look something like this:
 
-``` screen
+```
 ghci> :load syslogtcpclient.hs
 Loading package base ... linking ... done.
 [1 of 2] Compiling SyslogTypes      ( SyslogTypes.hs, interpreted )
@@ -560,7 +560,7 @@ ghci> closelog sl
 
 Over on the server, you'll see something like this:
 
-``` screen
+```
 From 127.0.0.1:46319: syslogtcpserver.hs: client connected
 From 127.0.0.1:46319: <9>tcptest: This is my TCP message
 From 127.0.0.1:46319: <9>tcptest: This is my TCP message again

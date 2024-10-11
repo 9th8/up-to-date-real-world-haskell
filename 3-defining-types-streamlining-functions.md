@@ -101,7 +101,7 @@ myInfo = Book 9780135072455 "Algebra of Programming"
 Once we have defined a type, we can experiment with it in `ghci`. We
 begin by using the `:load` command to load our source file.
 
-``` screen
+```
 ghci> :load BookStore
 [1 of 1] Compiling Main             ( BookStore.hs, interpreted )
 Ok, one module loaded.
@@ -110,7 +110,7 @@ Ok, one module loaded.
 Remember the `myInfo` variable we defined in our source file? Here it
 is.
 
-``` screen
+```
 ghci> myInfo
 Book 9780135072455 "Algebra of Programming" ["Richard Bird","Oege de Moor"]
 ghci> :type myInfo
@@ -119,7 +119,7 @@ myInfo :: BookInfo
 
 We can construct new values interactively in `ghci`, too.
 
-``` screen
+```
 ghci> Book 0 "The Book of Imaginary Beings" ["Jorge Luis Borges"]
 Book 0 "The Book of Imaginary Beings" ["Jorge Luis Borges"]
 ```
@@ -127,7 +127,7 @@ Book 0 "The Book of Imaginary Beings" ["Jorge Luis Borges"]
 The `ghci` command `:type` lets us see what the type of an expression
 is.
 
-``` screen
+```
 ghci> :type Book 1 "Cosmicomics" ["Italo Calvino"]
 Book 1 "Cosmicomics" ["Italo Calvino"] :: BookInfo
 ghci> cities = Book 173 "Use of Weapons" ["Iain M. Banks"]
@@ -137,7 +137,7 @@ To find out more about a type, we can use some of `ghci`'s browsing
 capabilities. The `:info` command gets `ghci` to tell us everything it
 knows about a name.
 
-``` screen
+```
 ghci> :info BookInfo
 data BookInfo = Book Int String [String]
         -- Defined at BookStore.hs:2:1
@@ -147,7 +147,7 @@ instance [safe] Show BookInfo -- Defined at BookStore.hs:3:27
 We can also find out why we use `Book` to construct a new value of type
 BookStore.
 
-``` screen
+```
 ghci> :type Book
 Book :: Int -> String -> [String] -> BookInfo
 ```
@@ -303,7 +303,7 @@ constructor.
 When we use a value constructor to create a value of type `BillingInfo`,
 we must supply the arguments that it requires.
 
-``` screen
+```
 ghci> :type CreditCard
 CreditCard :: CardNumber -> CardHolder -> Address -> BillingInfo
 ghci> CreditCard "2901650221064486" "Thomas Gradgrind" ["Dickens", "England"]
@@ -334,7 +334,7 @@ There is some overlap between tuples and user-defined algebraic data
 types. If we wanted to, we could represent our `BookInfo` type from
 earlier as an `(Int, String, [String])` tuple.
 
-``` screen
+```
 ghci> Book 2 "The Wealth of Networks" ["Yochai Benkler"]
 Book 2 "The Wealth of Networks" ["Yochai Benkler"]
 ghci> (2, "The Wealth of Networks", ["Yochai Benkler"])
@@ -404,7 +404,7 @@ However, the *meanings* of the elements are different. Because
 let us accidentally use a `Cartesian2D` value where a `Polar2D` is
 expected, or vice versa.
 
-``` screen
+```
 ghci> Cartesian2D (sqrt 2) (sqrt 2) == Polar2D (pi / 4) 2
 
 <interactive>:2:34: error:
@@ -435,7 +435,7 @@ If we used tuples to represent these values, we could quickly land
 ourselves in hot water by mixing the two representations
 inappropriately.
 
-``` screen
+```
 ghci> (1, 2) == (1, 2)
 True
 ```
@@ -541,7 +541,7 @@ types, and how they relate to concepts that might be more familiar.
 
     We can try these out in `ghci`.
 
-    ``` screen
+    ```
     ghci> :type Yellow
     Yellow :: Roygbiv
     ghci> :type Red
@@ -559,7 +559,7 @@ types, and how they relate to concepts that might be more familiar.
     does not occur. For example, we cannot use a `Roygbiv` value where
     an `Int` is expected.
 
-    ``` screen
+    ```
     ghci> take 3 "foobar"
     "foo"
     ghci> take Red "foobar"
@@ -820,7 +820,7 @@ complicated (True, a, x:xs, 5) = (a, xs)
 
 We can try this out interactively.
 
-``` screen
+```
 ghci> :load Tuple.hs
 [1 of 1] Compiling Main             ( Tuple.hs, interpreted )
 Ok, one module loaded.
@@ -833,7 +833,7 @@ tuple pattern above), that value must match exactly for the pattern
 match to succeed. If every pattern within a series of equations fails to
 match, we get a runtime error.
 
-``` screen
+```
 ghci> complicated (False, 1, [1,2,3], 5)
 *** Exception: Tuple.hs:10:0-39: Non-exhaustive patterns in function complicated
 ```
@@ -860,7 +860,7 @@ bookAuthors (Book id title authors) = authors
 
 Let's see it in action.
 
-``` screen
+```
 ghci> bookID (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
 3
 ghci> bookTitle (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
@@ -872,7 +872,7 @@ ghci> bookAuthors (Book 3 "Probability Theory" ["E.T.H. Jaynes"])
 The compiler can infer the types of the accessor functions based on the
 constructor we're using in our pattern.
 
-``` screen
+```
 ghci> :type bookID
 bookID :: BookInfo -> Int
 ghci> :type bookTitle
@@ -954,7 +954,7 @@ badExample (x:xs) = x + badExample xs
 If we apply this to a value that it cannot match, we'll get an error at
 runtime: our software has a bug!
 
-``` screen
+```
 ghci> badExample []
 *** Exception: BadPattern.hs:4:0-36: Non-exhaustive patterns in function badExample
 ```
@@ -991,7 +991,7 @@ goodExample _      = 0
 The wild card above will match the `[]` constructor, so applying this
 function does not lead to a crash.
 
-``` screen
+```
 ghci> goodExample []
 0
 ghci> goodExample [1,2]
@@ -1062,7 +1062,7 @@ customerAddress (Customer _ _ address) = address
 For each of the fields that we name in our type definition, Haskell
 creates an accessor function of that name.
 
-``` screen
+```
 ghci> :type customerID
 customerID :: Customer -> CustomerID
 ```
@@ -1109,7 +1109,7 @@ the declaration of the type.
 When we define a type using record syntax, it also changes the way the
 type's values are printed.
 
-``` screen
+```
 ghci> customer1
 Customer {customerID = 271828, customerName = "J.R. Hacker", customerAddress = ["255 Syntax Ct","Milpitas, CA 95134","USA"]}
 ```
@@ -1117,7 +1117,7 @@ Customer {customerID = 271828, customerName = "J.R. Hacker", customerAddress = [
 For comparison, let's look at a `BookInfo` value; we defined this type
 without record syntax.
 
-``` screen
+```
 ghci> cities
 Book 173 "Use of Weapons" ["Iain M. Banks"]
 ```
@@ -1125,7 +1125,7 @@ Book 173 "Use of Weapons" ["Iain M. Banks"]
 The accessor functions that we get "for free" when we use record
 syntax really are normal Haskell functions.
 
-``` screen
+```
 ghci> :type customerName
 customerName :: Customer -> String
 ghci> customerName customer1
@@ -1191,7 +1191,7 @@ someString = Just "something"
 
 As usual, we can experiment with this type in `ghci`.
 
-``` screen
+```
 ghci> Just 1.5
 Just 1.5
 ghci> Nothing
@@ -1248,14 +1248,14 @@ practice.
 The simplest value of type `List a` that we can create is `Nil`. Save
 the type definition in a file, then load it into `ghci`.
 
-``` screen
+```
 ghci> Nil
 Nil
 ```
 
 Because `Nil` has a `List` type, we can use it as a parameter to `Cons`.
 
-``` screen
+```
 ghci> Cons 0 Nil
 Cons 0 Nil
 ```
@@ -1263,7 +1263,7 @@ Cons 0 Nil
 And because `Cons 0 Nil` has the type `List a`, we can use this as a
 parameter to `Cons`.
 
-``` screen
+```
 ghci> Cons 1 it
 Cons 1 (Cons 0 Nil)
 ghci> Cons 2 it
@@ -1302,7 +1302,7 @@ By inspection, this clearly substitutes a `Cons` for every `(:)`, and a
 `Nil` for each `[]`. This covers both of the built-in list type's
 constructors. The two types are *isomorphic*; they have the same shape.
 
-``` screen
+```
 ghci> fromList "durian"
 Cons 'd' (Cons 'u' (Cons 'r' (Cons 'i' (Cons 'a' (Cons 'n' Nil)))))
 ghci> fromList [Just True, Nothing, Just False]
@@ -1424,7 +1424,7 @@ mySecond xs = if null (tail xs)
 
 As usual, we can see how this works in practice in `ghci`.
 
-``` screen
+```
 ghci> mySecond "xi"
 'i'
 ghci> mySecond [2]
@@ -1443,7 +1443,7 @@ should terminate our program.
 As we have already seen, a pattern matching failure causes a similar
 unrecoverable error.
 
-``` screen
+```
 ghci> mySecond []
 *** Exception: Prelude.tail: empty list
 ```
@@ -1478,7 +1478,7 @@ If the list we're passed is too short, we return `Nothing` to our
 caller. This lets them decide what to do, where a call to `error` would
 force a crash.
 
-``` screen
+```
 ghci> safeSecond []
 Nothing
 ghci> safeSecond [1]
@@ -1603,7 +1603,7 @@ bar = let x = 1
 Here, the inner `x` is hiding, or *shadowing*, the outer `x`. It has the
 same name, but a different type and value.
 
-``` screen
+```
 ghci> bar
 ("foo",1)
 ```
@@ -1626,7 +1626,7 @@ Because the function's argument `a` is never used in the body of the
 function, due to being shadowed by the `let`-bound `a`, the argument can
 have any type at all.
 
-``` screen
+```
 ghci> :type quux
 quux :: t -> [Char]
 ```
@@ -1769,7 +1769,7 @@ BadIndent.hs
 
 Here's what happens when we try to load the two files into `ghci`.
 
-``` screen
+```
 ghci> :load GoodIndent.hs
 [1 of 1] Compiling Main             ( GoodIndent.hs, interpreted )
 Ok, one module loaded.
@@ -2192,7 +2192,7 @@ intersperse :: a -> [[a]] -> [a]
 The separator should appear between elements of the list, but should not
 follow the last element. Your function should behave as follows.
 
-``` screen
+```
 ghci> :load Intersperse
 [1 of 1] Compiling Main             ( Intersperse.hs, interpreted )
 Ok, modules loaded: Main.

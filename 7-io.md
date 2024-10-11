@@ -39,7 +39,7 @@ You can compile this program to a standalone executable, run it with
 `runghc`, or invoke `main` from within `ghci`. Here's a sample session
 using `runghc`:
 
-``` screen
+```
 $ runghc basicio.hs
 Greetings!  What is your name?
 John
@@ -56,7 +56,7 @@ input string with our own text.
 Let's take a look at the types of `putStrLn` and `getLine`. You can
 find that information in the library reference, or just ask `ghci`:
 
-``` screen
+```
 ghci> :type putStrLn
 putStrLn :: String -> IO ()
 ghci> :type getLine
@@ -92,7 +92,7 @@ only be performed (executed) from within another I/O action.
 
 Let's look at this with `ghci`:
 
-``` screen
+```
 ghci> writefoo = putStrLn "foo"
 ghci> writefoo
 foo
@@ -195,7 +195,7 @@ instance--\~name2reply\~ did not and could not. That's because
 
 Let's examine this with `ghci`:
 
-``` screen
+```
 ghci> :load callingpure.hs
 [1 of 1] Compiling Main             ( callingpure.hs, interpreted )
 Ok, one module loaded.
@@ -377,7 +377,7 @@ I/O IS FUN
 
 Let's use `ghci` to check on the type of `openFile`:
 
-``` screen
+```
 ghci> :module System.IO
 ghci> :type openFile
 openFile :: FilePath -> IOMode -> IO Handle
@@ -526,7 +526,7 @@ code with other programs--if that's what's requested.[^5]
 As an example, we can provide input to `callingpure.hs` in advance like
 this:
 
-``` screen
+```
 $ echo John | runghc callingpure.hs
 Greetings once again. What is your name?
 Pleased to meet you, John.
@@ -715,7 +715,7 @@ same as `putStrLn (show c)`.
 
 Let's look at the output:
 
-``` screen
+```
 $ runhaskell tempfile.hs
 Welcome to tempfile.hs
 I have a temporary file at /tmp/mytemp8572.txt
@@ -829,7 +829,7 @@ lazily from a file in this case. It can work perfectly well with a
 
 You can even verify that with `ghci`:
 
-``` screen
+```
 Prelude> :load toupper-lazy1.hs
 [1 of 1] Compiling Main             ( toupper-lazy1.hs, interpreted )
 Ok, one module loaded.
@@ -921,7 +921,7 @@ internally.
 Can you guess the Haskell types of these functions? Let's check with
 `ghci`:
 
-``` screen
+```
 ghci> :type readFile
 readFile :: FilePath -> IO String
 ghci> :type writeFile
@@ -1015,14 +1015,14 @@ Look at that--/one/ line of code to achieve our transformation! To
 achieve the same effect as with the previous examples, you could run
 this one like this:
 
-``` screen
+```
 $ runghc toupper-lazy4.hs < input.txt > output.txt
 ```
 
 Or, if you'd like to see the output printed to the screen, you could
 type:
 
-``` screen
+```
 $ runghc toupper-lazy4.hs < input.txt
 ```
 
@@ -1104,7 +1104,7 @@ This moved the header outside of the `map`.
     This may have introduced three functions that you aren't familiar
     with yet. Let's inspect their types with `ghci`:
 
-    ``` screen
+    ```
     ghci> :type lines
     lines :: String -> [String]
     ghci> :type unlines
@@ -1125,7 +1125,7 @@ This moved the header outside of the `map`.
 
     Try running this over our standard example input:
 
-    ``` screen
+    ```
     $ runghc filter.hs < input.txt
     I like Haskell
     Haskell is great
@@ -1174,7 +1174,7 @@ chaining functions together purely and are covered in [Chapter 14,
 order to understand I/O. Just understand that the result type of actions
 is "tagged" with IO. Let's take a look at some types:
 
-``` screen
+```
 ghci> :type putStrLn
 putStrLn :: String -> IO ()
 ghci> :type getLine
@@ -1246,7 +1246,7 @@ since Haskell is lazy, the actions aren't generated until here either.
 
 When you run the program, your output will look like this:
 
-``` screen
+```
 Data: Start of the program
 Data: 1
 Data: 2
@@ -1293,7 +1293,7 @@ to `mapM_` is an I/O action that is executed for every item in the list.
 to return a list of I/O results if you want them. Take a look at their
 types:
 
-``` screen
+```
 ghci> :type mapM
 mapM :: (Monad m) => (a -> m b) -> [a] -> m [b]
 ghci> :type mapM_
@@ -1328,7 +1328,7 @@ individual actions into one big action that prints out lines.
 actions. There are two operators that you can use instead of `do`
 blocks: `>>` and `>>=`. Let's look at their types in `ghci`:
 
-``` screen
+```
 ghci> :type (>>)
 (>>) :: (Monad m) => m a -> m b -> m b
 ghci> :type (>>=)

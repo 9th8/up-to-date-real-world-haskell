@@ -64,7 +64,7 @@ sum by its length. The result is printed as a string. Let's compile
 this source to native code (with optimizations on) and run it with the
 `time` command to see how it performs:
 
-``` screen
+```
 $ ghc --make -O2 A.hs
 [1 of 1] Compiling Main             ( A.hs, A.o )
 Linking A ...
@@ -103,7 +103,7 @@ Guide](http://www.haskell.org/ghc/docs/latest/html/users_guide/):
 So let's run the program with statistic reporting enabled, via
 `+RTS -sstderr`, yielding this result.
 
-``` screen
+```
 $ ./A 1e7 +RTS -sstderr
 ./A 1e7 +RTS -sstderr
 5000000.5
@@ -189,7 +189,7 @@ forms", or CAFs, we use the `-caf-all` flag.
 Compiling our example program for profiling then (using the
 `-fforce-recomp` flag to to force full recompilation):
 
-``` screen
+```
 $ ghc -O2 --make A.hs -prof -auto-all -caf-all -fforce-recomp
 [1 of 1] Compiling Main             ( A.hs, A.o )
 Linking A ...
@@ -199,7 +199,7 @@ We can now run this annotated program with time profiling enabled (and
 we'll use a smaller input size for the time being, as the program now
 has additional profiling overhead):
 
-``` screen
+```
 $ time ./A  1e6 +RTS -p
 Stack space overflow: current size 8388608 bytes.
 Use `+RTS -Ksize' to increase it.
@@ -215,7 +215,7 @@ how it executes. In this case, it is simple to proceed---we use the GHC
 runtime flag, `-K`, to set a larger stack limit for our program (with
 the usual suffixes to indicate magnitude):
 
-``` screen
+```
 $ time ./A 1e6 +RTS -p -K100M
 500000.5
 ./A 1e6 +RTS -p -K100M  4.27s user 0.20s system 99% cpu 4.489 total
@@ -225,7 +225,7 @@ The runtime will dump its profiling information into a file, `A.prof`
 (named after the binary that was executed) which contains the following
 information:
 
-``` screen
+```
 Time and Allocation Profiling Report  (Final)
 
        A +RTS -p -K100M -RTS 1e6
@@ -308,7 +308,7 @@ visualization of the heap over time.
 To extract a standard heap profile from our program, we run it with the
 `-hc` runtime flag:
 
-``` screen
+```
 $ time ./A 1e6 +RTS -hc -p -K100M
 500000.5
 ./A 1e6 +RTS -hc -p -K100M  4.15s user 0.27s system 99% cpu 4.432 total
@@ -317,7 +317,7 @@ $ time ./A 1e6 +RTS -hc -p -K100M
 A heap profiling log, `A.hp`, was created, with the content in the
 following form:
 
-``` screen
+```
 JOB "A 1e6 +RTS -hc -p -K100M"
 SAMPLE_UNIT "seconds"
 VALUE_UNIT "bytes"
@@ -340,7 +340,7 @@ more we sample, the more accurate the results, but the slower our
 program will run. We can now render the heap profile as a graph, using
 the `hp2ps` tool:
 
-``` screen
+```
 $ hp2ps -e8in -c A.hp
 ```
 
@@ -355,7 +355,7 @@ initial allocation also coincides with `sum`, doing some work,
 allocating a lot of data. We get a slightly different presentation if we
 break down the allocation by type, using `-hy` profiling:
 
-``` screen
+```
 $ time ./A 1e6 +RTS -hy -p -K100M
 500000.5
 ./A 1e6 +RTS -i0.001 -hy -p -K100M  34.96s user 0.22s system 99% cpu 35.237 total
@@ -372,7 +372,7 @@ devoted to values of list type (the `[]` band), and heap-allocated
 (represented as data of type "\*"). Finally, let's break it down by
 what constructors are being allocated, using the `-hd` flag:
 
-``` screen
+```
 $ time ./A 1e6 +RTS -hd -p -K100M
 $ time ./A 1e6 +RTS -i0.001 -hd -p -K100M
 500000.5
@@ -444,7 +444,7 @@ loop state, and the current element, and returns a new state with the
 length increased by one, and the sum increased by the current element.
 When we run this, however, we get a stack overflow:
 
-``` screen
+```
 $ ghc -O2 --make B.hs -fforce-recomp
 $ time ./B 1e6
 Stack space overflow: current size 8388608 bytes.
@@ -457,7 +457,7 @@ stack size to the size of the heap in our previous implementation, with
 the `-K` runtime flag, the program runs to completion, and has similar
 allocation figures:
 
-``` screen
+```
 $ ghc -O2 --make B.hs -prof -auto-all -caf-all -fforce-recomp
 [1 of 1] Compiling Main             ( B.hs, B.o )
 Linking B ...
@@ -506,7 +506,7 @@ mean xs = s / fromIntegral n
 However, if we run this implementation, we see we still haven't quite
 got it right:
 
-``` screen
+```
 $ ghc -O2 --make C.hs
 [1 of 1] Compiling Main             ( C.hs, C.o )
 Linking C ...
@@ -565,7 +565,7 @@ In this variant, we step inside the tuple state, and explicitly tell the
 compiler that each state component should be reduced, on each step. This
 gives us a version that does, at last, run in constant space:
 
-``` screen
+```
 $ ghc -O2 D.hs --make
 [1 of 1] Compiling Main             ( D.hs, D.o )
 Linking D ...
@@ -574,7 +574,7 @@ Linking D ...
 If we run this, with allocation statistics enabled, we get the
 satisfying result:
 
-``` screen
+```
 $ time ./D 1e6 +RTS -sstderr
 ./D 1e6 +RTS -sstderr
 500000.5
@@ -697,7 +697,7 @@ and does so quickly.
     The intermediate values in the loop state are now made strict, and
     the loop runs in constant space:
 
-    ``` screen
+    ```
     $ ghc -O2 F.hs --make
     $ time ./F 1e6 +RTS -sstderr
     ./F 1e6 +RTS -sstderr
@@ -794,14 +794,14 @@ To view the Core version of our Haskell program we compile with the
 that lets us view Core in a pager. So let's look at the representation
 of our final `fold` using strict data types, in Core form:
 
-``` screen
+```
 $ ghc -O2 -ddump-simpl G.hs
 ```
 
 A screenful of text is generated. If we look carefully at, we'll see a
 loop (here, cleaned up slightly for clarity):
 
-``` screen
+```
 lgo :: Integer -> [Double] -> Double# -> (# Integer, Double #)
 
 lgo = \ n xs s ->
@@ -869,7 +869,7 @@ Compiling this with optimizations on, and
 `-funbox-strict-fields -ddump-simpl`, we get a tighter inner loop in
 Core:
 
-``` screen
+```
 lgo :: Int# -> Double# -> [Double] -> (# Int#, Double# #)
 lgo = \ n s xs ->
     case xs of
@@ -886,7 +886,7 @@ list is lazily demanded. If we compile and run this tuned version, we
 can compare the allocation and time performance against our original
 program:
 
-``` screen
+```
 $ time ./H 1e7 +RTS -sstderr
 ./H 1e7 +RTS -sstderr
 5000000.5
@@ -999,7 +999,7 @@ After installing the `uvector` library, from Hackage, we can build our
 program, with `-O2 -funbox-strict-fields`, and inspect the Core that
 results:
 
-``` screen
+```
 fold :: Int# -> Double# -> Double# -> (# Int#, Double# #)
 fold = \ n s t ->
     case >## t limit of {
@@ -1013,7 +1013,7 @@ accumulation, and all input and output variables are kept in registers.
 Running this, we see another improvement bump in performance, with
 runtime falling by another order of magnitude:
 
-``` screen
+```
 $ time ./I 1e7
 5000000.5
 ./I 1e7  0.06s user 0.00s system 72% cpu 0.083 total
@@ -1038,7 +1038,7 @@ final fused loop code by using `-funbox-strict-fields -fvia-C
 is able to optimize away some redundant move instructions in the
 program's inner loop):
 
-``` screen
+```
 $ ghc -fforce-recomp --make -O2 -funbox-strict-fields -fvia-C -optc-O2 I.hs
 [1 of 1] Compiling Main             ( I.hs, I.o )
 Linking I ...
@@ -1050,7 +1050,7 @@ $ time ./I 1e7
 Inspecting the final x86~64~ assembly (via `-keep-tmp-files`), we see
 the generated loop contains only six instructions:
 
-``` screen
+```
 go:
   ucomisd     5(%rbx), %xmm6
   ja  .L31

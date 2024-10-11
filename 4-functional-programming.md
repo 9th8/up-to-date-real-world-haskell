@@ -61,7 +61,7 @@ This is all we need to write simple, but complete, file processing
 programs. This is a complete program. We can compile it to an executable
 named `InteractWith` as follows.
 
-``` screen
+```
 $ ghc --make InteractWith
 [1 of 1] Compiling Main             ( InteractWith.hs, InteractWith.o )
 Linking InteractWith ...
@@ -71,7 +71,7 @@ If we run this program from the shell or command prompt, it will accept
 two file names: the name of a file to read, and the name of a file to
 write.
 
-``` screen
+```
 $ ./Interact
 error: exactly two arguments needed
 $ ./Interact hello-in.txt hello-out.txt
@@ -100,7 +100,7 @@ Haskell provides a built-in function, `lines`, that lets us split a text
 string on line boundaries. It returns a list of strings with line
 termination characters omitted.
 
-``` screen
+```
 ghci> :type lines
 lines :: String -> [String]
 ghci> lines "line 1\nline 2"
@@ -121,7 +121,7 @@ one platform that was written on the other, the line endings are likely
 to become a mess. (Both `readFile` and `writeFile` operate in text
 mode.)
 
-``` screen
+```
 ghci> lines "a\r\nb"
 ["a\r","b"]
 ```
@@ -186,7 +186,7 @@ a `Bool` to indicate whether to break the list at that point. The
 before the predicate returned `True` (the *prefix*), and the rest of the
 list (the *suffix*).
 
-``` screen
+```
 ghci> break odd [2,4,5,6,8]
 ([2,4],[5,6,8])
 ghci> :module +Data.Char
@@ -224,7 +224,7 @@ oberving the behavior of the function in different circumstances.
 Let's start by partitioning a string that doesn't contain any line
 terminators.
 
-``` screen
+```
 ghci> splitLines "foo"
 ["foo"]
 ```
@@ -232,7 +232,7 @@ ghci> splitLines "foo"
 Here, our application of `break` never finds a line terminator, so the
 suffix it returns is empty.
 
-``` screen
+```
 ghci> break isLineTerminator "foo"
 ("foo","")
 ```
@@ -241,14 +241,14 @@ The `case` expression in `splitLines` must thus be matching on the
 fourth branch, and we're finished. What about a slightly more
 interesting case?
 
-``` screen
+```
 ghci> splitLines "foo\r\nbar"
 ["foo","bar"]
 ```
 
 Our first application of `break` gives us a non-empty suffix.
 
-``` screen
+```
 ghci> break isLineTerminator "foo\r\nbar"
 ("foo","\r\nbar")
 ```
@@ -258,7 +258,7 @@ we match on the first branch of the `case` expression. This gives us
 `pre` bound to `"foo"`, and `suf` bound to `"bar"`. We apply
 `splitLines` recursively, this time on `"bar"` alone.
 
-``` screen
+```
 ghci> splitLines "bar"
 ["bar"]
 ```
@@ -266,7 +266,7 @@ ghci> splitLines "bar"
 The result is that we construct a list whose head is `"foo"` and whose
 tail is `["bar"]`.
 
-``` screen
+```
 ghci> "foo" : ["bar"]
 ["foo","bar"]
 ```
@@ -305,7 +305,7 @@ If we replace the `id` function with `fixLines`, we can compile an
 executable that will convert a text file to our system's native line
 ending.
 
-``` screen
+```
 $ ghc --make FixLines
 [1 of 1] Compiling Main             ( FixLines.hs, FixLines.o )
 Linking FixLines ...
@@ -323,7 +323,7 @@ On Unix-like systems, the standard pagers and editors hide Windows line
 endings. This makes it more difficult to verify that `FixLines` is
 actually eliminating them. Here are a few commands that should help.
 
-``` screen
+```
 $ file gpl-3.0.txt
 gpl-3.0.txt: ASCII English text
 $ unix2dos gpl-3.0.txt
@@ -368,7 +368,7 @@ bar = True `Pair` "quux"
 Since infix notation is purely a syntactic convenience, it does not
 change a function's behavior.
 
-``` screen
+```
 ghci> 1 `plus` 2
 3
 ghci> plus 1 2
@@ -384,7 +384,7 @@ defines a function, `elem`, that indicates whether a value is present in
 a list. If we use `elem` using prefix notation, it is fairly easy to
 read.
 
-``` screen
+```
 ghci> elem 'a' "camogie"
 True
 ```
@@ -393,7 +393,7 @@ If we switch to infix notation, the code becomes even easier to
 understand. It is now clearer that we're checking to see if the value
 on the left is present in the list on the right.
 
-``` screen
+```
 ghci> 3 `elem` [1,2,4,8]
 False
 ```
@@ -402,7 +402,7 @@ We see a more pronounced improvement with some useful functions from the
 `Data.List` module. The `isPrefixOf` function tells us if one list
 matches the beginning of another.
 
-``` screen
+```
 ghci> :module +Data.List
 ghci> "foo" `isPrefixOf` "foobar"
 True
@@ -411,7 +411,7 @@ True
 The `isInfixOf` and `isSuffixOf` functions match anywhere in a list and
 at its end, respectively.
 
-``` screen
+```
 ghci> "needle" `isInfixOf` "haystack full of needle thingies"
 True
 ghci> "end" `isSuffixOf` "the end"
@@ -463,7 +463,7 @@ exported by `Data.List`. Several useful functions in `Data.List` are
 functions in the sections that follow, we will explicitly mention those
 that are only in `Data.List`.
 
-``` screen
+```
 ghci> :module +Data.List
 ```
 
@@ -476,7 +476,7 @@ definition of each function after you've read about it.
 
 The `length` function tells us how many elements are in a list.
 
-``` screen
+```
 ghci> :type length
 length :: [a] -> Int
 ghci> length []
@@ -490,7 +490,7 @@ ghci> length "strings are lists, too"
 If you need to determine whether a list is empty, use the `null`
 function.
 
-``` screen
+```
 ghci> :type null
 null :: [a] -> Bool
 ghci> null []
@@ -501,7 +501,7 @@ False
 
 To access the first element of a list, we use the `head` function.
 
-``` screen
+```
 ghci> :type head
 head :: [a] -> a
 ghci> head [1,2,3]
@@ -510,7 +510,7 @@ ghci> head [1,2,3]
 
 The converse, `tail`, returns all *but* the head of a list.
 
-``` screen
+```
 ghci> :type tail
 tail :: [a] -> [a]
 ghci> tail "foo"
@@ -519,7 +519,7 @@ ghci> tail "foo"
 
 Another function, `last`, returns the very last element of a list.
 
-``` screen
+```
 ghci> :type last
 last :: [a] -> a
 ghci> last "bar"
@@ -529,7 +529,7 @@ ghci> last "bar"
 The converse of `last` is `init`, which returns a list of all but the
 last element of its input.
 
-``` screen
+```
 ghci> :type init
 init :: [a] -> [a]
 ghci> init "bar"
@@ -540,7 +540,7 @@ Several of the functions above behave poorly on empty lists, so be
 careful if you don't know whether or not a list is empty. What form
 does their misbehavior take?
 
-``` screen
+```
 ghci> head []
 *** Exception: Prelude.head: empty list
 ```
@@ -629,7 +629,7 @@ providing "safe" total equivalents.
 
 Haskell's name for the "append" function is `(++)`.
 
-``` screen
+```
 ghci> :type (++)
 (++) :: [a] -> [a] -> [a]
 ghci> "foo" ++ "bar"
@@ -643,7 +643,7 @@ ghci> [True] ++ []
 The `concat` function takes a list of lists, all of the same type, and
 concatenates them into a single list.
 
-``` screen
+```
 ghci> :type concat
 concat :: [[a]] -> [a]
 ghci> concat [[1,2,3], [4,5,6]]
@@ -652,7 +652,7 @@ ghci> concat [[1,2,3], [4,5,6]]
 
 It removes one level of nesting.
 
-``` screen
+```
 ghci> concat [[[1,2],[3]], [[4],[5],[6]]]
 [[1,2],[3],[4],[5],[6]]
 ghci> concat (concat [[[1,2],[3]], [[4],[5],[6]]])
@@ -661,7 +661,7 @@ ghci> concat (concat [[[1,2],[3]], [[4],[5],[6]]])
 
 The `reverse` function returns the elements of a list in reverse order.
 
-``` screen
+```
 ghci> :type reverse
 reverse :: [a] -> [a]
 ghci> reverse "foo"
@@ -671,7 +671,7 @@ ghci> reverse "foo"
 For lists of `Bool`, the `and` and `or` functions generalise their
 two-argument cousins, `(&&)` and `(||)`, over lists.
 
-``` screen
+```
 ghci> :type and
 and :: [Bool] -> Bool
 ghci> and [True,False,True]
@@ -692,7 +692,7 @@ returns `True` if that predicate succeeds on every element of the list,
 while `any` returns `True` if the predicate succeeds on at least one
 element of the list.
 
-``` screen
+```
 ghci> :type all
 all :: (a -> Bool) -> [a] -> Bool
 ghci> all odd [1,3,5]
@@ -717,7 +717,7 @@ application"](2-types-and-functions.org::*Function application)
 consisting of the first *k* elements from a list. Its converse, `drop`,
 drops *k* elements from the start of the list.
 
-``` screen
+```
 ghci> :type take
 take :: Int -> [a] -> [a]
 ghci> take 3 "foobar"
@@ -735,7 +735,7 @@ ghci> drop 1 []
 The `splitAt` function combines the functions of `take` and `drop`,
 returning a pair of the input list, split at the given index.
 
-``` screen
+```
 ghci> :type splitAt
 splitAt :: Int -> [a] -> ([a], [a])
 ghci> splitAt 3 "foobar"
@@ -747,7 +747,7 @@ takes elements from the beginning of a list as long as the predicate
 returns `True`, while `dropWhile` drops elements from the list as long
 as the predicate returns `True`.
 
-``` screen
+```
 ghci> :type takeWhile
 takeWhile :: (a -> Bool) -> [a] -> [a]
 ghci> takeWhile odd [1,3,5,6,8,9,11]
@@ -767,7 +767,7 @@ and `span` tuple up the results of `takeWhile` and `dropWhile`.
 Each function takes a predicate; `break` consumes its input while its
 predicate fails, while `span` consumes while its predicate succeeds.
 
-``` screen
+```
 ghci> :type span
 span :: (a -> Bool) -> [a] -> ([a], [a])
 ghci> span even [2,4,6,7,9,10,11]
@@ -783,7 +783,7 @@ ghci> break even [1,3,5,6,8,9,10]
 As we've already seen, the `elem` function indicates whether a value is
 present in a list. It has a companion function, `notElem`.
 
-``` screen
+```
 ghci> :type elem
 elem :: (Eq a) => a -> [a] -> Bool
 ghci> 2 `elem` [5,3,2,1,1]
@@ -795,7 +795,7 @@ False
 For a more general search, `filter` takes a predicate, and returns every
 element of the list on which the predicate succeeds.
 
-``` screen
+```
 ghci> :type filter
 filter :: (a -> Bool) -> [a] -> [a]
 ghci> filter odd [2,4,1,3,6,8,5,7]
@@ -809,7 +809,7 @@ list. The easiest way to use them is using infix notation.
 The `isPrefixOf` function tells us whether its left argument matches the
 beginning of its right argument.
 
-``` screen
+```
 ghci> :module +Data.List
 ghci> :type isPrefixOf
 isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
@@ -822,7 +822,7 @@ False
 The `isInfixOf` function indicates whether its left argument is a
 sublist of its right.
 
-``` screen
+```
 ghci> :module +Data.List
 ghci> [2,6] `isInfixOf` [3,1,4,1,5,9,2,6,5,3,5,8,9,7,9]
 True
@@ -832,7 +832,7 @@ False
 
 The operation of `isSuffixOf` shouldn't need any explanation.
 
-``` screen
+```
 ghci> :module +Data.List
 ghci> ".c" `isSuffixOf` "crashme.c"
 True
@@ -844,7 +844,7 @@ The `zip` function takes two lists and "zips" them into a single list
 of pairs. The resulting list is the same length as the shorter of the
 two inputs.
 
-``` screen
+```
 ghci> :type zip
 zip :: [a] -> [b] -> [(a, b)]
 ghci> zip [12,72,93] "zippity"
@@ -855,7 +855,7 @@ More useful is `zipWith`, which takes two lists and applies a function
 to each pair of elements, generating a list that is the same length as
 the shorter of the two.
 
-``` screen
+```
 ghci> :type zipWith
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
 ghci> zipWith (+) [1,2,3] [4,5,6]
@@ -875,7 +875,7 @@ text"](4-functional-programming.org::*Warming up: portably splitting lines of te
 and its standard counterpart, `unlines`. Notice that `unlines` always
 places a newline on the end of its result.
 
-``` screen
+```
 ghci> lines "foo\nbar"
 ["foo","bar"]
 ghci> unlines ["foo", "bar"]
@@ -885,7 +885,7 @@ ghci> unlines ["foo", "bar"]
 The `words` function splits an input string on any white space. Its
 counterpart, `unwords`, uses a single space to join a list of words.
 
-``` screen
+```
 ghci> words "the  \r  quick \t  brown\n\n\nfox"
 ["the","quick","brown","fox"]
 ghci> unwords ["jumps", "over", "the", "lazy", "dog"]
@@ -1070,7 +1070,7 @@ will match, and the recursive calls will cease.
 How well does this function work? For positive integers, it's perfectly
 cromulent.
 
-``` screen
+```
 ghci> asInt "33"
 33
 ```
@@ -1078,7 +1078,7 @@ ghci> asInt "33"
 But because we were focusing on how to traverse lists, not error
 handling, our poor function misbehaves if we try to feed it nonsense.
 
-``` screen
+```
 ghci> asInt ""
 0
 ghci> asInt "potato"
@@ -1249,7 +1249,7 @@ This is our first close look at a function that takes another function
 as its argument. We can learn a lot about what `map` does by simply
 inspecting its type.
 
-``` screen
+```
 ghci> :type map
 map :: (a -> b) -> [a] -> [b]
 ```
@@ -1311,7 +1311,7 @@ explicitly.
 We try out our `myMap` function to give ourselves some assurance that it
 behaves similarly to the standard `map`.
 
-``` screen
+```
 ghci> :module +Data.Char
 ghci> map toLower "SHOUTING"
 "shouting"
@@ -1351,7 +1351,7 @@ oddList _                  = []
 
 Let's see that in action.
 
-``` screen
+```
 ghci> oddList [1,1,2,3,5,8,13,21,34]
 [1,1,3,5,13,21]
 ```
@@ -1360,7 +1360,7 @@ Once again, this idiom is so common that the prelude defines a function,
 `filter`, which we have already introduced. It removes the need for
 boilerplate code to recurse over the list.
 
-``` screen
+```
 ghci> :type filter
 filter :: (a -> Bool) -> [a] -> [a]
 ghci> filter odd [3,1,4,1,5,9,2,6,5]
@@ -1787,7 +1787,7 @@ identity xs = foldr (:) [] xs
 
 It transforms a list into a copy of itself.
 
-``` screen
+```
 ghci> identity [1,2,3]
 [1,2,3]
 ```
@@ -1795,7 +1795,7 @@ ghci> identity [1,2,3]
 If `foldr` replaces the end of a list with some other value, this gives
 us another way to look at Haskell's list append function, `(++)`.
 
-``` screen
+```
 ghci> [1,2,3] ++ [4,5,6]
 [1,2,3,4,5,6]
 ```
@@ -1816,7 +1816,7 @@ append xs ys = foldr (:) ys xs
 
 Let's try this out.
 
-``` screen
+```
 ghci> append [1,2,3] [4,5,6]
 [1,2,3,4,5,6]
 ```
@@ -1871,7 +1871,7 @@ large, GHC places a fixed limit on the maximum size of this stack.
 Thanks to this limit, we can try a large thunked expression in `ghci`
 without needing to worry that it might consume all of memory.
 
-``` screen
+```
 ghci> foldl (+) 0 [1..1000]
 500500
 ```
@@ -1882,7 +1882,7 @@ That's a lot of memory and effort to represent a single number! With a
 larger expression, although the size is still modest, the results are
 more dramatic.
 
-``` screen
+```
 ghci> foldl (+) 0 [1..1000000]
 *** Exception: stack overflow
 ```
@@ -1900,7 +1900,7 @@ The `Data.List` module defines a function named `foldl'` that is similar
 to `foldl`, but does not build up thunks. The difference in behavior
 between the two is immediately obvious.
 
-``` screen
+```
 ghci> foldl  (+) 0 [1..1000000]
 *** Exception: stack overflow
 ghci> :module +Data.List
@@ -1934,7 +1934,7 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
 
     Your function should behave as follows.
 
-    ``` screen
+    ```
     ghci> asInt_fold "101"
     ghci> asInt_fold "-31337"
     -31337
@@ -1945,7 +1945,7 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
     Extend your function to handle the following kinds of exceptional
     conditions by calling `error`.
 
-    ``` screen
+    ```
     ghci> asInt_fold ""
     0
     ghci> asInt_fold "-"
@@ -1972,7 +1972,7 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
     ```
     ::::
 
-    ``` screen
+    ```
     ghci> asInt_either "33"
     Right 33
     ghci> asInt_either "foo"
@@ -2108,7 +2108,7 @@ unsafeHead = \(x:_) -> x
 This definition of `unsafeHead` will explode in our faces if we call it
 with a value on which pattern matching fails.
 
-``` screen
+```
 ghci> :type unsafeHead
 unsafeHead :: [t] -> t
 ghci> unsafeHead [1]
@@ -2149,7 +2149,7 @@ often invaluable as "glue".
 You may wonder why the `->` arrow is used for what seems to be two
 purposes in the type signature of a function.
 
-``` screen
+```
 ghci> :type dropWhile
 dropWhile :: (a -> Bool) -> [a] -> [a]
 ```
@@ -2166,7 +2166,7 @@ two arguments, it is actually a function of one argument, which returns
 a function that takes one argument. Here's a perfectly valid Haskell
 expression.
 
-``` screen
+```
 ghci> :module +Data.Char
 ghci> :type dropWhile isSpace
 dropWhile isSpace :: [Char] -> [Char]
@@ -2176,7 +2176,7 @@ Well, *that* looks useful. The value `dropWhile isSpace` is a function
 that strips leading white space from a string. How is this useful? As
 one example, we can use it as an argument to a higher order function.
 
-``` screen
+```
 ghci> map (dropWhile isSpace) [" a","f","   e"]
 ["a","f","e"]
 ```
@@ -2186,7 +2186,7 @@ element off the front of its type signature. Let's take `zip3` as an
 example to see what we mean; this is a function that zips three lists
 into a list of three-tuples.
 
-``` screen
+```
 ghci> :type zip3
 zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
 ghci> zip3 "foo" "bar" "quux"
@@ -2198,7 +2198,7 @@ accepts two arguments. No matter what arguments we supply to this
 compound function, its first argument will always be the fixed value we
 specified.
 
-``` screen
+```
 ghci> :type zip3 "foo"
 zip3 "foo" :: [b] -> [c] -> [(Char, b, c)]
 ghci> let zip3foo = zip3 "foo"
@@ -2223,7 +2223,7 @@ signatures of the two and their behavior are identical.
 This applies just as well if we fix two arguments, giving us a function
 of just one argument.
 
-``` screen
+```
 ghci> let zip3foobar = zip3 "foo" "bar"
 ghci> :type zip3foobar
 zip3foobar :: [c] -> [(Char, Char, c)]
@@ -2298,7 +2298,7 @@ parentheses, we can supply its left or right argument inside the
 parentheses to get a partially applied function. This kind of partial
 application is called a *section*.
 
-``` screen
+```
 ghci> (1+) 2
 3
 ghci> map (*3) [24,36]
@@ -2314,7 +2314,7 @@ argument. And vice versa.
 Recall that we can wrap a function name in backquotes to use it as an
 infix operator. This lets us use sections with functions.
 
-``` screen
+```
 ghci> :type (`elem` ['a'..'z'])
 (`elem` ['a'..'z']) :: Char -> Bool
 ```
@@ -2322,7 +2322,7 @@ ghci> :type (`elem` ['a'..'z'])
 The above definition fixes `elem`'s second argument, giving us a
 function that checks to see whether its argument is a lowercase letter.
 
-``` screen
+```
 ghci> (`elem` ['a'..'z']) 'f'
 True
 ```
@@ -2330,7 +2330,7 @@ True
 Using this as an argument to `all`, we get a function that checks an
 entire string to see if it's all lowercase.
 
-``` screen
+```
 ghci> all (`elem` ['a'..'z']) "Frobozz"
 False
 ```
@@ -2354,7 +2354,7 @@ Haskell's `tails` function, in the `Data.List` module, generalises the
 `tail` function we introduced earlier. Instead of returning one "tail"
 of a list, it returns *all* of them.
 
-``` screen
+```
 ghci> :m +Data.List
 ghci> tail "foobar"
 "oobar"
@@ -2369,7 +2369,7 @@ produces a list of all suffixes, plus an extra empty list at the end. It
 always produces that extra empty list, even when its input list is
 empty.
 
-``` screen
+```
 ghci> tails []
 ```
 
@@ -2399,7 +2399,7 @@ bound to the entire list that matched, and `xs'` to all but the head of
 the list (we used the wild card `_` pattern to indicate that we're not
 interested in the value of the head of the list).
 
-``` screen
+```
 ghci> tails "foo"
 ["foo","oo","o",""]
 ghci> suffixes "foo"
@@ -2457,7 +2457,7 @@ suffixes2 xs = init (tails xs)
 This `suffixes2` function behaves identically to `suffixes`, but it's a
 single line of code.
 
-``` screen
+```
 ghci> suffixes2 "foo"
 ["foo","oo","o"]
 ```
@@ -2520,7 +2520,7 @@ suffixes5 = init . tails
 The `(.)` operator isn't a special piece of language syntax; it's just
 a normal operator.
 
-``` screen
+```
 ghci> :type (.)
 (.) :: (b -> c) -> (a -> b) -> a -> c
 ghci> :type suffixes
@@ -2539,7 +2539,7 @@ of parameter that the function on the left can accept.
 As an example, let's solve a simple puzzle: counting the number of
 words in a string that begin with a capital letter.
 
-``` screen
+```
 ghci> :module +Data.Char
 ghci> let capCount = length . filter (isUpper . head) . words
 ghci> capCount "Hello there, Mom!"
@@ -2550,7 +2550,7 @@ We can understand what this composed function does by examining its
 pieces. The `(.)` function is right associative, so we will proceed from
 right to left.
 
-``` screen
+```
 ghci> :type words
 words :: String -> [String]
 ```
@@ -2558,7 +2558,7 @@ words :: String -> [String]
 The `words` function has a result type of `[String]`, so whatever is on
 the left side of `(.)` must accept a compatible argument.
 
-``` screen
+```
 ghci> :type isUpper . head
 isUpper . head :: [Char] -> Bool
 ```
@@ -2567,7 +2567,7 @@ This function returns `True` if a word begins with a capital letter (try
 it in `ghci`), so `filter (isUpper . head)` returns a list of `Strings`
 containing only words that begin with capital letters.
 
-``` screen
+```
 ghci> :type filter (isUpper . head)
 filter (isUpper . head) :: [[Char]] -> [[Char]]
 ```
@@ -2630,7 +2630,7 @@ of compositions like this. Let's walk through the procedure.
 Once again, we proceed from right to left. The first function is
 `words`.
 
-``` screen
+```
 ghci> :type words
 words :: String -> [String]
 ghci> words "#define DLT_CHAOS    5"
@@ -2639,7 +2639,7 @@ ghci> words "#define DLT_CHAOS    5"
 
 We then apply `tail` to the result of `words`.
 
-``` screen
+```
 ghci> :type tail
 tail :: [a] -> [a]
 ghci> tail ["#define","DLT_CHAOS","5"]
@@ -2653,7 +2653,7 @@ ghci> (tail . words) "#define DLT_CHAOS    5"
 Finally, applying `head` to the result of `drop 1 . words` will give us
 the name of our macro.
 
-``` screen
+```
 ghci> :type head . tail . words
 head . tail . words :: String -> String
 ghci> (head . tail . words) "#define DLT_CHAOS    5"
@@ -2763,7 +2763,7 @@ foldl' step zero (x:xs) =
 This `seq` function has a peculiar type, hinting that it is not playing
 by the usual rules.
 
-``` screen
+```
 ghci> :type seq
 seq :: a -> t -> t
 ```

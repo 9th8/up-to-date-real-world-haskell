@@ -93,7 +93,7 @@ is written simply as a Haskell function stating an equality that must
 hold for any input data that is sorted. We can check this makes sense
 for a few simple cases by hand:
 
-``` screen
+```
 ghci> prop_idempotent []
 True
 ghci> prop_idempotent [1,1,1,1]
@@ -115,7 +115,7 @@ generation plumbing, however we can also run the generators by hand to
 get a sense for the distribution of data QuickCheck produces. For
 example, to generate a random list of boolean values:
 
-``` screen
+```
 ghci> :m +Test.QuickCheck.Arbitrary
 ghci> :m +Test.QuickCheck.Gen
 ghci> :m +Test.QuickCheck.Random
@@ -134,7 +134,7 @@ as a type constraint on the property. To run the test, we just call
 (otherwise the list element type will default to the uninteresting `()`
 type):
 
-``` screen
+```
 ghci> :type quickCheck
 quickCheck :: Testable prop => prop -> IO ()
 ghci> quickCheck (prop_idempotent :: [Integer] -> Bool)
@@ -176,7 +176,7 @@ prop_minimum xs = head (qsort xs) == minimum xs
 
 Testing this, though, reveals an error:
 
-``` screen
+```
 ghci> quickCheck (prop_minimum :: [Integer] -> Bool)
 *** Failed! Exception: 'Prelude.head: empty list' (after 1 test): []
 ```
@@ -221,7 +221,7 @@ prop_minimum' xs = not (null xs) ==> head (qsort xs) == minimum xs
 The result is quite clean. By separating out the empty list case, we can
 now confirm the property does in fact hold:
 
-``` screen
+```
 ghci> quickCheck (prop_minimum' :: [Integer] -> Property)
 +++ OK, passed 100 tests.
 ```
@@ -505,7 +505,7 @@ but they describe the same data either way. We can check that the output
 makes sense, by generating a list of random documents (seeding the
 pseudo-random generator with an initial seed of 2):
 
-``` screen
+```
 ghci> unGen arbitrary (mkQCGen 2) 10 :: [Doc]
 [Empty,Union (Char 't') Line,Line,Union Line Empty,Concat (Char '\9930')
 (Text "\DEL"),Line,Text "\263060\ACKJ@e",Empty,Char '\367759',Concat Line
@@ -545,7 +545,7 @@ prop_empty_id x = empty <> x == x && x <> empty == x
 Confirming that this is indeed true, we're now underway with our
 testing:
 
-``` screen
+```
 ghci> quickCheck prop_empty_id
 +++ OK, passed 100 tests.
 ```
@@ -631,7 +631,7 @@ prop_punctuate s xs = punctuate s xs == intersperse s xs
 
 While this looks fine, running it reveals a flaw in our reasoning:
 
-``` screen
+```
 ghci> quickCheck prop_punctuate
 *** Failed! Falsifiable (after 4 tests):
 Empty
@@ -664,7 +664,7 @@ Running this in GHCi, we can confirm the result. It is reassuring to
 have the test framework spot the flaws in our reasoning about the
 code--exactly what we're looking for:
 
-``` screen
+```
 ghci> quickCheck prop_punctuate'
 +++ OK, passed 100 tests.
 ```
@@ -721,7 +721,7 @@ source. This is typical for library projects, where the tests are kept
 apart from the library itself, and import the library via the module
 system. The test script can then be compiled and executed:
 
-``` screen
+```
 ghci> :l Run.hs
 [1 of 4] Compiling SimpleJSON       ( SimpleJSON.hs, interpreted )
 [2 of 4] Compiling Prettify         ( Prettify.hs, interpreted )
@@ -759,13 +759,13 @@ weak spots in the test suite.
 To obtain test coverage data, all we need to do is add the `-fhpc` flag
 to the command line, when compiling the tests:
 
-``` screen
+```
 $ ghc -fhpc Run.hs --make
 ```
 
 Then run the tests as normal;
 
-``` screen
+```
 $ ./Run
 Running simple tests:
 +++ OK, passed 200 tests.
@@ -787,7 +787,7 @@ We'll exclude the test programs themselves, (using the `--exclude`
 flag), so as to concentrate only on code in the pretty printer library.
 Entering the following into the console:
 
-``` screen
+```
 $ hpc report Run --exclude=Main --exclude=QC
  17% expressions used (30/176)
   0% boolean coverage (0/3)
@@ -806,7 +806,7 @@ The textual version is useful for a quick summary, but to really see
 what's going on it is best to look at the marked up output. To generate
 this, use the `markup` flag instead:
 
-``` screen
+```
 $ hpc markup Run --exclude=Main --exclude=QC
 ```
 
@@ -824,7 +824,7 @@ It is important to remove the old .tix file after you make modifications
 or an error will occur as HPC tries to combine the statistics from
 separate runs:
 
-``` screen
+```
 $ ghc -fhpc Run.hs --make -no-recomp
 $ ./Run
 in module 'Prettify'

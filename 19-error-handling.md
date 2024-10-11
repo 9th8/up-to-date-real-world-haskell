@@ -27,7 +27,7 @@ divBy numerator = map (numerator `div`)
 
 Very simple, right? We can play around with this a bit in `ghci`:
 
-``` screen
+```
 ghci> divBy 50 [1,2,5,8,10]
 [50,25,10,6,5]
 ghci> take 5 (divBy 100 [1..])
@@ -38,7 +38,7 @@ This behaves as expected: `50 / 1` is `50`, `50 / 2` is `25`, and so
 forth.[^1] This even worked with the infinite list `[1..]`. What happens
 if we sneak a `0` into our list somewhere?
 
-``` screen
+```
 ghci> divBy 50 [1,2,0,8,10]
 [50,25,*** Exception: divide by zero
 ```
@@ -72,7 +72,7 @@ divBy numerator (denom:xs) =
 
 If you try it out in `ghci`, you'll see that it works:
 
-``` screen
+```
 ghci> divBy 50 [1,2,5,8,10]
 Just [50,25,10,6,5]
 ghci> divBy 50 [1,2,0,8,10]
@@ -113,7 +113,7 @@ simplicity, but wanted to point out that it exists.
     in it. You can verify this is the case by attempting one of our
     earlier examples:
 
-    ``` screen
+    ```
     ghci> divBy 100 [1..]
     *** Exception: stack overflow
     ```
@@ -145,7 +145,7 @@ simplicity, but wanted to point out that it exists.
     error, using `Maybe` here doesn't reduce our laziness. We can test
     this out in `ghci` and see how it compares with regular `tail`:
 
-    ``` screen
+    ```
     ghci> tail [1,2,3,4,5]
     [2,3,4,5]
     ghci> safeTail [1,2,3,4,5]
@@ -161,7 +161,7 @@ simplicity, but wanted to point out that it exists.
     of results, so we can test with `take 5 (tail [1..])` and a similar
     construction with `safeTail`:
 
-    ``` screen
+    ```
     ghci> take 5 (tail [1..])
     [2,3,4,5,6]
     ghci> case safeTail [1..] of {Nothing -> Nothing; Just x -> Just (take 5 x)}
@@ -202,7 +202,7 @@ simplicity, but wanted to point out that it exists.
     `ghci` and see that it works for finite and infinite lists just
     fine:
 
-    ``` screen
+    ```
     ghci> divBy 50 [1,2,5,8,10]
     [Just 50,Just 25,Just 10,Just 6,Just 5]
     ghci> divBy 50 [1,2,0,8,10]
@@ -242,7 +242,7 @@ simplicity, but wanted to point out that it exists.
     actually seen anywhere. We can test this algorithm with the same
     tests we used against `divby2.hs` if we want:
 
-    ``` screen
+    ```
     ghci> divBy 50 [1,2,5,8,10]
     Just [50,25,10,6,5]
     ghci> divBy 50 [1,2,0,8,10]
@@ -274,7 +274,7 @@ simplicity, but wanted to point out that it exists.
 
     Let's try this out in `ghci`.
 
-    ``` screen
+    ```
     ghci> :l divby5.hs
     [1 of 1] Compiling Main             ( divby5.hs, interpreted )
     Ok, modules loaded: Main.
@@ -300,7 +300,7 @@ simplicity, but wanted to point out that it exists.
     `Either String` into a monad as well. If you use `Either`, you can
     get a pure result that preserves the error message, like so:
 
-    ``` screen
+    ```
     ghci> :m +Control.Monad.Error
     ghci> (divByGeneric 50 [1,2,5,8,10])::(Integral a => Either String [a])
     Loading package mtl-1.1.0.0 ... linking ... done.
@@ -337,7 +337,7 @@ This code is almost identical to the `Maybe` code; we've substituted
 `Right` for every `Just`. `Left` compares to `Nothing`, but now it can
 carry a message. Let's check it out in `ghci`:
 
-``` screen
+```
 ghci> divBy 50 [1,2,5,8,10]
 Right [50,25,10,6,5]
 ghci> divBy 50 [1,2,0,8,10]
@@ -374,7 +374,7 @@ Left "divBy: division by 0"
     `show`, which will generate a reasonable idea of the problem as
     well. Here's this function in action:
 
-    ``` screen
+    ```
     ghci> divBy 50 [1,2,5,8]
     Right [50,25,10,6]
     ghci> divBy 50 [1,2,5,8,10]
@@ -475,7 +475,7 @@ return a `Left` value with the exception; otherwise, a `Right` value
 with the original result. Let's try this out in `ghci`. We'll first
 trigger an unhandled exception, and then try to catch it.
 
-``` screen
+```
 ghci> :m Control.Exception
 ghci> let x = 5 `div` 0
 ghci> let y = 5 `div` 1
@@ -504,7 +504,7 @@ Now that you know how `try` works, let's try another experiment. Let's
 say we want to catch the result of `try` for future evaluation, so we
 can handle the result of division. Perhaps we would do it like this:
 
-``` screen
+```
 ghci> result <- try (return x)
 Right *** Exception: divide by zero
 ```
@@ -512,7 +512,7 @@ Right *** Exception: divide by zero
 What happened here? Let's try to piece it together, and illustrate with
 another attempt:
 
-``` screen
+```
 ghci> let z = undefined
 ghci> try (print z)
 Left Prelude.undefined
@@ -539,7 +539,7 @@ does not force evaluation. To solve this problem, the
 just like `return`, but forces its argument to be evaluated immediately.
 Let's try it:
 
-``` screen
+```
 ghci> let z = undefined
 ghci> result <- try (evaluate z)
 Left Prelude.undefined
@@ -571,7 +571,7 @@ like this, there's a function called `handle`. This function has type
 the first is a function to call in the event there is an exception while
 performing the second. Here's one way we could use it:
 
-``` screen
+```
 ghci> :m Control.Exception
 ghci> let x = 5 `div` 0
 ghci> let y = 5 `div` 1
@@ -617,7 +617,7 @@ interested in a given exception. It returns `Just` if so, and `Nothing`
 if not. Also, the value attached to `Just` will be passed to our
 handler. We can now use `safePrint` nicely:
 
-``` screen
+```
 ghci> :l hj1.hs
 [1 of 1] Compiling Main             ( hj1.hs, interpreted )
 Ok, modules loaded: Main.
@@ -650,7 +650,7 @@ In this way, we can catch all types of `ArithException`, but still let
 other exceptions pass through unmodified and uncaught. We can see it
 work like so:
 
-``` screen
+```
 ghci> :l hj2.hs
 [1 of 1] Compiling Main             ( hj2.hs, interpreted )
 Ok, modules loaded: Main.
@@ -879,7 +879,7 @@ example of the dynamic exception itself and the utilities that often go
 with it. In fact, these examples reflect almost exactly what is present
 in the HDBC library. Let's play with these in `ghci` for a bit:
 
-``` screen
+```
 ghci> :l dynexc.hs
 [1 of 1] Compiling Main             ( dynexc.hs, interpreted )
 Ok, modules loaded: Main.
@@ -896,7 +896,7 @@ error by itself. However, you can also see that our `handleSqlError`
 function helped out with that, but also passed through other errors
 unmodified. Let's finally try out a custom handler:
 
-``` screen
+```
 ghci> handleSql (fail . seErrorMsg) (throwSqlErrorIO "state" 5 "my error")
 *** Exception: user error (my error)
 ```
@@ -987,7 +987,7 @@ if, for example, someone calls `fail` in our monad.
 One last piece of plumbing that we need to know about is the type of the
 execution function `runErrorT`.
 
-``` screen
+```
 ghci> :t runErrorT
 runErrorT :: ErrorT e m a -> m (Either e a)
 ```
@@ -1068,7 +1068,7 @@ runParser p bs = case runState (runErrorT (runP p)) bs of
 
 If we load this into `ghci`, we can put it through its paces.
 
-``` screen
+```
 ghci> :m +Data.Char
 ghci> let p = satisfy isDigit
 Loading package array-0.1.0.0 ... linking ... done.

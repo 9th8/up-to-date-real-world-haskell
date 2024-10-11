@@ -112,7 +112,7 @@ transferTest = do
 
 If we run this in `ghci`, it behaves as we should expect.
 
-``` screen
+```
 ghci> :load GameInventory
 [1 of 1] Compiling Main             ( GameInventory.hs, interpreted )
 Ok, modules loaded: Main.
@@ -167,7 +167,7 @@ we cannot either deliberately or accidentally escape from an
 `atomically` block. Haskell's type system enforces this on our behalf,
 via the STM monad.
 
-``` screen
+```
 ghci> :type atomically
 atomically :: STM a -> IO a
 ```
@@ -178,7 +178,7 @@ monad in which all transactional code executes. For instance, the
 functions that we have seen for manipulating `TVar` values operate in
 the `STM` monad.
 
-``` screen
+```
 ghci> :type newTVar
 newTVar :: a -> STM (TVar a)
 ghci> :type readTVar
@@ -300,7 +300,7 @@ just try the sale once.
 The `orElse` combinator lets us perform a "backup" action if the main
 one fails.
 
-``` screen
+```
 ghci> :type orElse
 orElse :: STM a -> STM a -> STM a
 ```
@@ -411,7 +411,7 @@ can use `unsafeIOToSTM` to execute an `IO` action. This function is
 exported by the low-level `GHC.Conc` module, so we must go out of our
 way to use it.
 
-``` screen
+```
 ghci> :m +GHC.Conc
 ghci> :type unsafeIOToSTM
 unsafeIOToSTM :: IO a -> STM a
@@ -547,7 +547,7 @@ Notice that we use the `printf` function to print a report at the end.
 Unlike its counterpart in C, the Haskell `printf` function can check its
 argument types, and their number, at runtime.
 
-``` screen
+```
 ghci> :m +Text.Printf
 ghci> printf "%d and %d\n" (3::Int)
 3 and *** Exception: Printf.printf: argument list ended prematurely
@@ -590,7 +590,7 @@ writeBadLinks c =
 We use the `forever` combinator above, which repeats an action
 endlessly.
 
-``` screen
+```
 ghci> :m +Control.Monad
 ghci> :type forever
 forever :: (Monad m) => m a -> m ()
@@ -962,7 +962,7 @@ only occurring in the field, under heavy load.
 The `alwaysSucceeds` function lets us define an *invariant*, a property
 of our data that must always be true.
 
-``` screen
+```
 ghci> :type alwaysSucceeds
 alwaysSucceeds :: STM a -> STM ()
 ```
@@ -1018,7 +1018,7 @@ tryBogusSale = do
 If we run it in `ghci`, it should detect the inconsistency caused by our
 incorrect use of `atomically` in the `bogusTransfer` function we wrote.
 
-``` screen
+```
 ghci> tryBogusSale
 *** Exception: inconsistent global balance
 ```

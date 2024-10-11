@@ -174,7 +174,7 @@ over both the data it contains and the index type. For example, the type
 of a one-dimensional array of `String` is `Array Int String`, but a
 two-dimensional array would have the type `Array (Int, Int) String`.
 
-``` screen
+```
 ghci> :m +Data.Array
 ghci> :type listArray
 listArray :: Ix i => (i, i) -> [e] -> Array i e
@@ -182,7 +182,7 @@ listArray :: Ix i => (i, i) -> [e] -> Array i e
 
 We can construct an array easily.
 
-``` screen
+```
 ghci> listArray (0,2) "foo"
 array (0,2) [(0,'f'),(1,'o'),(2,'o')]
 ```
@@ -191,7 +191,7 @@ Notice that we have to specify the lower and upper bounds of the array.
 These bounds are inclusive, so an array from 0 to 2 has elements 0, 1,
 and 2.
 
-``` screen
+```
 ghci> listArray (0,3) [True,False,False,True,False]
 array (0,3) [(0,True),(1,False),(2,False),(3,True)]
 ghci> listArray (0,10) "too short"
@@ -203,7 +203,7 @@ array element
 Once an array is constructed, we can use the `(!)` operator to access
 its elements by index.
 
-``` screen
+```
 ghci> a = listArray (0,14) ['a'..]
 ghci> a ! 2
 'c'
@@ -216,7 +216,7 @@ array, we don't have to use the zero-based array indexing familiar to C
 programmers. We can choose whatever bounds are convenient for our
 purposes.
 
-``` screen
+```
 ghci> a = listArray (-9,5) ['a'..]
 ghci> a ! (-2)
 'h'
@@ -225,7 +225,7 @@ ghci> a ! (-2)
 The index type can be any member of the `Ix` type. This lets us use, for
 example, `Char` as the index type.
 
-``` screen
+```
 ghci> a = listArray ('a', 'h') [97..]
 ghci> a ! 'e'
 101
@@ -236,7 +236,7 @@ as the index type. The prelude makes tuples of up to five elements
 members of the `Ix` class. To illustrate, here's a small
 three-dimensional array.
 
-``` screen
+```
 ghci> a = listArray ((0,0,0), (9,9,9)) [0..]
 ghci> a ! (4,3,7)
 437
@@ -255,7 +255,7 @@ containing more than three elements, the remaining elements will
 undefined. We will not get an error unless we access an element beyond
 the third.
 
-``` screen
+```
 ghci> a = listArray (0,5) "bar"
 ghci> a ! 2
 'r'
@@ -738,7 +738,7 @@ runLength = map rle . group
 The `group` function takes sequences of identical elements in a list,
 and groups them into sublists.
 
-``` screen
+```
 ghci> group [1,1,2,3,3,3,3]
 [[1,1],[2],[3,3,3,3]]
 ```
@@ -746,7 +746,7 @@ ghci> group [1,1,2,3,3,3,3]
 Our `runLength` function represents each group as a pair of its length
 and first element.
 
-``` screen
+```
 ghci> :l Barcode.hs
 [1 of 3] Compiling PNM              ( PNM.hs, interpreted )
 [2 of 3] Compiling Parse            ( Parse.hs, interpreted )
@@ -773,7 +773,7 @@ runLengths = map fst . runLength
 ```
 ::::
 
-``` screen
+```
 ghci> runLengths bits
 [2,2,2,2,6,4,4]
 ```
@@ -850,7 +850,7 @@ distance a b = sum . map abs $ zipWith (-) a b
 An exact match will give a distance of zero, with weaker matches
 resulting in larger distances.
 
-``` screen
+```
 ghci> group = scaleToOne [2,6,4,4]
 ghci> distance group (head leftEvenSRL)
 13 % 28
@@ -882,7 +882,7 @@ The new notation that we introduced in the previous example is an
 example of a *list comprehension*, which creates a list from one or more
 other lists.
 
-``` screen
+```
 ghci> [ (a,b) | a <- [1,2], b <- "abc" ]
 [(1,'a'),(1,'b'),(1,'c'),(2,'a'),(2,'b'),(2,'c')]
 ```
@@ -898,14 +898,14 @@ In addition to generators, we can also specify guards on the right of a
 list comprehension. A guard is a `Bool` expression. If it evaluates to
 `False`, that element is skipped over.
 
-``` screen
+```
 ghci> [ (a,b) | a <- [1..6], b <- [5..7], even (a + b ^ 2) ]
 [(1,5),(1,7),(2,6),(3,5),(3,7),(4,6),(5,5),(5,7),(6,6)]
 ```
 
 We can also bind local variables using a `let` expression.
 
-``` screen
+```
 ghci> vowel = (`elem` "aeiou")
 ghci> [ x | a <- "etaoin", b <- "shrdlu", let x = [a,b], all vowel x ]
 ["eu","au","ou","iu"]
@@ -914,7 +914,7 @@ ghci> [ x | a <- "etaoin", b <- "shrdlu", let x = [a,b], all vowel x ]
 If a pattern match fails in a generator expression, no error occurs.
 Instead, that list element is skipped.
 
-``` screen
+```
 ghci> [ a | (3,a) <- [(1,'y'),(3,'e'),(5,'p')] ]
 "e"
 ```
@@ -1035,7 +1035,7 @@ sort them based only on the quality of each match.
     different code depending on whether or not we declare the type with
     record syntax.
 
-    ``` screen
+    ```
     ghci> show $ Even 1
     "Even 1"
     ghci> show $ AltEven 1
@@ -1133,7 +1133,7 @@ candidateDigits rle
 Let's take a glance at the candidate digits chosen for each group of
 bars, from a row taken from the image above.
 
-``` screen
+```
 ghci> input = zip (runLengths $ encodeEAN13 "9780132114677") (cycle [Zero, One])
 ghci> :type input
 input :: [(Run, Bit)]
@@ -1282,7 +1282,7 @@ this chapter, we imported it using the prefix `M`.
     To create an empty map, we use `empty`. For a map containing one
     key/value pair, we use `singleton`.
 
-    ``` screen
+    ```
     ghci> M.empty
     fromList []
     ghci> M.singleton "foo" True
@@ -1293,7 +1293,7 @@ this chapter, we imported it using the prefix `M`.
     `Map` values. Instead, it provides a number of lookup functions, of
     which two are particularly widely used.
 
-    ``` screen
+    ```
     ghci> :type M.lookup
     M.lookup :: Ord k => k -> M.Map k a -> Maybe a
     ```
@@ -1302,7 +1302,7 @@ this chapter, we imported it using the prefix `M`.
     `lookup` will return the value wrapped in `Just`. Otherwise, it will
     return `Nothing`.
 
-    ``` screen
+    ```
     ghci> m = M.singleton "foo" 1 :: M.Map String Int
     ghci> case M.lookup "bar" m of { Just v -> "yay"; Nothing -> "boo" }
     "boo"
@@ -1329,7 +1329,7 @@ this chapter, we imported it using the prefix `M`.
     value into the map, overwriting any matching value that may already
     have been present.
 
-    ``` screen
+    ```
     ghci> :type M.insert
     M.insert :: Ord k => k -> a -> M.Map k a -> M.Map k a
     ghci> M.insert "quux" 10 m
@@ -1344,7 +1344,7 @@ this chapter, we imported it using the prefix `M`.
     function is called on the new and old values, and its result is
     inserted into the map.
 
-    ``` screen
+    ```
     ghci> :module Data.Map.Strict
     ghci> :type insertWith
     insertWith :: Ord k => (a -> a -> a) -> k -> a -> Map k a -> Map k a
@@ -1362,7 +1362,7 @@ this chapter, we imported it using the prefix `M`.
     The `delete` function deletes the given key from the map. It returns
     the map unmodified if the key was not present.
 
-    ``` screen
+    ```
     ghci> :type M.delete
     M.delete :: Ord k => k -> Map k a -> Map k a
     ghci> M.delete "foo" m
@@ -1374,7 +1374,7 @@ this chapter, we imported it using the prefix `M`.
     below. This function is "left biased": if two maps contain the
     same key, the result will contain the value from the left map.
 
-    ``` screen
+    ```
     ghci> m `M.union` M.singleton "quux" 1
     fromList [("foo",1),("quux",1)]
     ghci> m `M.union` M.singleton "foo" 0
@@ -1412,7 +1412,7 @@ should we do? It's reasonable to ask if we could perform a brute force
 search. Given the candidates we saw in the `ghci` session above, how
 many combinations would we have to examine?
 
-``` screen
+```
 ghci> product . map length . candidateDigits $ input
 34012224
 ```
@@ -1508,7 +1508,7 @@ useDigit old new digit =
 Once again, let's illustrate what this code is doing using some
 examples.
 
-``` screen
+```
 ghci> single n = M.singleton n [Even n] :: ParityMap
 ghci> useDigit (single 1) M.empty (Even 1)
 fromList [(2,[Even 1,Even 1])]
@@ -1533,7 +1533,7 @@ incorporateDigits old digits = foldl' (useDigit old) M.empty digits
 
 This generates a complete new solution map from an old one.
 
-``` screen
+```
 ghci> incorporateDigits (M.singleton 0 []) [Even 1, Even 5]
 fromList [(1,[Even 1]),(5,[Even 5])]
 ```
@@ -1651,7 +1651,7 @@ solve xs = catMaybes $ map (addCheckDigit m) checkDigits
 Let's try this out on the row we picked from our photo, and see if we
 get a sensible answer.
 
-``` screen
+```
 ghci> listToMaybe . solve . candidateDigits $ input
 Just [9,7,8,0,1,3,2,1,1,4,6,7,7]
 ```

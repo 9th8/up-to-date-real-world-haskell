@@ -117,7 +117,7 @@ A Haskell compiler or interpreter will detect when we try to use
 expressions whose types don't match, and reject our code with an error
 message before we run it.
 
-``` screen
+```
 ghci> True && "false"
 
 <interactive>:1:9: error:
@@ -252,7 +252,7 @@ that `expression` has the type `MyType`. If we omit the `::` and the
 type that follows, a Haskell compiler will infer the type of the
 expression.
 
-``` screen
+```
 ghci> :type 'a'
 'a' :: Char
 ghci> 'a' :: Char
@@ -277,7 +277,7 @@ functions.
 To apply a function in Haskell, we write the name of the function
 followed by its arguments.
 
-``` screen
+```
 ghci> odd 3
 True
 ghci> odd 6
@@ -289,7 +289,7 @@ to a function; merely writing the name of the function, followed by each
 argument in turn, is enough. As an example, let's apply the `compare`
 function, which takes two arguments.
 
-``` screen
+```
 ghci> compare 2 3
 LT
 ghci> compare 3 3
@@ -305,7 +305,7 @@ uniform.
 Function application has higher precedence than using operators, so the
 following two expressions have the same meaning.
 
-``` screen
+```
 ghci> (compare 2 3) == LT
 True
 ghci> compare 2 3 == LT
@@ -316,7 +316,7 @@ The above parentheses don't do any harm, but they add some visual
 noise. Sometimes, however, we *must* use parentheses to indicate how we
 want a complicated expression to be parsed.
 
-``` screen
+```
 ghci> compare (sqrt 3) (sqrt 6)
 LT
 ```
@@ -338,7 +338,7 @@ and that the type "list of `Char`" is written `[Char]`.
 
 The `head` function returns the first element of a list.
 
-``` screen
+```
 ghci> head [1,2,3,4]
 1
 ghci> head ['a','b','c']
@@ -347,7 +347,7 @@ ghci> head ['a','b','c']
 
 Its counterpart, `tail`, returns all *but* the head of a list.
 
-``` screen
+```
 ghci> tail [1,2,3,4]
 [2,3,4]
 ghci> tail [2,3,4]
@@ -395,7 +395,7 @@ Similarly, the type `[MyPersonalType]` is a list of values of type
 `[[Int]]` is a list of values of type `[Int]`, i.e. a list of lists of
 `Int`.
 
-``` screen
+```
 ghci> :type [[True],[False,False]]
 [[True],[False,False]] :: [[Bool]]
 ```
@@ -429,7 +429,7 @@ is a number, and a title, which is a string. We can't keep both of
 these pieces of information in a list, because they have different
 types. Instead, we use a tuple.
 
-``` screen
+```
 ghci> (1964, "Labyrinths")
 (1964,"Labyrinths")
 ```
@@ -437,7 +437,7 @@ ghci> (1964, "Labyrinths")
 We write a tuple by enclosing its elements in parentheses and separating
 them with commas. We use the same notation for writing its type.
 
-``` screen
+```
 ghci> :type (True, "hello")
 (True, "hello") :: (Bool, [Char])
 ghci> (4, ['a', 'm'], (16, True))
@@ -462,7 +462,7 @@ elements. This means that tuples containing different numbers or types
 of elements have distinct types, as do tuples whose types appear in
 different orders.
 
-``` screen
+```
 ghci> :type (False, 'a')
 (False, 'a') :: (Bool, Char)
 ghci> :type ('a', False)
@@ -475,7 +475,7 @@ though the number of elements and their types are the same, these two
 types are distinct because the positions of the element types are
 different.
 
-``` screen
+```
 ghci> :type (False, 'a', 'b')
 (False, 'a', 'b') :: (Bool, Char, Char)
 ```
@@ -507,7 +507,7 @@ the list, while `drop` returns all *but* the first `n` elements of the
 list. (As these functions take two arguments, notice that we separate
 each function and its arguments using white space.)
 
-``` screen
+```
 ghci> take 2 [1,2,3,4,5]
 [1,2]
 ghci> drop 3 [1,2,3,4,5]
@@ -517,7 +517,7 @@ ghci> drop 3 [1,2,3,4,5]
 For tuples, the `fst` and `snd` functions return the first and second
 element of a pair, respectively.
 
-``` screen
+```
 ghci> fst (1,'a')
 1
 ghci> snd (1,'a')
@@ -557,7 +557,7 @@ illustrated by example: the expression `a b c d` is equivalent to
 another, we have to use explicit parentheses to tell the parser what we
 really mean. Here's an example.
 
-``` screen
+```
 ghci> head (drop 4 "azerty")
 't'
 ```
@@ -572,7 +572,7 @@ single argument, a list.
 
 Let's take a look at a function's type.
 
-``` screen
+```
 ghci> :type lines
 lines :: String -> [String]
 ```
@@ -581,7 +581,7 @@ We can read the `->` above as "to", which loosely translates to
 "returns". The signature as a whole thus reads as "`lines` has the
 type `String` to list-of-`String`". Let's try applying the function.
 
-``` screen
+```
 ghci> lines "the quick\nbrown fox\njumps"
 ["the quick","brown fox","jumps"]
 ```
@@ -609,7 +609,7 @@ effects are *impure*.
 If a function has side effects, we can tell by reading its type
 signature: the type of the function's result will begin with `IO`.
 
-``` screen
+```
 ghci> :type readFile
 readFile :: FilePath -> IO String
 ```
@@ -646,7 +646,7 @@ the function. With our source file saved, we can load it into `ghci`,
 and use our new `add` function straight away. (The prompt that `ghci`
 displays will change after you load your file.)
 
-``` screen
+```
 ghci> :load add.hs
 [1 of 1] Compiling Main             ( add.hs, interpreted )
 Ok, one module loaded.
@@ -666,7 +666,7 @@ search for source files in whatever directory it was run. If this is not
 the directory that your source file is actually in, you can use
 `ghci`'s `:cd` command to change its working directory.
 
-``` screen
+```
 ghci> :cd /tmp
 ```
 
@@ -734,7 +734,7 @@ x = 11
 
 We cannot assign a value to `x` twice.
 
-``` screen
+```
 ghci> :load Assign
 [1 of 1] Compiling Main             ( Assign.hs, interpreted )
 
@@ -756,7 +756,7 @@ write our own version of the standard `drop` function. Before we begin,
 let's probe a little into how `drop` behaves, so we can replicate its
 behaviour.
 
-``` screen
+```
 ghci> drop 2 "foobar"
 "obar"
 ghci> drop 4 "foobar"
@@ -800,7 +800,7 @@ function. This is a common naming pattern for lists: you can read the
 Let's save our Haskell function in a file named `myDrop.hs`, then load
 it into `ghci`.
 
-``` screen
+```
 ghci> :load MyDrop.hs
 [1 of 1] Compiling Main             ( myDrop.hs, interpreted )
 Ok, one module loaded.
@@ -853,7 +853,7 @@ Our predicate contains a few more novelties. The `null` function
 indicates whether a list is empty, while the `(||)` operator performs a
 logical "or" of its Bool-typed arguments.
 
-``` screen
+```
 ghci> :type null
 null :: Foldable t => t a -> Bool
 ghci> :type (||)
@@ -970,7 +970,7 @@ Non-strict evaluation is often referred to as *lazy evaluation*[^5].
 Let us now look at the evaluation of the expression `myDrop 2 "abcd"`,
 where we use `print` to ensure that it will be evaluated.
 
-``` screen
+```
 ghci> print (myDrop 2 "abcd")
 "cd"
 ```
@@ -981,7 +981,7 @@ values `2` and `"abcd"`. We bind the variable `n` to the value `2`, and
 `xs` to `"abcd"`. If we substitute these values into `myDrop`'s
 predicate, we get the following expression.
 
-``` screen
+```
 ghci> :type  2 <= 0 || null "abcd"
 2 <= 0 || null "abcd" :: Bool
 ```
@@ -991,7 +991,7 @@ This requires that we evaluate the `(||)` expression. To determine its
 value, the `(||)` operator needs to examine the value of its left
 operand first.
 
-``` screen
+```
 ghci> 2 <= 0
 False
 ```
@@ -999,7 +999,7 @@ False
 Substituting that value into the `(||)` expression leads to the
 following expression.
 
-``` screen
+```
 ghci> :type False || null "abcd"
 False || null "abcd" :: Bool
 ```
@@ -1009,7 +1009,7 @@ evaluate its right operand, since it could not affect the result of the
 expression. Since it evaluates to `False`, `(||)` must evaluate the
 right operand.
 
-``` screen
+```
 ghci> null "abcd"
 False
 ```
@@ -1018,7 +1018,7 @@ We now substitute this value back into the `(||)` expression. Since both
 operands evaluate to `False`, the `(||)` expression does too, and thus
 the predicate evaluates to `False`.
 
-``` screen
+```
 ghci> False || False
 False
 ```
@@ -1069,14 +1069,14 @@ and `xs` to `tail "abcd"`.
 We're now evaluating `myDrop` from the beginning again. We substitute
 the new values of `n` and `xs` into the predicate.
 
-``` screen
+```
 ghci> :type (2 - 1) <= 0 || null (tail "abcd")
 (2 - 1) <= 0 || null (tail "abcd") :: Bool
 ```
 
 Here's a condensed version of the evaluation of the left operand.
 
-``` screen
+```
 ghci> :type (2 - 1) <= 0
 (2 - 1) <= 0 :: Bool
 ghci> 2 - 1
@@ -1089,7 +1089,7 @@ As we should now expect, we didn't evaluate the expression `2 - 1`
 until we needed its value. We also evaluate the right operand lazily,
 deferring `tail "abcd"` until we need its value.
 
-``` screen
+```
 ghci> :type null (tail "abcd")
 null (tail "abcd") :: Bool
 ghci> tail "abcd"
@@ -1110,14 +1110,14 @@ evaluate the predicate, we now know that in this application of
 In the next recursive application of `myDrop`, we bind `n` to `1 - 1`
 and `xs` to `tail "bcd"`.
 
-``` screen
+```
 ghci> :type (1 - 1) <= 0 || null (tail "bcd")
 (1 - 1) <= 0 || null (tail "bcd") :: Bool
 ```
 
 Once again, `(||)` needs to evaluate its left operand first.
 
-``` screen
+```
 ghci> :type (1 - 1) <= 0
 (1 - 1) <= 0 :: Bool
 ghci> 1 - 1
@@ -1128,7 +1128,7 @@ True
 
 Finally, this expression has evaluated to `True`!
 
-``` screen
+```
 ghci> True || null (tail "bcd")
 True
 ```
@@ -1137,7 +1137,7 @@ Because the right operand cannot affect the result of `(||)`, it is not
 evaluated, and the result of the predicate is `True`. This causes us to
 evaluate the `then` branch.
 
-``` screen
+```
 ghci> :type tail "bcd"
 tail "bcd" :: [Char]
 ```
@@ -1149,7 +1149,7 @@ Remember, we're now inside our second recursive application of
 application of the function, substituting this expression for
 `myDrop (1 - 1) (tail "bcd")`, to become the result of this application.
 
-``` screen
+```
 ghci> myDrop (1 - 1) (tail "bcd") == tail "bcd"
 True
 ```
@@ -1159,7 +1159,7 @@ result of the second recursive application for
 `myDrop (2 - 1) (tail "abcd")`, to become the result of this
 application.
 
-``` screen
+```
 ghci> myDrop (2 - 1) (tail "abcd") == tail "bcd"
 True
 ```
@@ -1167,7 +1167,7 @@ True
 Finally, we return from our original application, substituting the
 result of the first recursive application.
 
-``` screen
+```
 ghci> myDrop 2 "abcd" == tail "bcd"
 True
 ```
@@ -1177,7 +1177,7 @@ none of them needs to evaluate the expression `tail "bcd"`: the final
 result of evaluating the original expression is a *thunk*. The thunk is
 only finally evaluated when `ghci` needs to print it.
 
-``` screen
+```
 ghci> myDrop 2 "abcd"
 "cd"
 ghci> tail "bcd"
@@ -1206,7 +1206,7 @@ function. The value that it returns must have the same type as the
 elements of the list, but `last` operates in the same way no matter what
 type those elements actually are.
 
-``` screen
+```
 ghci> last [1,2,3,4,5]
 5
 ghci> last "baz"
@@ -1215,7 +1215,7 @@ ghci> last "baz"
 
 To capture this idea, its type signature contains a *type variable*.
 
-``` screen
+```
 ghci> :type last
 last :: [a] -> a
 ```
@@ -1311,7 +1311,7 @@ talked about figuring out the behaviour of a function based on its type
 signature. We can apply the same kind of reasoning to polymorphic
 functions. Let's look again at `fst`.
 
-``` screen
+```
 ghci> :type fst
 fst :: (a, b) -> a
 ```
@@ -1342,7 +1342,7 @@ So far, we haven't looked much at signatures for functions that take
 more than one argument. We've already used a few such functions; let's
 look at the signature of one, `take`.
 
-``` screen
+```
 ghci> :type take
 take :: Int -> [a] -> [a]
 ```
@@ -1413,7 +1413,7 @@ arguments, we can often get a strong hint of what a pure function does
 by simply reading its name and understanding its type signature. As an
 example, let's look at `not`.
 
-``` screen
+```
 ghci> :type not
 not :: Bool -> Bool
 ```

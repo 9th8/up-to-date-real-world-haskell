@@ -52,7 +52,7 @@ these out, we'd recurse endlessly.
 We encountered `forM` in the previous chapter; it is `mapM` with its
 arguments flipped.
 
-``` screen
+```
 ghci> :m +Control.Monad
 ghci> :type mapM
 mapM :: (Monad m, Traversable t) => (a -> m b) -> t a -> m (t b)
@@ -153,7 +153,7 @@ files ending in the extension `.c`"?
 The `System.FilePath` module contains numerous invaluable functions that
 help us to manipulate file names. In this case, we want `takeExtension`.
 
-``` screen
+```
 ghci> :m +System.FilePath
 ghci> :type takeExtension
 takeExtension :: FilePath -> String
@@ -166,7 +166,7 @@ ghci> takeExtension "quux"
 This gives us a simple matter of writing a function that takes a path,
 extracts its extension, and compares it with `.c`.
 
-``` screen
+```
 ghci> :load SimpleFinder
 [1 of 2] Compiling RecursiveContents ( RecursiveContents.hs, interpreted )
 [2 of 2] Compiling Main             ( SimpleFinder.hs, interpreted )
@@ -227,7 +227,7 @@ expressiveness we want without also becoming potentially dangerous.
 Haskell's portable `System.Directory` module provides a useful, albeit
 limited, set of file metadata.
 
-``` screen
+```
 ghci> :m +System.Directory
 ```
 
@@ -237,7 +237,7 @@ ghci> :m +System.Directory
     widely available in recent years, such as named pipes, hard links
     and symbolic links.
 
-    ``` screen
+    ```
     ghci> :type doesFileExist
     doesFileExist :: FilePath -> IO Bool
     ghci> doesFileExist "."
@@ -251,7 +251,7 @@ ghci> :m +System.Directory
 -   The `getPermissions` function lets us find out whether certain
     operations on a file or directory are allowed.
 
-    ``` screen
+    ```
     ghci> :type getPermissions
     getPermissions :: FilePath -> IO Permissions
     ghci> :info Permissions
@@ -282,7 +282,7 @@ ghci> :m +System.Directory
 -   Finally, `getModificationTime` tells us when an entry was last
     modified.
 
-    ``` screen
+    ```
     ghci> :type getModificationTime
     getModificationTime
       :: FilePath
@@ -380,7 +380,7 @@ This leads us to the unfamiliar function `filterM`. It behaves like the
 normal `filter` function, but in this case it evaluates its predicate in
 the IO monad, allowing the predicate to perform I/O.
 
-``` screen
+```
 ghci> :m +Control.Monad
 ghci> :type filterM
 filterM :: Applicative m => (a -> m Bool) -> [a] -> m [a]
@@ -493,7 +493,7 @@ We need `hClose` to always be called if `openFile` succeeds. The
 `Control.Exception` module provides the `bracket` function for exactly
 this purpose.
 
-``` screen
+```
 ghci> :type bracket
 bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
 ```
@@ -671,7 +671,7 @@ equalP' f k w x y z = f w x y z == k
 Before we continue with our explorations, let's load our module into
 `ghci`.
 
-``` screen
+```
 ghci> :load BetterPredicate
 [1 of 2] Compiling RecursiveContents ( RecursiveContents.hs, interpreted )
 [2 of 2] Compiling Main             ( BetterPredicate.hs, interpreted )
@@ -681,7 +681,7 @@ Ok, two modules loaded.
 Let's see if a simple predicate constructed from these functions will
 work.
 
-``` screen
+```
 ghci> :type betterFind (sizeP `equalP` 1024)
 betterFind (sizeP `equalP` 1024) :: FilePath -> IO [FilePath]
 ```
@@ -741,7 +741,7 @@ We can recover some of that conciseness via combinators. For instance,
 
 1.  Prior to that, people wrote `flip mapM` instead.
 
-``` screen
+```
 ghci> :m +Control.Monad
 ghci> :t mapM
 mapM :: (Monad m, Traversable t) => (a -> m b) -> t a -> m (t b)
@@ -880,7 +880,7 @@ We can respond by writing fixity declarations for our new operators. Our
 first step is to find out what the fixities of the unlifted operators
 are, so that we can mimic them.
 
-``` screen
+```
 ghci> :info ==
 class Eq a where
   (==) :: a -> a -> Bool

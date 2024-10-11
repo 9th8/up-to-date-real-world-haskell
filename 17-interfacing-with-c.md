@@ -228,7 +228,7 @@ main = mapM_ (print . fastsin) [0/10, 1/10 .. 10/10]
 This simple program prints each result as it is computed. Putting the
 complete binding in the file `SimpleFFI.hs` we can run it in GHCi:
 
-``` screen
+```
 $ ghci SimpleFFI.hs
 *Main> main
 0.0
@@ -247,7 +247,7 @@ $ ghci SimpleFFI.hs
 Alternatively, we can compile the code to an executable, dynamically
 linked against the corresponding C library:
 
-``` screen
+```
 $ ghc -O --make SimpleFFI.hs
 [1 of 1] Compiling Main             ( SimpleFFI.hs, SimpleFFI.o )
 Linking SimpleFFI ...
@@ -255,7 +255,7 @@ Linking SimpleFFI ...
 
 and then run that:
 
-``` screen
+```
 $ ./SimpleFFI
 0.0
 9.983341664682815e-2
@@ -345,7 +345,7 @@ The file is processed with the preprocessor in a similar manner to C
 source (with CPP run for us by the Haskell compiler, when it spots the
 `LANGUAGE` pragma), resulting in program output:
 
-``` screen
+```
 $ runhaskell Enum.hs
 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 ```
@@ -489,7 +489,7 @@ This is the first step, creating a `.hsc` file. We now need to actually
 create a Haskell source file, with the C preprocessing done. Time to run
 `hsc2hs` over the `.hsc` file:
 
-``` screen
+```
 $ hsc2hs Regex.hsc
 ```
 
@@ -522,7 +522,7 @@ information to report errors in terms of their source, in the original
 file, rather than the generated one. We can load this generated `.hs`
 file into the interpreter, and play with the results:
 
-``` screen
+```
 $ ghci Regex.hs
 *Regex> caseless
 PCREOption {unPCREOption = 1}
@@ -1080,7 +1080,7 @@ We need to process our source file with `hsc2hs`, and then load the
 function in GHCi. However, doing this results in an error on the first
 attempt:
 
-``` screen
+```
 $ hsc2hs Regex.hsc
 $ ghci Regex.hs
 
@@ -1099,7 +1099,7 @@ let GHCi know about it by adding `-lpcre` to the GHCi command line. Now
 we can try out the code on some regular expressions, looking at the
 success and error cases:
 
-``` screen
+```
 $ ghci Regex.hs -lpcre
 *Regex> :m + Data.ByteString.Char8
 *Regex Data.ByteString.Char8> compile (pack "a.*b") []
@@ -1383,7 +1383,7 @@ Haskell file in GHCi and try out our code (we need to import
 `Data.ByteString.Char8` so we can build \~ByteString\~s from string
 literals):
 
-``` screen
+```
 $ hsc2hs Regex.hsc
 $ ghci Regex.hs -lpcre
 *Regex> :t compile
@@ -1395,7 +1395,7 @@ match :: Regex -> ByteString -> Maybe [ByteString]
 Things seem to be in order. Now let's try some compilation and
 matching. First, something easy:
 
-``` screen
+```
 *Regex> :m + Data.ByteString.Char8
 *Regex Data.ByteString.Char8> let Right r = compile (pack "the quick brown fox") []
 *Regex Data.ByteString.Char8> match r (pack "the quick brown fox") []
@@ -1410,7 +1410,7 @@ Just ["the quick brown fox"]
 (We could also avoid the `pack` calls by using the `OverloadedStrings`
 extensions). Or we can be more adventurous:
 
-``` screen
+```
 *Regex Data.ByteString.Char8> let Right r = compile (pack "a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz") []
 *Regex Data.ByteString.Char8> match r (pack "abxyzpqrrrabbxyyyypqAzz") []
 Just ["abxyzpqrrrabbxyyyypqAzz"]

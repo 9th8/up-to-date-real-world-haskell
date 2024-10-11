@@ -915,7 +915,7 @@ of hashes.
 Suppose we want to insert 10 million elements into a Bloom filter, with
 a false positive rate of 0.1%.
 
-``` screen
+```
 ghci> let kbytes (bits,hashes) = (ceiling bits `div` 8192, hashes)
 ghci> :m +BloomFilter.Easy Data.List
 Could not find module `BloomFilter.Easy':
@@ -939,7 +939,7 @@ If we increase our tolerance for false positives tenfold, to 1%, the
 amount of space and the number of hashes we need drop, though not by
 easily predictable amounts.
 
-``` screen
+```
 ghci> mapM_ (print . kbytes) . take 10 . sort $ sizings 10000000 0.01
 
 <interactive>:1:35: Not in scope: `sort'
@@ -1270,7 +1270,7 @@ Notice that although our `prop_one_present` function is polymorphic, it
 ignores its first argument. We use this to simulate monomorphic
 properties, as follows.
 
-``` screen
+```
 ghci> :load BloomCheck
 
 BloomCheck.hs:9:17:
@@ -1289,7 +1289,7 @@ We can supply any value as the first argument to `prop_one_present`. All
 that matters is its *type*, as the same type will be used for the first
 element of the second argument.
 
-``` screen
+```
 ghci> handyCheck 5000 $ prop_one_present (undefined :: Int)
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1320,7 +1320,7 @@ prop_all_present _ xs =
 
 This test also succeeds.
 
-``` screen
+```
 ghci> handyCheck 2000 $ prop_all_present (undefined :: Int)
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1402,7 +1402,7 @@ instance Arbitrary Word32 where
 With these `Arbitrary` instances created, we can try our existing
 properties on the `ByteString` types.
 
-``` screen
+```
 ghci> handyCheck 1000 $ prop_one_present (undefined :: Lazy.ByteString)
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1456,7 +1456,7 @@ prop_suggest_try1 =
 
 Not surprisingly, this gives us a test that is not actually useful.
 
-``` screen
+```
 ghci> handyCheck 1000 $ prop_suggest_try1
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1473,7 +1473,7 @@ When we plug the counterexamples that QuickCheck prints into
 `suggestSizings`, we can see that these inputs are rejected because they
 would result in a bit array that would be too large.
 
-``` screen
+```
 ghci> B.suggestSizing 1678125842 8.501133057303545e-3
 
 <interactive>:1:0:
@@ -1504,7 +1504,7 @@ prop_suggest_try2 =
 
 If we try this with a small number of tests, it seems to work well.
 
-``` screen
+```
 ghci> handyCheck 1000 $ prop_suggest_try2
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1514,7 +1514,7 @@ ghci> handyCheck 1000 $ prop_suggest_try2
 
 On a larger body of tests, we filter out too many combinations.
 
-``` screen
+```
 ghci> handyCheck 10000 $ prop_suggest_try2
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1544,7 +1544,7 @@ prop_suggestions_sane =
 
 Finally, we have a robust looking property.
 
-``` screen
+```
 ghci> handyCheck 40000 $ prop_suggestions_sane
 
 <interactive>:1:0: Not in scope: `handyCheck'
@@ -1646,7 +1646,7 @@ time is just long enough to be interesting, while the timing variation
 from run to run is small. We have created a plausible-looking
 microbenchmark.
 
-``` screen
+```
 $ ghc -O2  --make WordTest
 [1 of 1] Compiling Main             ( WordTest.hs, WordTest.o )
 Linking WordTest ...
@@ -1675,7 +1675,7 @@ decide to do nothing. We must force it to rebuild, which we accomplish
 by updating the filesystem's idea of when we last edited the source
 file.
 
-``` screen
+```
 $ touch WordTest.hs
 $ ghc -O2 -prof -auto-all --make WordTest
 [1 of 1] Compiling Main             ( WordTest.hs, WordTest.o )
@@ -1751,7 +1751,7 @@ higher level.
 GHC's `-ddump-simpl` option prints out the code that it produces after
 performing all of its high-level optimisations.
 
-``` screen
+```
 $ ghc -O2 -c -ddump-simpl --make BloomFilter/Hash.hs > dump.txt
 [1 of 1] Compiling BloomFilter.Hash ( BloomFilter/Hash.hs )
 ```
@@ -1762,7 +1762,7 @@ Even so, searching for `doubleHash` will immediately drop us at the
 definition of the function. For example, here is how we might start
 exactly at the right spot from a Unix shell.
 
-``` screen
+```
 $ less +/doubleHash dump.txt
 ```
 
@@ -1915,7 +1915,7 @@ __letrec {
 Our new function has compiled down to a simple counting loop. This is
 very encouraging, but how does it actually perform?
 
-``` screen
+```
 $ touch WordTest.hs
 $ ghc -O2 -prof -auto-all --make WordTest
 [1 of 1] Compiling Main             ( WordTest.hs, WordTest.o )

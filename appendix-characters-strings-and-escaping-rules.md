@@ -10,7 +10,7 @@ expand considerably upon them.
 A single character is surrounded by ASCII single quotes, `'`, and has
 type `Char`.
 
-``` screen
+```
 ghci> 'c'
 'c'
 ghci> :type 'c'
@@ -20,7 +20,7 @@ ghci> :type 'c'
 A string literal is surrounded by double quotes, `"`, and has type
 `[Char]` (more often written as `String`).
 
-``` screen
+```
 ghci> "a string literal"
 "a string literal"
 ghci> :type "a string literal"
@@ -30,7 +30,7 @@ ghci> :type "a string literal"
 The double-quoted form of a string literal is just syntactic sugar for
 list notation.
 
-``` screen
+```
 ghci> ['a', ' ', 's', 't', 'r', 'i', 'n', 'g'] == "a string"
 True
 ```
@@ -190,7 +190,7 @@ written `\x10ffff` or `\o4177777`.
 String literals can contain a zero-width escape sequence, written `\&`.
 This is not a real character, as it represents the empty string.
 
-``` screen
+```
 ghci> "\&"
 ""
 ghci> "foo\&bar"
@@ -200,7 +200,7 @@ ghci> "foo\&bar"
 The purpose of this escape sequence is to make it possible to write a
 numeric escape followed immediately by a regular ASCII digit.
 
-``` screen
+```
 ghci> "\130\&11"
 "\130\&11"
 ```

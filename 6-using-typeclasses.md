@@ -34,7 +34,7 @@ colorEq _     _     = False
 
 You can test this with `ghci`:
 
-``` screen
+```
 ghci> :l NaiveEq.hs
 [1 of 1] Compiling Main             ( NaiveEq.hs, interpreted )
 Ok, one module loaded.
@@ -134,7 +134,7 @@ Let's look at this in `ghci`. Recall that you can type `:type` in
 `ghci` to have it show you the type of something. Let's see what it
 says about `isEqual`:
 
-``` screen
+```
 *Main> :type isEqual
 isEqual :: BasicEq a => a -> a -> Bool
 ```
@@ -160,7 +160,7 @@ instance BasicEq Bool where
 You can also use `ghci` to verify that we can now use `isEqual` on
 \~Bool\~s, but not on any other type:
 
-``` screen
+```
 Prelude> :l EqClasses.hs
 [1 of 1] Compiling Main             ( EqClasses.hs, interpreted )
 Ok, one module loaded.
@@ -324,14 +324,14 @@ The most important function of `Show` is `show`. It takes one argument:
 the data to convert. It returns a `String` representing that data.
 `ghci` reports the type of `show` like this:
 
-``` screen
+```
 ghci> :type show
 show :: Show a => a -> String
 ```
 
 Let's look at some examples of converting values to strings:
 
-``` screen
+```
 ghci> show 1
 "1"
 ghci> show [1, 2, 3]
@@ -345,7 +345,7 @@ Haskell program. So the expression `show 1` returns a single-character
 string containing the digit `1`. That is, the quotes are not part of the
 string itself. We can make that clear by using `putStrLn`:
 
-``` screen
+```
 ghci> putStrLn (show 1)
 1
 ghci> putStrLn (show [1,2,3])
@@ -354,7 +354,7 @@ ghci> putStrLn (show [1,2,3])
 
 You can also use `show` on \~String\~s:
 
-``` screen
+```
 ghci> show "Hello!"
 ""Hello!""
 ghci> putStrLn (show "Hello!")
@@ -418,7 +418,7 @@ functions that will take a `String`, parse it, and return data in any
 type that is a member of `Read`. The most useful function in `Read` is
 `read`. You can ask `ghci` for its type like this:
 
-``` screen
+```
 ghci> :type read
 read :: (Read a) => String -> a
 ```
@@ -469,7 +469,7 @@ meaning that you can hit this ambiguous typing problem there as well.
 You'll need to explicitly give types for your `read` results in `ghci`
 as shown here:
 
-``` screen
+```
 ghci> read "5"
 *** Exception: Prelude.read: no parse
 ghci> :type (read "5")
@@ -485,7 +485,7 @@ the type of each instance of `Read`. Which particular parsing function
 is called depends upon the type that is expected from the return value
 of `read`. Let's see how that works:
 
-``` screen
+```
 ghci> (read "5.0") :: Double
 5.0
 ghci> (read "5.0") :: Integer
@@ -537,7 +537,7 @@ function is supposed to return the part of the input that was not
 parsed, so that the system can integrate the parsing of different types
 together. Here's an example of using this new instance of `Read`:
 
-``` screen
+```
 ghci> (read "Red")::Color
 Red
 ghci> (read "Green")::Color
@@ -600,7 +600,7 @@ to [Chapter 19, *Error handling*](19-error-handling.org).
 
 Let's try it out in `ghci`:
 
-``` screen
+```
 ghci> d1 = [Just 5, Nothing, Nothing, Just 8, Just 9] :: [Maybe Int]
 ghci> putStrLn (show d1)
 [Just 5,Nothing,Nothing,Just 8,Just 9]
@@ -613,7 +613,7 @@ First, we assign `d1` to be a list. Next, we print out the result of
 
 Let's try reading it back.
 
-``` screen
+```
 ghci> input <- readFile "test"
 ghci> d2 = read input
 ghci> print d2
@@ -627,7 +627,7 @@ is meant to be, so it doesn't know how to parse the input. If we give
 it an explicit type, it works, and we can verify that the two sets of
 data are equal.
 
-``` screen
+```
 ghci> print d1
 [Just 5,Nothing,Nothing,Just 8,Just 9]
 ghci> print (d2 :: [Maybe Int])
@@ -643,7 +643,7 @@ Derivation"](6-using-typeclasses.org::*Automatic Derivation) some
 really complex data structures. Here are a few examples of slightly more
 complex data structures:
 
-``` screen
+```
 ghci> putStrLn $ show [("hi", 1), ("there", 3)]
 [("hi",1),("there",3)]
 ghci> putStrLn $ show [[1, 2, 3], [], [4, 0, 1], [], [503]]
@@ -853,7 +853,7 @@ available for other type classes.
 
 Let's take a look at how these derived instances work for us:
 
-``` screen
+```
 ghci> show Red
 "Red"
 ghci> (read "Red")::Color
@@ -1212,7 +1212,7 @@ instance (JSON a) => JSON [(String, a)] where
 If we put these definitions into a source file and load them into
 `ghci`, everything initially seems fine.
 
-``` screen
+```
 ghci> :load BrokenClass
 [1 of 3] Compiling SimpleJSON       ( SimpleJSON.hs, interpreted )
 [2 of 3] Compiling JSONClass        ( JSONClass.hs, interpreted )
@@ -1223,7 +1223,7 @@ Ok, three modules loaded.
 However, once we try to *use* the list-of-pairs instance, we run into
 trouble.
 
-``` screen
+```
 ghci> toJValue [("foo","bar")]
 
 <interactive>:2:1: error:
@@ -1417,7 +1417,7 @@ type's type class instances we want to expose. Here, we've elected to
 make `NewtypeInt` provide `Int`'s instances for `Eq`, `Ord` and `Show`.
 As a result, we can compare and print values of type `NewtypeInt`.
 
-``` screen
+```
 ghci> N 1 < N 2
 True
 ```
@@ -1426,7 +1426,7 @@ Since we are *not* exposing `Int`'s `Num` or `Integral` instances,
 values of type `NewtypeInt` are not numbers. For instance, we can't add
 them.
 
-``` screen
+```
 ghci> N 313 + N 37
 
 <interactive>:2:1: error:
@@ -1497,7 +1497,7 @@ To understand the difference, let's first review what we might expect
 with a normal data type. We are already familiar with the idea that if
 `undefined` is evaluated at runtime, it causes a crash.
 
-``` screen
+```
 ghci> undefined
 *** Exception: Prelude.undefined
 ```
@@ -1505,7 +1505,7 @@ ghci> undefined
 Here is a pattern match where we construct a `DataInt` using the `D`
 constructor, and put `undefined` inside.
 
-``` screen
+```
 ghci> case D undefined of D _ -> 1
 1
 ```
@@ -1518,7 +1518,7 @@ In this example, we're not using the `D` constructor, so the
 unprotected `undefined` is evaluated when the pattern match occurs, and
 we throw an exception.
 
-``` screen
+```
 ghci> case undefined of D _ -> 1
 *** Exception: Prelude.undefined
 ```
@@ -1527,7 +1527,7 @@ When we use the `N` constructor for the `NewtypeInt` type, we see the
 same behaviour as with the `DataInt` type's `D` constructor: no
 exception.
 
-``` screen
+```
 ghci> case N undefined of N _ -> 1
 1
 ```
@@ -1535,7 +1535,7 @@ ghci> case N undefined of N _ -> 1
 The crucial difference arises when we get rid of the `N` constructor
 from the expression, and match against an unprotected `undefined`.
 
-``` screen
+```
 ghci> case undefined of N _ -> 1
 1
 ```
@@ -1891,7 +1891,7 @@ myShow = show
 If we try to load this definition into `ghci`, it issues a peculiar
 complaint.
 
-``` screen
+```
 ghci> :load Monomorphism
 [1 of 1] Compiling Main             ( Monomorphism.hs, interpreted )
 

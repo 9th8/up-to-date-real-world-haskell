@@ -141,7 +141,7 @@ be out of luck.
 Of course, our toolbox isn't yet empty. In `Control.Monad`, there's a
 function named `ap` with an interesting type signature.
 
-``` screen
+```
 ghci> :m +Control.Monad
 ghci> :type ap
 ap :: Monad m => m (a -> b) -> m a -> m b
@@ -152,7 +152,7 @@ monad, and why. Recall, however, that *all* Haskell functions really
 take only one argument, and you'll begin to see how this might relate
 to the `MovieReview` constructor.
 
-``` screen
+```
 ghci> :type MovieReview
 MovieReview :: String -> String -> String -> MovieReview
 ```
@@ -187,7 +187,7 @@ of the familiar `(<*>)` operator: think of pronouncing `ap` as *apply*.
 We can see this clearly when we compare the type signatures of the two
 functions.
 
-``` screen
+```
 ghci> :type (<*>)
 (<*>) :: Applicative f => f (a -> b) -> f a -> f b
 ghci> :type ap
@@ -264,7 +264,7 @@ Notice that these two functions structure their `case` expressions
 similarly: one alternative handles the case where the first lookup
 returns an empty result, while the other handles the non-empty case.
 
-``` screen
+```
 ghci> onePersonalPhone twalumba
 Nothing
 ghci> onePersonalPhone albulena
@@ -381,7 +381,7 @@ Depending on the monad we're working in, `mplus` *may* implement an
 operation that looks like addition. For example, `mplus` in the list
 monad is implemented as the `(++)` operator.
 
-``` screen
+```
 ghci> [1,2,3] `mplus` [4,5,6]
 [1,2,3,4,5,6]
 ```
@@ -389,7 +389,7 @@ ghci> [1,2,3] `mplus` [4,5,6]
 However, if we switch to another monad, the obvious similarity to
 addition falls away.
 
-``` screen
+```
 ghci> Just 1 `mplus` Just 2
 Just 1
 ```
@@ -686,7 +686,7 @@ runSupply (S m) xs = runState m xs
 If we load our module into `ghci`, we can try it out in a few simple
 ways.
 
-``` screen
+```
 ghci> :load Supply
 [1 of 1] Compiling Supply           ( Supply.hs, interpreted )
 Ok, one module loaded.
@@ -712,7 +712,7 @@ From the parts of the `System.Random` module we've seen so far, it's
 difficult to reconcile these demands. We can use `getStdRandom`, whose
 type ensures that when we get a `StdGen`, we put one back.
 
-``` screen
+```
 ghci> :t System.Random.getStdRandom
 System.Random.getStdRandom :: (StdGen -> (a, StdGen)) -> IO a
 ```
@@ -755,7 +755,7 @@ randomsIO =
 If we've written this function properly, our example ought to print a
 different random number on each invocation.
 
-``` screen
+```
 ghci> :load RandomSupply
 [1 of 2] Compiling Supply           ( Supply.hs, interpreted )
 [2 of 2] Compiling RandomSupply     ( RandomSupply.hs, interpreted )
@@ -782,7 +782,7 @@ code.
 In the `Control.Arrow` module are two functions, `first` and `second`,
 that perform this operation.
 
-``` screen
+```
 ghci> :m +Control.Arrow
 ghci> first (+3) (1,2)
 (4,2)
@@ -1079,7 +1079,7 @@ Within a given chain of actions, every invocation of `ask` will return
 the same value, since the value stored in the environment doesn't
 change. Our code is easy to test in `ghci`.
 
-``` screen
+```
 ghci> :l SupplyInstance.hs
 [1 of 1] Compiling Main             ( SupplyInstance.hs, interpreted )
 Ok, one module loaded.
@@ -1183,7 +1183,7 @@ import RandomSupply
 ```
 ::::
 
-``` screen
+```
 ghci> :l RandomSupplyInstance.hs
 [1 of 5] Compiling Supply           ( Supply.hs, interpreted )
 [2 of 5] Compiling RandomSupply     ( RandomSupply.hs, interpreted )
@@ -1216,7 +1216,7 @@ same answer every time. Our code remains the same, but because we are
 executing it in a different implementation of `MonadSupply`, its
 behavior has changed.
 
-``` screen
+```
 ghci> :r
 [4 of 5] Compiling SupplyInstance   ( SupplyInstance.hs, interpreted)
 [5 of 5] Compiling Main             ( RandomSupplyInstance.hs, interp reted ) [SupplyInstance changed]
@@ -1354,7 +1354,7 @@ safeHello path = do
 
 To run this action, we use `runHandleIO`.
 
-``` screen
+```
 ghci> :load HandleIO
 [1 of 1] Compiling HandleIO         ( HandleIO.hs, interpreted )
 Ok, one module loaded.
@@ -1366,7 +1366,7 @@ ghci> removeFile "hello_world_101.txt"
 If we try to sequence an action that runs in the `HandleIO` monad with
 one that is not permitted, the type system forbids it.
 
-``` screen
+```
 ghci> runHandleIO (safeHello "goodbye" >> removeFile "goodbye")
 
 <interactive>:1:36: error:
@@ -1396,7 +1396,7 @@ The `Control.Monad.Trans` module defines a "standard escape hatch",
 the `MonadIO` type class. This defines a single function, `liftIO`,
 which lets us embed an `IO` action in another monad.
 
-``` screen
+```
 ghci> :m +Control.Monad.Trans
 ghci> :info MonadIO
 class Monad m => MonadIO (m :: * -> *) where
@@ -1541,7 +1541,7 @@ safeHello path = do
 Because we made `IO` an instance of this type class, we can execute this
 action from `ghci`.
 
-``` screen
+```
 ghci> :l MonadHandleIo.hs
 [1 of 3] Compiling MonadHandle      ( MonadHandle.hs, interpreted )
 [2 of 3] Compiling SafeHello        ( SafeHello.hs, interpreted )
@@ -1602,7 +1602,7 @@ the standard, and more general, `Writer` monad. Like other `mtl` monads,
 the API provided by `Writer` is defined in a type class, in this case
 `MonadWriter`. Its most useful method is `tell`, which logs a value.
 
-``` screen
+```
 ghci> :m +Control.Monad.Writer
 ghci> :type tell
 tell :: MonadWriter w m => w -> m ()
@@ -1655,7 +1655,7 @@ instance MonadHandle FilePath WriterIO where
 When we try this code out in `ghci`, it gives us a log of the
 function's file activities.
 
-``` screen
+```
 ghci> :load WriterIO
 [1 of 3] Compiling MonadHandle      ( MonadHandle.hs, interpreted )
 [2 of 3] Compiling SafeHello        ( SafeHello.hs, interpreted )

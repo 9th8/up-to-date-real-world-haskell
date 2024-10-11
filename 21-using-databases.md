@@ -90,7 +90,7 @@ that is an instance of `IConnection`. When you're done talking to the
 database, call the `disconnect` function. It will disconnect you from
 the database. Here's an example of connecting to a Sqlite database:
 
-``` screen
+```
 ghci> :module Database.HDBC Database.HDBC.Sqlite3
 ghci> conn <- connectSqlite3 "test1.db"
 Loading package array-0.1.0.0 ... linking ... done.
@@ -170,7 +170,7 @@ function takes an `IConnection`, a `String` representing the query
 itself, and a list of parameters. Let's use it to set up some things in
 our database.
 
-``` screen
+```
 ghci> :module Database.HDBC Database.HDBC.Sqlite3
 ghci> conn <- connectSqlite3 "test1.db"
 Loading package array-0.1.0.0 ... linking ... done.
@@ -242,7 +242,7 @@ characters such as backslashes differ between databases. Rather than
 trying to code this yourself, HDBC can handle it all for you. Let's
 look at an example.
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> run conn "INSERT INTO test VALUES (?, ?)" [toSql 0, toSql "zero"]
 1
@@ -296,7 +296,7 @@ what's happening, you can use a `Statement` instead of a function like
 Let's look at using statements to insert multiple values with a single
 query. Here's an example:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> stmt <- prepare conn "INSERT INTO test VALUES (?, ?)"
 ghci> execute stmt [toSql 1, toSql "one"]
@@ -321,7 +321,7 @@ HDBC also provides a function `executeMany` that can be useful in
 situations such as this. `executeMany` simply takes a list of rows of
 data to call the statement with. Here's an example:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> stmt <- prepare conn "INSERT INTO test VALUES (?, ?)"
 ghci> executeMany stmt [[toSql 5, toSql "five's nice"], [toSql 6, SqlNull]]
@@ -351,7 +351,7 @@ discuss getting data back out of the database. The type of the function
 results instead of a count of changed rows. `quickQuery'` is normally
 used with `SELECT` statements. Let's see an example:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> quickQuery' conn "SELECT * from test where id < 2" []
 [[SqlString "0",SqlNull],[SqlString "0",SqlString "zero"],[SqlString "1",SqlString "one"]]
@@ -428,7 +428,7 @@ convert a SQL `NULL` value into the string `"NULL"`. When printed, this
 will be indistinguishable from a SQL string `'NULL'`, but that's
 acceptable for this example. Let's try calling this function in `ghci`:
 
-``` screen
+```
 ghci> :load query.hs
 [1 of 1] Compiling Main             ( query.hs, interpreted )
 Ok, modules loaded: Main.
@@ -506,7 +506,7 @@ before, without the apostrophe. For instance, you'd use `fetchAllRows`
 instead of `fetchAllRows'`. The types of the lazy functions are the same
 as their strict cousins. Here's an example of lazy reading:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> stmt <- prepare conn "SELECT * from test where id < 2"
 ghci> execute stmt []
@@ -545,7 +545,7 @@ and `proxiedClientName`, for instance. The `dbTransactionSupport`
 function can be used to determine whether or not a given database
 supports transactions. Let's look at an example of some of these items:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> getTables conn
 ["test"]
@@ -581,7 +581,7 @@ error code, if any.
 occurs. While the exception will cause the program to terminate, it will
 not display a useful message. Here's an example:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> quickQuery' conn "SELECT * from test2" []
 *** Exception: (unknown)
@@ -595,7 +595,7 @@ error message we got back wasn't helpful. There's a utility function,
 more difficult to extract specific pieces of information
 programmatically. Let's look at its usage:
 
-``` screen
+```
 ghci> conn <- connectSqlite3 "test1.db"
 ghci> handleSqlError $ quickQuery' conn "SELECT * from test2" []
 *** Exception: user error (SQL error: SqlError {seState = "", seNativeError = 1, seErrorMsg = "prepare 20: SELECT * from test2: no such table: test2"})

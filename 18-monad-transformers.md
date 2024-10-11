@@ -131,7 +131,7 @@ a visit to a directory.
 
 To run our code, we must use one of `WriterT`'s execution functions.
 
-``` screen
+```
 ghci> :type runWriterT
 runWriterT :: WriterT w m a -> m (a, w)
 ghci> :type execWriterT
@@ -144,7 +144,7 @@ function gives both the result of the action and whatever was recorded
 as it ran, while `execWriterT` throws away the result and just gives us
 what was recorded.
 
-``` screen
+```
 ghci> :l CountEntriesT.hs
 ghci> :type countEntries ".."
 countEntries ".." :: WriterT [(FilePath, Int)] IO ()
@@ -211,7 +211,7 @@ localExample = do
 If we execute the `localExample` action in `ghci`, we can see that the
 effect of modifying the environment is confined to one place.
 
-``` screen
+```
 ghci> runReader localExample "Fred"
 Loading package mtl-1.1.0.0 ... linking ... done.
 ("First, I am Fred","Second, I am Freddy","Third, I am Fred")
@@ -496,7 +496,7 @@ Instead of relying on all of these type class instances to work for us
 behind the scenes, we can be explicit. The `MonadTrans` type class
 defines a useful function named `lift`.
 
-``` screen
+```
 ghci> :m +Control.Monad.Trans
 ghci> :info MonadTrans
 class MonadTrans t where lift :: (Monad m) => m a -> t m a
@@ -941,7 +941,7 @@ b = problem
 
 Let's try the alternatives in `ghci`.
 
-``` screen
+```
 ghci> runWriterT a
 Loading package mtl-1.1.0.0 ... linking ... done.
 Nothing
@@ -952,7 +952,7 @@ ghci> runWriter $ runMaybeT b
 This difference in results should not come as a surprise: just look at
 the signatures of the execution functions.
 
-``` screen
+```
 ghci> :t runWriterT
 runWriterT :: WriterT w m a -> m (a, w)
 ghci> :t runWriter . runMaybeT
@@ -982,7 +982,7 @@ pure code. Many useful pure functions need monadic counterparts, simply
 to tack on a placeholder parameter `m` for some monadic type
 constructor.
 
-``` screen
+```
 ghci> :t filter
 filter :: (a -> Bool) -> [a] -> [a]
 ghci> :i filterM

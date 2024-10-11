@@ -440,7 +440,7 @@ Because neither the `identity` parser nor the `parse` function examines
 the parse state, we don't even need to create an input string in order
 to try our code.
 
-``` screen
+```
 ghci> :load Parse
 [1 of 1] Compiling Main             ( Parse.hs, interpreted )
 Ok, one module loaded.
@@ -477,7 +477,7 @@ modifyOffset initState newOffset = initState { offset = newOffset }
 This creates a new `ParseState` value identical to `initState`, but with
 its `offset` field set to whatever value we specify for `newOffset`.
 
-``` screen
+```
 ghci> let before = ParseState (L8.pack "foo") 0
 ghci> let after = modifyOffset before 3
 ghci> before
@@ -521,7 +521,7 @@ There are a number of new functions in our definition.
 
 The `L8.uncons` function takes the first element from a `ByteString`.
 
-``` screen
+```
 ghci> L8.uncons (L8.pack "foo")
 Just ('f',Chunk "oo" Empty)
 ghci> L8.uncons L8.empty
@@ -685,7 +685,7 @@ We're by now thoroughly familiar with the `map` function, which applies
 a function to every element of a list, returning a list of possibly a
 different type.
 
-``` screen
+```
 ghci> map (+1) [1,2,3]
 [2,3,4]
 ghci> map show [1,2,3]
@@ -742,7 +742,7 @@ treeMap f (Node l r) = Node (treeMap f l) (treeMap f r)
 As we might hope, `treeLengths` and `treeMap length` give the same
 results.
 
-``` screen
+```
 ghci> :l TreeMap.hs
 [1 of 1] Compiling Main             ( TreeMap.hs, interpreted )
 Ok, one module loaded.
@@ -807,7 +807,7 @@ instance Functor [] where
 
 So we can use `fmap` over different types.
 
-``` screen
+```
 ghci> fmap length ["foo","quux"]
 [3,4]
 ghci> fmap length (Node (Leaf "Livingstone") (Leaf "I presume"))
@@ -880,7 +880,7 @@ This says that we can only put a type `a` into a `Foo` if `a` is a
 member of the `Eq` type class. However, the constraint renders it
 impossible to write a `Functor` instance for `Bar`.
 
-``` screen
+```
 ghci> :load ValidFunctor
 [1 of 1] Compiling Main             ( ValidFunctor.hs, interpreted )
 
@@ -976,7 +976,7 @@ where ordering isn't used.
 
 Quite often, you'll see `fmap` called as an operator.
 
-``` screen
+```
 ghci> (1+) `fmap` [1,2,3] ++ [4,5,6]
 [2,3,4,4,5,6]
 ```
@@ -987,7 +987,7 @@ One possible reason for the stickiness of the `fmap`-as-operator meme is
 that this use lets us omit parentheses from its second argument. Fewer
 parentheses leads to reduced mental juggling while reading a function.
 
-``` screen
+```
 ghci> fmap (1+) ([1,2,3] ++ [4,5,6])
 [2,3,4,5,6,7]
 ```
@@ -1008,7 +1008,7 @@ objects. We have only two rules to remember, and they're simple.
 Our first rule is that a functor must preserve *identity*. That is,
 applying `fmap id` to a value should give us back an identical value.
 
-``` screen
+```
 ghci> fmap id (Node (Leaf "a") (Leaf "b"))
 Node (Leaf "a") (Leaf "b")
 ```
@@ -1017,7 +1017,7 @@ Our second rule is that functors must be *composable*. That is,
 composing two uses of `fmap` should give the same result as one `fmap`
 with the same functions composed.
 
-``` screen
+```
 ghci> (fmap even . fmap length) (Just "twelve")
 Just True
 ghci> fmap (even . length) (Just "twelve")
@@ -1028,7 +1028,7 @@ Another way of looking at these two rules is that a functor must
 preserve *shape*. The structure of a collection should not be affected
 by a functor; only the values that it contains should change.
 
-``` screen
+```
 ghci> fmap odd (Just 1)
 Just True
 ghci> fmap odd Nothing
@@ -1081,7 +1081,7 @@ First, we'll check that identity is preserved. Let's try this first on
 a parse that ought to fail: parsing a byte from an empty string
 (remember that `(<$>)` is `fmap`).
 
-``` screen
+```
 ghci> parse parseByte L.empty
 Left "byte offset 0: no more input"
 ghci> parse (id <$> parseByte) L.empty
@@ -1090,7 +1090,7 @@ Left "byte offset 0: no more input"
 
 Good. Now for a parse that should succeed.
 
-``` screen
+```
 ghci> input = L8.pack "foo"
 ghci> L.head input
 102
@@ -1106,7 +1106,7 @@ is preserved as failure, and success as success.
 
 Finally, we'll ensure that composability is preserved.
 
-``` screen
+```
 ghci> parse ((chr . fromIntegral) <$> parseByte) input
 Right 'f'
 ghci> parse (chr <$> fromIntegral <$> parseByte) input

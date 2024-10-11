@@ -279,7 +279,7 @@ example `ghci` session demonstrating interacting with the database. It
 will create a database file named `poddbtest.db` in the current working
 directory and add a podcast and an episode to it.
 
-``` screen
+```
 ghci> :load PodDB.hs
 [1 of 2] Compiling PodTypes         ( PodTypes.hs, interpreted )
 [2 of 2] Compiling PodDB            ( PodDB.hs, interpreted )
@@ -667,7 +667,7 @@ command-line arguments.
 
 You can compile this program with a command like this:
 
-``` screen
+```
 ghc --make -O2 -o pod -package HTTP -package HaXml -package network 
     -package HDBC -package HDBC-sqlite3 PodMain.hs
 ```
@@ -700,7 +700,7 @@ main = defaultMain
 
 Now, to build with Cabal, you just run:
 
-``` screen
+```
 runghc Setup.hs configure
 runghc Setup.hs build
 ```
