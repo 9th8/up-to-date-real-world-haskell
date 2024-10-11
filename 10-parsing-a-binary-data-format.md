@@ -50,27 +50,20 @@ it's compact. Since the header of a PGM file is ASCII text, but its
 body is binary, we import both the text and binary-oriented `ByteString`
 modules.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 import qualified Data.ByteString.Lazy.Char8 as L8
 import qualified Data.ByteString.Lazy as L
 import Data.Char (isSpace)
 ```
-::::
 
 For our purposes, it doesn't matter whether we use a lazy or strict
 `ByteString`, so we've somewhat arbitrarily chosen the lazy kind.
 
 We'll use a straightforward data type to represent PGM images.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 data Greymap = Greymap {
@@ -80,7 +73,6 @@ data Greymap = Greymap {
     , greyData :: L.ByteString
     } deriving (Eq)
 ```
-::::
 
 Normally, a Haskell `Show` instance should produce a string
 representation that we can read back by calling `read`. However, for a
@@ -89,17 +81,13 @@ for example if we were to `show` a photo. For this reason, we're not
 going to let the compiler automatically derive a `Show` instance for us:
 we'll write our own, and intentionally simplify it.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 instance Show Greymap where
     show (Greymap w h m _) = "Greymap " ++ show w ++ "x" ++ show h ++
                              " " ++ show m
 ```
-::::
 
 Because our `Show` instance intentionally avoids printing the bitmap
 data, there's no point in writing a `Read` instance, as we can't
@@ -107,15 +95,11 @@ reconstruct a valid Greymap from the result of `show`.
 
 Here's an obvious type for our parsing function.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 parseP5 :: L.ByteString -> Maybe (Greymap, L.ByteString)
 ```
-::::
 
 This will take a `ByteString`, and if the parse succeeds, it will return
 a single parsed `Greymap`, along with the string that remains after
@@ -127,10 +111,7 @@ PGM file; then we need to parse the numbers from the remainder of the
 header; then we consume the bitmap data. Here's an obvious way to
 express this, which we will use as a base for later improvements.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 matchHeader :: L.ByteString -> L.ByteString -> Maybe L.ByteString
@@ -163,7 +144,6 @@ parseP5 s =
                             Just (bitmap, s6) ->
                               Just (Greymap width height maxGrey bitmap, s6)
 ```
-::::
 
 This is a very literal piece of code, performing all of the parsing in
 one long staircase of `case` expressions. Each function returns the
@@ -175,10 +155,7 @@ proceed. Here are the bodies of the functions that we apply during
 parsing. Their types are commented out because we already presented them
 above.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 -- L.ByteString -> L.ByteString -> Maybe L.ByteString
@@ -202,7 +179,6 @@ getBytes n str = let count           = fromIntegral n
                     then Nothing
                     else Just both
 ```
-::::
 
 ## Getting rid of boilerplate code
 
@@ -225,17 +201,13 @@ result to a function.
 
 We can quite easily write a function that captures this second pattern.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 (>>?) :: Maybe a -> (a -> Maybe b) -> Maybe b
 Nothing >>? _ = Nothing
 Just v  >>? f = f v
 ```
-::::
 
 The `(>>?)` function acts very simply: it takes a value as its left
 argument, and a function as its right. If the value is not `Nothing`, it
@@ -249,10 +221,7 @@ evaluated from left to right, as `(a >>? b) >>? c)`.
 With this chaining function in hand, we can take a second try at our
 parsing function.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 parseP5_take2 :: L.ByteString -> Maybe (Greymap, L.ByteString)
@@ -271,7 +240,6 @@ parseP5_take2 s =
 skipSpace :: (a, L.ByteString) -> Maybe (a, L.ByteString)
 skipSpace (a, s) = Just (a, L8.dropWhile isSpace s)
 ```
-::::
 
 The key to understanding this function is to think about the chaining.
 On the left hand side of each `(>>?)` is a `Maybe` value; on the right
@@ -310,10 +278,7 @@ use it carefully.
 Let's do something to address the inflexibility of our new code. First,
 we will change the type of state that our parser uses.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 import qualified Data.ByteString.Lazy.Char8 as L8
@@ -325,7 +290,6 @@ data ParseState = ParseState {
     , offset :: Int64
     } deriving (Show)
 ```
-::::
 
 In our switch to an algebraic data type, we added the ability to track
 both the current residual string and the offset into the original string
@@ -340,31 +304,23 @@ as a kind of function: it consumes a parsing state, and produces both a
 new parsing state and some other piece of information. We can directly
 represent this as a Haskell type.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 simpleParse :: ParseState -> (a, ParseState)
 simpleParse = undefined
 ```
-::::
 
 To provide more help to our users, we would like to report an error
 message if parsing fails. This only requires a minor tweak to the type
 of our parser.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 betterParse :: ParseState -> Either String (a, ParseState)
 betterParse = undefined
 ```
-::::
 
 In order to future-proof our code, it is best if we do not expose the
 implementation of our parser to our users. When we explicitly used pairs
@@ -373,17 +329,13 @@ once we considered extending the capabilities of our parser. To stave
 off a repeat of that difficulty, we will hide the details of our parser
 type using a `newtype` declaration.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 newtype Parse a = Parse {
     runParse :: ParseState -> Either String (a, ParseState)
 }
 ```
-::::
 
 Remember that the `newtype` definition is just a compile-time wrapper
 around a function, so it has no run-time overhead. When we want to use
@@ -400,16 +352,12 @@ Let's try to define a simple parser, the *identity* parser. All it does
 is turn whatever it is passed into the result of the parse. In this way,
 it somewhat resembles the `id` function.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 identity :: a -> Parse a
 identity a = Parse (\s -> Right (a, s))
 ```
-::::
 
 This function leaves the parse state untouched, and uses its argument as
 the result of the parse. We wrap the body of the function in our `Parse`
@@ -422,10 +370,7 @@ We also need to construct a `ParseState`, then run our parsing function
 on that parse state. Finally, we'd like to separate the result of the
 parse from the final `ParseState`.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 parse :: Parse a -> L.ByteString -> Either String a
@@ -434,7 +379,6 @@ parse parser initState
         Left err          -> Left err
         Right (result, _) -> Right result
 ```
-::::
 
 Because neither the `identity` parser nor the `parse` function examines
 the parse state, we don't even need to create an input string in order
@@ -463,16 +407,12 @@ Record syntax is useful for more than just accessor functions: we can
 use it to copy and partly change an existing value. In use, the notation
 looks like this.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 modifyOffset :: ParseState -> Int64 -> ParseState
 modifyOffset initState newOffset = initState { offset = newOffset }
 ```
-::::
 
 This creates a new `ParseState` value identical to `initState`, but with
 its `offset` field set to whatever value we specify for `newOffset`.
@@ -495,10 +435,7 @@ Let's focus now on writing a parser that does something meaningful.
 We're not going to get too ambitious yet: all we want to do is parse a
 single byte.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 -- import the Word8 type from Data.Word
@@ -515,7 +452,6 @@ parseByte =
                                      offset = newOffset }
               newOffset = offset initState + 1
 ```
-::::
 
 There are a number of new functions in our definition.
 
@@ -533,10 +469,7 @@ Our `getState` function retrieves the current parsing state, while
 reports an error. The `(==>)` function chains parsers together. We will
 cover each of these functions shortly.
 
-:::: tip
-::: title
 Tip
-:::
 
 Hanging lambdas
 
@@ -551,7 +484,6 @@ room for more text in the body of the function. It also makes it more
 visually clear that there's a relationship between one function and the
 one that follows. Often, for instance, the result of the first function
 is being passed as a parameter to the second.
-::::
 
 ### Obtaining and modifying the parse state
 
@@ -559,10 +491,7 @@ Our `parseByte` function doesn't take the parse state as an argument.
 Instead, it has to call `getState` to get a copy of the state, and
 `putState` to replace the current state with a new one.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 getState :: Parse ParseState
@@ -571,7 +500,6 @@ getState = Parse (\s -> Right (s, s))
 putState :: ParseState -> Parse ()
 putState s = Parse (\_ -> Right ((), s))
 ```
-::::
 
 When reading these functions, recall that the left element of the tuple
 is the result of a `Parse`, while the right is the current `ParseState`.
@@ -606,17 +534,13 @@ failure. The `(==>)` combinator checks for a parse failure and stops
 parsing if it runs into a failure. But we haven't yet introduced the
 `bail` function, which we use to report a parse error.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 bail :: String -> Parse a
 bail err = Parse $ \s -> Left $
            "byte offset " ++ show (offset s) ++ ": " ++ err
 ```
-::::
 
 After we call `bail`, `(==>)` will successfully pattern match on the
 `Left` constructor that it wraps the error message with, and it will not
@@ -628,10 +552,7 @@ to percolate back through the chain of prior callers.
 The `(==>)` function serves a similar purpose to our earlier `(>>?)`
 function: it is "glue" that lets us chain functions together.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 (==>) :: Parse a -> (a -> Parse b) -> Parse b
@@ -643,7 +564,6 @@ firstParser ==> secondParser = Parse chainedParser
             Right (firstResult, newState) ->
                 runParse (secondParser firstResult) newState
 ```
-::::
 
 The body of `(==>)` is interesting, and ever so slightly tricky. Recall
 that the `Parse` type represents really a function inside a wrapper.
@@ -653,10 +573,7 @@ must return a function, in a wrapper.
 The function doesn't really "do" much: it just creates a *closure* to
 remember the values of `firstParser` and `secondParser`.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -666,7 +583,6 @@ Haskell. For instance, the section `(+5)` is a closure. An
 implementation must record the value `5` as the second argument to the
 `(+)` operator, so that the resulting function can add `5` to whatever
 value it is passed.
-::::
 
 This closure will not be unwrapped and applied until we apply `parse`.
 At that point, it will be applied with a `ParseState`. It will apply
@@ -697,47 +613,35 @@ map show :: (Show a) => [a] -> [String]
 This `map`-like activity can be useful in other instances. For example,
 consider a binary tree.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 data Tree a = Node (Tree a) (Tree a)
             | Leaf a
               deriving (Show)
 ```
-::::
 
 If we want to take a tree of strings and turn it into a tree containing
 the lengths of those strings, we could write a function to do this.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 treeLengths (Leaf s) = Leaf (length s)
 treeLengths (Node l r) = Node (treeLengths l) (treeLengths r)
 ```
-::::
 
 Now that our eyes are attuned to looking for patterns that we can turn
 into generally useful functions, we can see a possible case of this
 here.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 treeMap :: (a -> b) -> Tree a -> Tree b
 treeMap f (Leaf a)   = Leaf (f a)
 treeMap f (Node l r) = Node (treeMap f l) (treeMap f r)
 ```
-::::
 
 As we might hope, `treeLengths` and `treeMap length` give the same
 results.
@@ -759,16 +663,12 @@ Haskell provides a well-known type class to further generalise
 `treeMap`. This type class is named `Functor`, and it defines one
 function, `fmap`.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 class Functor f where
     fmap :: (a -> b) -> f a -> f b
 ```
-::::
 
 We can think of `fmap` as a kind of *lifting* function, as we introduced
 in [the section called "Avoiding boilerplate with
@@ -781,29 +681,21 @@ If we substitute `Tree` for the type variable `f`, for example, the type
 of `fmap` is identical to the type of `treeMap`, and in fact we can use
 `treeMap` as the implementation of `fmap` over Trees.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 instance Functor Tree where
     fmap = treeMap
 ```
-::::
 
 `map` is actually the implementation of `fmap` for lists.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 instance Functor [] where
     fmap = map
 ```
-::::
 
 So we can use `fmap` over different types.
 
@@ -817,17 +709,13 @@ Node (Leaf 11) (Leaf 9)
 The Prelude defines instances of `Functor` for several common types,
 notably lists and `Maybe`.
 
-:::: captioned-content
-::: caption
 TreeMap.hs
-:::
 
 ``` haskell
 instance Functor Maybe where
     fmap _ Nothing  = Nothing
     fmap f (Just x) = Just (f x)
 ```
-::::
 
 The instance for `Maybe` makes it particularly clear what an `fmap`
 implementation needs to do. The implementation must have a sensible
@@ -847,10 +735,7 @@ In addition, we can't place any constraints on our type definition.
 What does this mean? To illustrate, let's first look at a normal `data`
 definition and its `Functor` instance.
 
-:::: captioned-content
-::: caption
 ValidFunctor.hs
-:::
 
 ``` haskell
 data Foo a = Foo a
@@ -858,15 +743,11 @@ data Foo a = Foo a
 instance Functor Foo where
     fmap f (Foo a) = Foo (f a)
 ```
-::::
 
 When we define a new type, we can add a type constraint just after the
 `data` keyword as follows.
 
-:::: captioned-content
-::: caption
 ValidFunctor.hs
-:::
 
 ``` haskell
 data Eq a => Bar a = Bar a
@@ -874,7 +755,6 @@ data Eq a => Bar a = Bar a
 instance Functor Bar where
     fmap f (Bar a) = Bar (f a)
 ```
-::::
 
 This says that we can only put a type `a` into a `Foo` if `a` is a
 member of the `Eq` type class. However, the constraint renders it
@@ -901,27 +781,20 @@ that we need a stack data structure that we want to be able to query to
 see whether its elements obey some ordering. Here's a naive definition
 of the data type.
 
-:::: captioned-content
-::: caption
 TypeConstraint.hs
-:::
 
 ``` haskell
 data (Ord a) => OrdStack a = Bottom
                            | Item a (OrdStack a)
                              deriving (Show)
 ```
-::::
 
 If we want to write a function that checks the stack to see whether it
 is increasing (i.e. every element is bigger than the element below it),
 we'll obviously need an `Ord` constraint to perform the pairwise
 comparisons.
 
-:::: captioned-content
-::: caption
 TypeConstraint.hs
-:::
 
 ``` haskell
 isIncreasing :: (Ord a) => OrdStack a -> Bool
@@ -930,23 +803,18 @@ isIncreasing (Item a rest@(Item b _))
     | otherwise = False
 isIncreasing _  = True
 ```
-::::
 
 However, because we wrote the type constraint on the type definition,
 that constraint ends up infecting places where it isn't needed: we need
 to add the `Ord` constraint to `push`, which does not care about the
 ordering of elements on the stack.
 
-:::: captioned-content
-::: caption
 TypeConstraint.hs
-:::
 
 ``` haskell
 push :: (Ord a) => a -> OrdStack a -> OrdStack a
 push a s = Item a s
 ```
-::::
 
 Try removing that `Ord` constraint above, and the definition of `push`
 will fail to type-check.
@@ -1043,16 +911,12 @@ no need to memorise them. They just formalize a few intuitive notions of
 "do what I mean". Here is a pseudocode representation of the expected
 behavior.
 
-:::: captioned-content
-::: caption
 FunctorLaws.hs
-:::
 
 ``` haskell
 fmap id      == id
 fmap (f . g) == fmap f . fmap g
 ```
-::::
 
 ## Writing a functor instance for `Parse`
 
@@ -1062,17 +926,13 @@ to its complexity. A reasonable guess is that the function we're
 \~fmap\~ping should be applied to the current result of a parse, and
 leave the parse state untouched.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 instance Functor Parse where
     fmap f parser = parser ==> \result ->
                     identity (f result)
 ```
-::::
 
 This definition is easy to read, so let's perform a few quick
 experiments to see if we're following our rules for functors.
@@ -1130,10 +990,7 @@ advantage of the functor nature of `Parse`. Our functor takes the result
 of a parse and applies a function to it, so what we need is a function
 that turns a `Word8` into a `Char`.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 -- import Data.Char
@@ -1144,37 +1001,28 @@ w2c = chr . fromIntegral
 parseChar :: Parse Char
 parseChar = w2c <$> parseByte
 ```
-::::
 
 We can also use functors to write a compact "peek" function. This
 returns `Nothing` if we're at the end of the input string. Otherwise,
 it returns the next character without consuming it (i.e. it inspects,
 but doesn't disturb, the current parsing state).
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 peekByte :: Parse (Maybe Word8)
 peekByte = (fmap fst . L.uncons . string) <$> getState
 ```
-::::
 
 The same lifting trick that let us define `parseChar` lets us write a
 compact definition for `peekChar`.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 peekChar :: Parse (Maybe Char)
 peekChar = fmap w2c <$> peekByte
 ```
-::::
 
 Notice that `peekByte` and `peekChar` each make two calls to `fmap`, one
 of which is disguised as `(<$>)`. This is necessary because the type
@@ -1185,10 +1033,7 @@ Finally, we'll write another generic combinator, which is the `Parse`
 analogue of the familiar `takeWhile`: it consumes its input while its
 predicate returns `True`.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 parseWhile :: (Word8 -> Bool) -> Parse [Word8]
@@ -1198,16 +1043,12 @@ parseWhile p = (fmap p <$> peekByte) ==> \mp ->
                     (b:) <$> parseWhile p
                else identity []
 ```
-::::
 
 Once again, we're using functors in several places (doubled up, when
 necessary) to reduce the verbosity of our code. Here's a rewrite of the
 same function in a more direct style that does not use functors.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 parseWhileVerbose p =
@@ -1221,7 +1062,6 @@ parseWhileVerbose p =
              | otherwise ->
                  identity []
 ```
-::::
 
 The more verbose definition is likely easier to read when you are less
 familiar with functors. However, use of functors is sufficiently common
@@ -1233,10 +1073,7 @@ second nature (both to read and to write) fairly quickly.
 With our new parsing code, what does the raw PGM parsing function look
 like now?
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 -- import PNM
@@ -1252,15 +1089,11 @@ parseRawPGM =
     identity (Greymap width height maxGrey bitmap)
   where notWhite = (`notElem` " \r\n\t")
 ```
-::::
 
 This definition makes use of a few more helper functions that we present
 here, following a pattern that should by now be familiar.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 parseWhileWith :: (Word8 -> a) -> (a -> Bool) -> Parse [a]
@@ -1285,7 +1118,6 @@ assert :: Bool -> String -> Parse ()
 assert True  _   = identity ()
 assert False err = bail err
 ```
-::::
 
 The `(==>&)` combinator chains parsers like `(==>)`, but the right hand
 side ignores the result from the left. The `assert` function lets us
@@ -1301,10 +1133,7 @@ Of course, we can't completely avoid inspecting and modifying the
 parsing state. Here's a case in point, the last of the helper functions
 needed by `parseRawPGM`.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 parseBytes :: Int -> Parse L.ByteString
@@ -1317,7 +1146,6 @@ parseBytes n =
        assert (L.length h == n') "end of input" ==>&
        identity h
 ```
-::::
 
 ## Future directions
 

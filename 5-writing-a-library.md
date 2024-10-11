@@ -36,10 +36,7 @@ in an object or array can be of any type.
 To work with JSON data in Haskell, we use an algebraic data type to
 represent the range of possible JSON types.
 
-:::: captioned-content
-::: caption
 SimpleJSON.hs
-:::
 
 ``` haskell
 data JValue = JString String
@@ -50,7 +47,6 @@ data JValue = JString String
             | JArray [JValue]
               deriving (Eq, Ord, Show)
 ```
-::::
 
 For each JSON type, we supply a distinct value constructor. Some of
 these constructors have parameters: if we want to construct a JSON
@@ -79,17 +75,13 @@ a string from a JSON value for us. If the JSON value actually contains a
 string, our function will wrap the string with the `Just` constructor.
 Otherwise, it will return `Nothing`.
 
-:::: captioned-content
-::: caption
 SimpleJSON.hs
-:::
 
 ``` haskell
 getString :: JValue -> Maybe String
 getString (JString s) = Just s
 getString _           = Nothing
 ```
-::::
 
 When we save the modified source file, we can reload it in `ghci` and
 try the new definition. (The `:reload` command remembers the last source
@@ -107,10 +99,7 @@ Nothing
 A few more accessor functions, and we've got a small body of code to
 work with.
 
-:::: captioned-content
-::: caption
 SimpleJSON.hs
-:::
 
 ``` haskell
 getInt :: JValue -> Maybe Int
@@ -136,7 +125,6 @@ getArray _          = Nothing
 isNull :: JValue -> Bool
 isNull v = v == JNull
 ```
-::::
 
 The `truncate` function turns a floating point or rational number into
 an integer by dropping the digits after the decimal point.
@@ -158,10 +146,7 @@ from other modules.
 A source file begins with a *module declaration*. This must precede all
 other definitions in the source file.
 
-:::: captioned-content
-::: caption
 SimpleJSON.hs
-:::
 
 ``` haskell
 module SimpleJSON
@@ -175,7 +160,6 @@ module SimpleJSON
     , isNull
     ) where
 ```
-::::
 
 The word `module` is reserved. It is followed by the name of the module,
 which must begin with a capital letter. A source file must have the same
@@ -204,28 +188,20 @@ situations in which we might want to make a type abstract.
 If we omit the exports (and the parentheses that enclose them) from a
 module declaration, every name in the module will be exported.
 
-:::: captioned-content
-::: caption
 Exporting.hs
-:::
 
 ``` haskell
 module ExportEverything where
 ```
-::::
 
 To export no names at all (which is rarely useful), we write an empty
 export list using a pair of parentheses.
 
-:::: captioned-content
-::: caption
 Exporting.hs
-:::
 
 ``` haskell
 module ExportNothing () where
 ```
-::::
 
 ## Compiling Haskell source
 
@@ -260,10 +236,7 @@ Now that we've successfully compiled our minimal library, we'll write
 a tiny program to exercise it. Create the following file in your text
 editor, and save it as `Main.hs`.
 
-:::: captioned-content
-::: caption
 Main.hs
-:::
 
 ``` haskell
 module Main where
@@ -272,7 +245,6 @@ import SimpleJSON
 
 main = print (JObject [("foo", JNumber 1), ("bar", JBool False)])
 ```
-::::
 
 Notice the `import` directive that follows the module declaration. This
 indicates that we want to take all of the names that are exported from
@@ -317,10 +289,7 @@ There are a few ways we could go about this. Perhaps the most direct
 would be to write a rendering function that prints a value in JSON form.
 Once we're done, we'll explore some more interesting approaches.
 
-:::: captioned-content
-::: caption
 PutJSON.hs
-:::
 
 ``` haskell
 module PutJSON where
@@ -345,22 +314,17 @@ renderJValue (JArray a) = "[" ++ values a ++ "]"
   where values [] = ""
         values vs = intercalate ", " (map renderJValue vs)
 ```
-::::
 
 Good Haskell style involves separating pure code from code that performs
 I/O. Our `renderJValue` function has no interaction with the outside
 world, but we still need to be able to print a `JValue`.
 
-:::: captioned-content
-::: caption
 PutJSON.hs
-:::
 
 ``` haskell
 putJValue :: JValue -> IO ()
 putJValue v = putStrLn (renderJValue v)
 ```
-::::
 
 Printing a JSON value is now easy.
 
@@ -399,17 +363,13 @@ find the source of our problem.
 Suppose, for instance, that we write a function that we believe returns
 a `String`, but we don't write a type signature for it.
 
-:::: captioned-content
-::: caption
 Trouble.hs
-:::
 
 ``` haskell
 import Data.Char
 
 upcaseFirst (c:cs) = toUpper c -- forgot ":cs" here
 ```
-::::
 
 Here, we want to upper-case the first character of a word, but we've
 forgotten to append the rest of the word onto the result. We think our
@@ -417,16 +377,12 @@ function's type is `String -> String`, but the compiler will correctly
 infer its type as `String -> Char`. Let's say we then try to use this
 function somewhere else.
 
-:::: captioned-content
-::: caption
 Trouble.hs
-:::
 
 ``` haskell
 camelCase :: String -> String
 camelCase xs = concat (map upcaseFirst (words xs))
 ```
-::::
 
 When we try to compile this code or load it into `ghci`, we won't
 necessarily get an obvious error message.
@@ -469,10 +425,7 @@ out fairly aggressive with explicit type signatures, and slowly ease
 back as your mental model of how type checking works becomes more
 accurate.
 
-:::: tip
-::: title
 Tip
-:::
 
 Explicit types, undefined values, and error
 
@@ -484,7 +437,6 @@ body of a top-level definition. If we omit a type signature, we may be
 able to use the value we have defined in places where a correctly typed
 version would be rejected by the compiler. This can easily lead us
 astray.
-::::
 
 ## A more general look at rendering
 
@@ -505,17 +457,13 @@ techniques.
 We will call our generic pretty printing module `Prettify`, so our code
 will go into a source file named `Prettify.hs`.
 
-:::: note
-::: title
 Note
-:::
 
 Naming
 
 In our `Prettify` module, we will base our names on those used by
 several established Haskell pretty printing libraries. This will give us
 a degree of compatibility with existing mature libraries.
-::::
 
 To make sure that `Prettify` meets practical needs, we write a new JSON
 renderer that uses the `Prettify` API. After we're done, we'll go back
@@ -531,10 +479,7 @@ We will name our new JSON rendering module `PrettyJSON.hs`, and retain
 the name `renderJValue` for the rendering function. Rendering one of the
 basic JSON values is straightforward.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 renderJValue :: JValue -> Doc
@@ -544,7 +489,6 @@ renderJValue JNull         = text "null"
 renderJValue (JNumber num) = double num
 renderJValue (JString str) = string str
 ```
-::::
 
 The `text`, `double`, and `string` functions will be provided by our
 `Prettify` module.
@@ -570,10 +514,7 @@ to "compile early, compile often" with our JSON renderer will fail, as
 the compiler won't know anything about those functions. To avoid this
 problem, we write stub code that doesn't do anything.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 import SimpleJSON
@@ -589,7 +530,6 @@ text str = undefined
 double :: Double -> Doc
 double num = undefined
 ```
-::::
 
 The special value `undefined` has the type `a`, so it always
 type-checks, no matter where we use it. If we attempt to evaluate it, it
@@ -620,21 +560,14 @@ When we must pretty print a string value, JSON has moderately involved
 escaping rules that we must follow. At the highest level, a string is
 just a series of characters wrapped in quotes.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 string :: String -> Doc
 string = enclose '"' '"' . hcat . map oneChar
 ```
-::::
 
-:::::: note
-::: title
 Note
-:::
 
 Point-free style
 
@@ -649,39 +582,27 @@ Contrast the point-free definition of `string` above with this
 "pointy" version, which uses a variable `s` to refer to the value on
 which it operates.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 pointyString :: String -> Doc
 pointyString s = enclose '"' '"' (hcat (map oneChar s))
 ```
-::::
-::::::
 
 The `enclose` function simply wraps a `Doc` value with an opening and
 closing character.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 enclose :: Char -> Char -> Doc -> Doc
 enclose left right x = char left <> x <> char right
 ```
-::::
 
 We provide a `(<>)` function in our pretty printing library. It appends
 two `Doc` values, so it's the `Doc` equivalent of `(++)`.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 (<>) :: Doc -> Doc -> Doc
@@ -690,31 +611,23 @@ a <> b = undefined
 char :: Char -> Doc
 char c = undefined
 ```
-::::
 
 Our pretty printing library also provides `hcat`, which concatenates
 multiple `Doc` values into one: it's the analogue of `concat` for
 lists.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 hcat :: [Doc] -> Doc
 hcat xs = undefined
 ```
-::::
 
 Our `string` function applies the `oneChar` function to every character
 in a string, concatenates the lot, and encloses the result in quotes.
 The `oneChar` function escapes or renders an individual character.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 oneChar :: Char -> Doc
@@ -728,7 +641,6 @@ simpleEscapes :: [(Char, String)]
 simpleEscapes = zipWith ch "\b\n\f\r\t\\"/" "bnfrt\\"/"
     where ch a b = (a, ['\',b])
 ```
-::::
 
 The `simpleEscapes` value is a list of pairs. We call a list of pairs an
 *association list*, or *alist* for short. Each element of our alist
@@ -750,10 +662,7 @@ The more complicated escaping involves turning a character into the
 string "`\u`" followed by a four-character sequence of hexadecimal
 digits representing the numeric value of the Unicode character.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 smallHex :: Int -> Doc
@@ -762,7 +671,6 @@ smallHex x  = text "\\u"
            <> text h
     where h = showHex x ""
 ```
-::::
 
 The `showHex` function comes from the `Numeric` library (you will need
 to import this at the beginning of `Prettify.hs`), and returns a
@@ -788,10 +696,7 @@ above `0xffff` in a JSON string, we follow some complicated rules to
 split it into two. This gives us an opportunity to perform some
 bit-level manipulation of Haskell numbers.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 astral :: Int -> Doc
@@ -799,7 +704,6 @@ astral n = smallHex (a + 0xd800) <> smallHex (b + 0xdc00)
     where a = (n `shiftR` 10) .&. 0x3ff
           b = n .&. 0x3ff
 ```
-::::
 
 The `shiftR` function comes from the `Data.Bits` module, and shifts a
 number to the right. The `(.&.)` function, also from `Data.Bits`,
@@ -815,10 +719,7 @@ ghci> 7 .&. 2   :: Int
 Now that we've written `smallHex` and `astral`, we can provide a
 definition for `hexEscape`.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 hexEscape :: Char -> Doc
@@ -826,7 +727,6 @@ hexEscape c | d < 0x10000 = smallHex d
             | otherwise   = astral (d - 0x10000)
     where d = ord c
 ```
-::::
 
 ## Arrays and objects, and the module header
 
@@ -836,17 +736,13 @@ opening character, followed by a series of values separated with commas,
 followed by a closing character. Let's write a function that captures
 the common structure of arrays and objects.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 series :: Char -> Char -> (a -> Doc) -> [a] -> Doc
 series open close item = enclose open close
                        . fsep . punctuate (char ',') . map item
 ```
-::::
 
 We'll start by interpreting this function's type. It takes an opening
 and closing character, then a function that knows how to pretty print a
@@ -863,16 +759,12 @@ and closing characters. The `fsep` function will live in our `Prettify`
 module. It combines a list of `Doc` values into one, possibly wrapping
 lines if the output will not fit on a single line.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 fsep :: [Doc] -> Doc
 fsep xs = undefined
 ```
-::::
 
 By now, you should be able to define your own stubs in `Prettify.hs`, by
 following the examples we have supplied. We will not explicitly define
@@ -882,10 +774,7 @@ The `punctuate` function will also live in our `Prettify` module, and we
 can define it in terms of functions for which we've already written
 stubs.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 punctuate :: Doc -> [Doc] -> [Doc]
@@ -893,29 +782,21 @@ punctuate _ []       = []
 punctuate _ [d]      = [d]
 punctuate p (d : ds) = (d <> p) : punctuate p ds
 ```
-::::
 
 With this definition of `series`, pretty printing an array is entirely
 straightforward. We add this equation to the end of the block we've
 already written for our `renderJValue` function.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 renderJValue (JArray ary) = series '[' ']' renderJValue ary
 ```
-::::
 
 To pretty print an object, we need to do only a little more work: for
 each element, we have both a name and a value to deal with.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 renderJValue (JObject obj) = series '{' '}' field obj
@@ -923,17 +804,13 @@ renderJValue (JObject obj) = series '{' '}' field obj
                           <> text ": "
                           <> renderJValue val
 ```
-::::
 
 ## Writing a module header
 
 Now that we have written the bulk of our `PrettyJSON.hs` file, we must
 go back to the top and add a module declaration.
 
-:::: captioned-content
-::: caption
 PrettyJSON.hs
-:::
 
 ``` haskell
 module PrettyJSON
@@ -956,7 +833,6 @@ import Prettify
     , text
     , compact)
 ```
-::::
 
 We export just one name from this module: `renderJValue`, our JSON
 rendering function. The other definitions in the module exist purely to
@@ -1002,10 +878,7 @@ programmer will probably know which names come from that module.
 In our `Prettify` module, we represent our `Doc` type as an algebraic
 data type.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 data Doc = Empty
@@ -1016,7 +889,6 @@ data Doc = Empty
          | Union Doc Doc
            deriving (Show, Eq)
 ```
-::::
 
 Observe that the `Doc` type is actually a tree. The `Concat` and `Union`
 constructors create an internal node from two other `Doc` values, while
@@ -1031,10 +903,7 @@ function that we provide. Here are the simple construction functions. As
 we add real definitions, we must replace any stubbed versions already in
 the `Prettify.hs` source file.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 empty :: Doc
@@ -1050,7 +919,6 @@ text s  = Text s
 double :: Double -> Doc
 double d = text (show d)
 ```
-::::
 
 The `Line` constructor represents a line break. The `line` function
 creates *hard* line breaks, which always appear in the pretty printer's
@@ -1058,24 +926,17 @@ output. Sometimes we'll want a *soft* line break, which is only used if
 a line is too wide to fit in a window or page. We'll introduce a
 `softline` function shortly.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 line :: Doc
 line = Line
 ```
-::::
 
 Almost as simple as the basic constructors is the `(<>)` function, which
 concatenates two `Doc` values.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 (<>) :: Doc -> Doc -> Doc
@@ -1083,7 +944,6 @@ Empty <> y = y
 x <> Empty = x
 x <> y = x `Concat` y
 ```
-::::
 
 We pattern match against `Empty` so that concatenating a `Doc` value
 with `Empty` on the left or right will have no effect. This keeps us
@@ -1098,10 +958,7 @@ ghci> empty <> text "bar"
 Text "bar"
 ```
 
-:::: tip
-::: title
 Tip
-:::
 
 A mathematical moment
 
@@ -1111,31 +968,23 @@ concatenate a `Doc` value with `Empty`. In a similar vein, 0 is the
 identity for adding numbers, and 1 is the identity for multiplying them.
 Taking the mathematical perspective has useful practical consequences,
 as we will see in a number of places throughout this book.
-::::
 
 Our `hcat` and `fsep` functions concatenate a list of `Doc` values into
 one. In [the section called
 "Exercises"](4-functional-programming.org::*Exercises) could define
 concatenation for lists using `foldr`.
 
-:::: captioned-content
-::: caption
 Concat.hs
-:::
 
 ``` haskell
 concat :: [[a]] -> [a]
 concat = foldr (++) []
 ```
-::::
 
 Since `(<>)` is analogous to `(++)`, and `empty` to `[]`, we can see how
 we might write `hcat` and `fsep` as folds, too.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 hcat :: [Doc] -> Doc
@@ -1144,14 +993,10 @@ hcat = fold (<>)
 fold :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
 fold f = foldr f empty
 ```
-::::
 
 The definition of `fsep` depends on several other functions.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 fsep :: [Doc] -> Doc
@@ -1163,7 +1008,6 @@ x </> y = x <> softline <> y
 softline :: Doc
 softline = group line
 ```
-::::
 
 These take a little explaining. The `softline` function should insert a
 newline if the current line has become too wide, or a space otherwise.
@@ -1172,24 +1016,17 @@ about rendering? Our answer is that every time we encounter a soft
 newline, we maintain *two* alternative representations of the document,
 using the `Union` constructor.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 group :: Doc -> Doc
 group x = flatten x `Union` x
 ```
-::::
 
 Our `flatten` function replaces a `Line` with a space, turning two lines
 into one longer line.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 flatten :: Doc -> Doc
@@ -1198,7 +1035,6 @@ flatten Line           = Char ' '
 flatten (x `Union` _)  = flatten x
 flatten other          = other
 ```
-::::
 
 Notice that we always call `flatten` on the left element of a `Union`:
 the left of each `Union` is always the same width (in characters) as, or
@@ -1217,10 +1053,7 @@ good would add a lot of overhead.
 For these cases, and because it's a simple piece of code to start with,
 we provide a bare-bones compact rendering function.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 compact :: Doc -> String
@@ -1235,7 +1068,6 @@ compact x = transform [x]
                 a `Concat` b -> transform (a:b:ds)
                 _ `Union` b  -> transform (b:ds)
 ```
-::::
 
 The `compact` function wraps its argument in a list, and applies the
 `transform` helper function to it. The `transform` function treats its
@@ -1316,15 +1148,11 @@ output, we'll write another function, `pretty`. Compared to `compact`,
 `pretty` takes one extra argument: the maximum width of a line, in
 columns. (We're assuming that our typeface is of fixed width.)
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 pretty :: Int -> Doc -> String
 ```
-::::
 
 To be more precise, this `Int` parameter controls the behaviour of
 `pretty` when it encounters a `softline`. Only at a `softline` does
@@ -1334,10 +1162,7 @@ set out by the person using our pretty printing functions.
 
 Here's the core of our implementation
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 pretty width x = best 0 [x]
@@ -1356,7 +1181,6 @@ pretty width x = best 0 [x]
                          | otherwise                = b
                          where least = min width col
 ```
-::::
 
 Our `best` helper function takes two arguments: the number of columns
 emitted so far on the current line, and the list of remaining `Doc`
@@ -1377,10 +1201,7 @@ our job is to see which (if either) of the two layouts, the
 To do this, we write a small helper that determines whether a single
 line of a rendered `Doc` value will fit into a given number of columns.
 
-:::: captioned-content
-::: caption
 Prettify.hs
-:::
 
 ``` haskell
 fits :: Int -> String -> Bool
@@ -1389,7 +1210,6 @@ w `fits` ""        = True
 w `fits` ('\n':_)  = True
 w `fits` (c:cs)    = (w - 1) `fits` cs
 ```
-::::
 
 ### Following the pretty printer
 
@@ -1452,15 +1272,11 @@ make.
 
 1.  Write a function, `fill`, with the following type signature.
 
-    :::: captioned-content
-    ::: caption
     Prettify.hs
-    :::
 
     ``` haskell
     fill :: Int -> Doc -> Doc
     ```
-    ::::
 
     It should add spaces to a document until it is the given number of
     columns wide. If it is already wider than this value, it should add
@@ -1473,15 +1289,11 @@ make.
 
     Add support for nesting, with a controllable amount of indentation.
 
-    :::: captioned-content
-    ::: caption
     Prettify.hs
-    :::
 
     ``` haskell
     nest :: Int -> Doc -> Doc
     ```
-    ::::
 
 ## Creating a package
 
@@ -1570,10 +1382,7 @@ specify the range of versions with which this library is known to work.
 The `base` package contains many of the core Haskell modules, such as
 the Prelude, so it's effectively always required.
 
-:::: tip
-::: title
 Tip
-:::
 
 Figuring out build dependencies
 
@@ -1597,7 +1406,6 @@ even though `base` is already installed. Forcing us to be explicit about
 every package we need has a practical benefit: a command line tool named
 `cabal-install` will automatically download, build, and install a
 package and all of the packages it depends on.
-::::
 
 ### GHC's package manager
 
@@ -1623,16 +1431,12 @@ In addition to a `.cabal` file, a package must contain a *setup* file.
 This allows Cabal's build process to be heavily customised, if a
 package needs it. The simplest setup file looks like this.
 
-:::: captioned-content
-::: caption
 Setup.hs
-:::
 
 ``` haskell
 import Distribution.Simple
 main = defaultMain
 ```
-::::
 
 We save this file under the name `Setup.hs`.
 

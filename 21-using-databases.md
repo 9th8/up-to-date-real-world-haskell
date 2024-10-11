@@ -142,10 +142,7 @@ last `commit`, `rollback`, or `withTransaction`. A database does not
 maintain an extensive history like a version-control system. You will
 see examples of `commit` later in this chapter.
 
-:::: warning
-::: title
 Warning
-:::
 
 Warning
 
@@ -157,7 +154,6 @@ MySQL to indicate to HDBC that it does not support transactions, which
 will cause `commit` and `rollback` to generate errors. Alternatively,
 you can use InnoDB tables with MySQL, which do support transactions.
 InnoDB tables are recommended for use with HDBC.
-::::
 
 ## Simple Queries
 
@@ -262,10 +258,7 @@ inserting large amounts of data. For that, we need more control over the
 process of creating the SQL query. We'll discuss that in the next
 section.
 
-:::: note
-::: title
 Note
-:::
 
 Using replaceable parameters
 
@@ -276,7 +269,6 @@ statement or a value for an `INSERT` statement. You cannot say
 table name is not a value, and most databases will not accept this
 syntax. That's not a big problem in practice, because there is rarely a
 call for replacing things that aren't values in this way.
-::::
 
 ## Prepared Statements
 
@@ -329,10 +321,7 @@ ghci> commit conn
 ghci> disconnect conn
 ```
 
-:::: note
-::: title
 Note
-:::
 
 More efficient execution
 
@@ -341,7 +330,6 @@ apply to `executeMany` so that they only have to compile this query
 string once, rather than twice.[^4] This can lead to a dramatic
 performance gain when inserting large amounts of data at once. Some
 databases can also apply this optimization to `execute`, but not all.
-::::
 
 ## Reading Results
 
@@ -369,10 +357,7 @@ types as needed.
 It's a bit hard to read that output. Let's extend this example to
 format the results nicely. Here's some code to do that:
 
-:::: captioned-content
-::: caption
 query.hs
-:::
 
 ``` haskell
 import Database.HDBC.Sqlite3 (connectSqlite3)
@@ -409,7 +394,6 @@ query maxId =
                              Nothing -> "NULL"
           convRow x = fail $ "Unexpected result: " ++ show x
 ```
-::::
 
 This program does mostly the same thing as our example with `ghci`, but
 with a new addition: the `convRow` function. This function takes a row
@@ -489,17 +473,13 @@ or execute a new query. We encourage you to use the strict functions, or
 row-by-row processing, wherever possible to minimize complex
 interactions with lazy reading.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 If you are new to HDBC or the concept of lazy reading, but have lots of
 data to read, repeated calls to `fetchRow` may be easier to understand.
 Lazy reading is a powerful and useful tool, but must be used correctly.
-::::
 
 To read lazily from a database, you use the same functions you used
 before, without the apostrophe. For instance, you'd use `fetchAllRows`

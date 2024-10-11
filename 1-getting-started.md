@@ -19,17 +19,13 @@ GHC has three main components.
 -   `runghc` is a program for running Haskell programs as scripts,
     without needing to compile them first.
 
-:::: note
-::: title
 Note
-:::
 
 How we refer to the components of GHC
 
 When we discuss the GHC system as a whole, we will refer to it as GHC.
 If we are talking about a specific command, we will mention `ghc`,
 `ghci`, or `runghc` by name.
-::::
 
 In this book, we assume that you're using at least version 8.2.2 of
 GHC, which was released in 2017. To obtain a copy of GHC visit [the GHC
@@ -57,10 +53,7 @@ our code. If you are familiar with Python or Ruby, `ghci` is somewhat
 similar to `python` and `irb`, the interactive Python and Ruby
 interpreters.
 
-:::: note
-::: title
 Note
-:::
 
 The `ghci` command has a narrow focus
 
@@ -68,7 +61,6 @@ We typically cannot copy some code out of a Haskell source file and
 paste it into `ghci`. This does not have a significant effect on
 debugging pieces of code, but it can initially be surprising if you are
 used to, say, the interactive Python interpreter.
-::::
 
 On Unix-like systems, we run `ghci` as a command in a shell window. On
 Windows, it's available via the Start Menu. For example, if you
@@ -91,25 +83,18 @@ The word `Prelude` in the prompt indicates that `Prelude`, a standard
 library of useful functions, is loaded and ready to use. When we load
 other modules or source files, they will show up in the prompt, too.
 
-:::: tip
-::: title
 Tip
-:::
 
 Getting help
 
 If you enter `:?` at the `ghci` prompt, it will print a long help
 message.
-::::
 
 The `Prelude` module is sometimes referred to as "the standard
 prelude", because its contents are defined by the Haskell 2010
 standard. Usually, it's simply shortened to "the prelude".
 
-:::: note
-::: title
 Note
-:::
 
 About the ghci prompt
 
@@ -127,7 +112,6 @@ as follows.
 Prelude> :set prompt "ghci> "
 ghci>
 ```
-::::
 
 The prelude is always implicitly available; we don't need to take any
 actions to use the types, values, or functions it defines. To use
@@ -312,10 +296,7 @@ Here is a more detailed breakdown of the error message.
 -   "`` In the definition of `it' ``" refers to a `ghci` short cut
     that we will revisit in a few pages.
 
-:::: tip
-::: title
 Tip
-:::
 
 Remain fearless in the face of error messages
 
@@ -331,7 +312,6 @@ writing correct code, by making us perform some amount of debugging "up
 front", before we ever run a program. If you are coming from a
 background of working with more permissive languages, this way of
 working may come as something of a shock. Bear with us.
-::::
 
 Most of Haskell's comparison operators are similar to those used in C
 and the many languages it has influenced.
@@ -444,17 +424,13 @@ ghci> e
 
 Oh well. We have to define it ourselves.
 
-:::: note
-::: title
 Note
-:::
 
 Don't worry about the error message
 
 If the above "not in scope" error message seems a little daunting, do
 not worry. All it means is that there is no variable defined with the
 name `e`.
-::::
 
 Using `ghci`'s `let` construct, we can make a temporary definition of
 `e` ourselves.
@@ -478,10 +454,7 @@ ghci> (e ** pi) - pi
 19.99909997918947
 ```
 
-:::: warning
-::: title
 Warning
-:::
 
 This syntax is ghci-specific
 
@@ -489,7 +462,6 @@ The syntax for `let` that `ghci` accepts is not the same as we would use
 at the "top level" of a normal Haskell program. We will see the normal
 syntax in [the section called "Introducing local
 variables"](3-defining-types-streamlining-functions.org::*Introducing local variables)
-::::
 
 ### Dealing with precedence and associativity rules
 
@@ -516,10 +488,7 @@ You can use the ← and → arrow keys to move around inside a line of
 input. On Unix (but not Windows, unfortunately), the `tab` key completes
 partially entered identifiers.
 
-:::: tip
-::: title
 Tip
-:::
 
 Where to look for more information
 
@@ -530,7 +499,6 @@ useful to do some further reading. `ghci` uses the Haskeline library
 under the hood, which is
 [powerful](https://github.com/judah/haskeline/wiki/KeyBindings) and
 [customisable](https://github.com/judah/haskeline/wiki/UserPreferences).
-::::
 
 ## Lists
 
@@ -542,10 +510,7 @@ ghci> [1, 2, 3]
 [1,2,3]
 ```
 
-:::: note
-::: title
 Note
-:::
 
 Commas are separators, not terminators
 
@@ -553,7 +518,6 @@ Some languages permit the last element in a list to be followed by an
 optional trailing comma before a closing bracket, but Haskell doesn't
 allow this. If you leave in a trailing comma (e.g. `[1,2,]`), you'll
 get a parse error.
-::::
 
 A list can be of any length. The empty list is written `[]`.
 
@@ -622,10 +586,7 @@ of ever-larger numbers. If you are tempted to do this, type `Ctrl-C` to
 halt the enumeration. We will find later on that infinite lists are
 often useful in Haskell.
 
-:::: warning
-::: title
 Warning
-:::
 
 Beware enumerating floating point numbers
 
@@ -643,7 +604,6 @@ Using enumeration notation over floating point numbers can pack more
 than a few surprises, so if you use it at all, be careful. Floating
 point behavior is quirky in all programming languages; there is nothing
 unique to Haskell here.
-::::
 
 ### Operators on lists
 
@@ -775,10 +735,7 @@ down the meaning of the last line of `ghci` output.
     `String` is often used instead of `[Char]`. It is simply a synonym
     for `[Char]`.)
 
-:::: tip
-::: title
 Tip
-:::
 
 The joy of "it"
 
@@ -822,7 +779,6 @@ edit the last expression we typed, we gain a decent way to experiment
 interactively: the cost of mistakes is very low. Take advantage of the
 opportunity to make cheap, plentiful mistakes when you're exploring the
 language!
-::::
 
 Here are a few more of Haskell's names for types, from expressions of
 the sort we've already seen.
@@ -943,10 +899,7 @@ the number of lines in its input. Don't expect to understand this yet;
 it's just fun to get our hands dirty. In a text editor, enter the
 following code into a file, and save it as `WC.hs`.
 
-:::: captioned-content
-::: caption
 wc.hs
-:::
 
 ``` haskell
 -- lines beginning with "--" are comments.
@@ -954,7 +907,6 @@ wc.hs
 main = interact wordCount
     where wordCount input = show (length (lines input)) ++ "\n"
 ```
-::::
 
 Find or create a text file; let's call it `quux.txt`[^1].
 

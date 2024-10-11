@@ -55,15 +55,11 @@ To start with, we need to enable the foreign function interface
 extension, as the FFI addendum support isn't enabled by default. We do
 this, as always, via a `LANGUAGE` pragma at the top of our source file:
 
-:::: captioned-content
-::: caption
 SimpleFFI.hs
-:::
 
 ``` haskell
 {-# LANGUAGE ForeignFunctionInterface #-}
 ```
-::::
 
 The `LANGUAGE` pragmas indicate which extensions to Haskell 98 a module
 uses. We bring just the FFI extension in play this time. It is important
@@ -78,16 +74,12 @@ types (such as pointers, numerical types, arrays) and utility functions
 (such as `malloc` and `alloca`), for writing bindings to other
 languages:
 
-:::: captioned-content
-::: caption
 SimpleFFI.hs
-:::
 
 ``` haskell
 import Foreign
 import Foreign.C.Types
 ```
-::::
 
 For extensive work with foreign libraries, a good knowledge of the
 `Foreign` modules is essential. Other useful modules include
@@ -100,16 +92,12 @@ the standard C library, we'll need to know the C library's name, for
 linking purposes. The actual binding work is done with a
 `foreign import` declaration, like so:
 
-:::: captioned-content
-::: caption
 SimpleFFI.hs
-:::
 
 ``` haskell
 foreign import ccall "math.h sin"
      c_sin :: CDouble -> CDouble
 ```
-::::
 
 This defines a new Haskell function, `c_sin`, whose concrete
 implementation is in C, via the `sin` function. When `c_sin` is called,
@@ -188,16 +176,12 @@ C types we pass to and receive from the foreign language call into
 native Haskell types, wrapping the binding so it appears as a normal
 Haskell function:
 
-:::: captioned-content
-::: caption
 SimpleFFI.hs
-:::
 
 ``` haskell
 fastsin :: Double -> Double
 fastsin x = realToFrac (c_sin (realToFrac x))
 ```
-::::
 
 The main thing to remember when writing convenient wrappers over
 bindings like this is to convert input and output back to normal Haskell
@@ -215,15 +199,11 @@ available on the source and destination types.
 We can now proceed to use the bound function in a program. For example,
 we can apply the C `sin` function to a Haskell list of tenths:
 
-:::: captioned-content
-::: caption
 SimpleFFI.hs
-:::
 
 ``` haskell
 main = mapM_ (print . fastsin) [0/10, 1/10 .. 10/10]
 ```
-::::
 
 This simple program prints each result as it is computed. Putting the
 complete binding in the file `SimpleFFI.hs` we can run it in GHCi:
@@ -327,10 +307,7 @@ which we then compile as a normal Haskell source file. Using the
 preprocessor we can even declare simple constants, via textual
 substitutions on the Haskell source file:
 
-:::: captioned-content
-::: caption
 Enum1.hs
-:::
 
 ``` haskell
 {-# LANGUAGE CPP #-}
@@ -339,7 +316,6 @@ Enum1.hs
 
 main = print [ 1 .. N ]
 ```
-::::
 
 The file is processed with the preprocessor in a similar manner to C
 source (with CPP run for us by the Haskell compiler, when it spots the
@@ -371,10 +347,7 @@ create an `.hsc` file, `Regex.hsc`, which will hold the Haskell source
 for our binding, along with `hsc2hs` processing rules, C headers and C
 type information. To start off, we need some pragmas and imports:
 
-:::: captioned-content
-::: caption
 Regex-hsc.hs
-:::
 
 ``` haskell
 {-# LANGUAGE CPP, ForeignFunctionInterface #-}
@@ -386,7 +359,6 @@ import Foreign.C.Types
 
 #include <pcre.h>
 ```
-::::
 
 The module begins with a typical preamble for an FFI binding: enable
 `CPP`, enable the foreign function interface syntax, declare a module
@@ -426,10 +398,7 @@ introduce a layer of type safety to the C PCRE API.
 To do this, we define a `newtype` for PCRE compile time options, whose
 representation is actually that of a `CInt` value, like so:
 
-:::: captioned-content
-::: caption
 Regex-hsc.hs
-:::
 
 ``` haskell
 -- | A type for PCRE compile-time options. These are newtyped CInts,
@@ -438,7 +407,6 @@ Regex-hsc.hs
 newtype PCREOption = PCREOption { unPCREOption :: CInt }
     deriving (Eq,Show)
 ```
-::::
 
 The type name is `PCREOption`, and it has a single constructor, also
 named `PCREOption`, which lifts a `CInt` value into a new type by
@@ -462,10 +430,7 @@ We can do this in two ways with `hsc2hs`. The first way is to use the
 provided by the C preprocessor. We can bind to the constants manually,
 by listing the `CPP` symbols for them using the `#const` keyword:
 
-:::: captioned-content
-::: caption
 Regex-hsc-const.hs
-:::
 
 ``` haskell
 caseless       :: PCREOption
@@ -477,7 +442,6 @@ dollar_endonly = PCREOption #const PCRE_DOLLAR_ENDONLY
 dotall         :: PCREOption
 dotall         = PCREOption #const PCRE_DOTALL
 ```
-::::
 
 This introduces three new constants on the Haskell side, `caseless`,
 `dollar_endonly` and `dotall`, corresponding to the similarly named C
@@ -496,10 +460,7 @@ $ hsc2hs Regex.hsc
 This creates a new output file, `Regex.hs`, where the `CPP` variables
 have been expanded, yielding valid Haskell code:
 
-:::: captioned-content
-::: caption
 Regex-hsc-const-generated.hs
-:::
 
 ``` haskell
 caseless       :: PCREOption
@@ -514,7 +475,6 @@ dotall         :: PCREOption
 dotall         = PCREOption 4
 {-# LINE 27 "Regex.hsc" #-}
 ```
-::::
 
 Notice also how the original line in the `.hsc` is listed next to each
 expanded definition via the `LINE` pragma. The compiler uses this
@@ -551,10 +511,7 @@ common task that `hsc2hs` provides convenient syntax to automate it: the
 
 We can replace our list of top level bindings with the equivalent:
 
-:::: captioned-content
-::: caption
 Regex-hsc.hs
-:::
 
 ``` haskell
 -- PCRE compile options
@@ -564,7 +521,6 @@ Regex-hsc.hs
   , dotall               = PCRE_DOTALL
   }
 ```
-::::
 
 This is much more concise! The `#enum` construct gives us three fields
 to work with. The first is the name of the type we'd like the C defines
@@ -581,10 +537,7 @@ Running this code through `hsc2hs`, as before, generates a Haskell file
 with the following binding code produced (with `LINE` pragmas removed
 for brevity):
 
-:::: captioned-content
-::: caption
 Regex.hs
-:::
 
 ``` haskell
 caseless              :: PCREOption
@@ -594,7 +547,6 @@ dollar_endonly        = PCREOption 32
 dotall                :: PCREOption
 dotall                = PCREOption 4
 ```
-::::
 
 Perfect. Now we can do something in Haskell with these values. Our aim
 here is to treat flags as abstract types, not as bit fields in integers
@@ -604,17 +556,13 @@ too much information. Preserving the abstraction, and giving it a
 Haskell flavor, we'd prefer users passed in flags in a list that the
 library itself combined. This is achievable with a simple fold:
 
-:::: captioned-content
-::: caption
 Regex.hs
-:::
 
 ``` haskell
 -- | Combine a list of options into a single option, using bitwise (.|.)
 combineOptions :: [PCREOption] -> PCREOption
 combineOptions = PCREOption . foldr ((.|.) . unPCREOption) 0
 ```
-::::
 
 This simple loop starts with an initial value of 0, unpacks each flag,
 and uses bitwise-or, `(.|.)` on the underlying `CInt`, to combine each
@@ -661,10 +609,7 @@ created and operated on with a number of allocation primitives in the
 FFI library. For example, we can represent a pointer to a C `int` as
 `Ptr CInt`, and a pointer to an unsigned char as a `Ptr Word8`.
 
-:::::::: note
-::: title
 Note
-:::
 
 Once we have a Haskell `Ptr` value handy, we can do various pointer-like
 things with it. We can compare it for equality with the null pointer,
@@ -685,15 +630,11 @@ trick for arbitrarily typed foreign data. The idiomatic simple type to
 use to represent unknown foreign data is a pointer to the `()` type. We
 can use a type synonym to remember the binding:
 
-:::: captioned-content
-::: caption
 PCRE-compile.hs
-:::
 
 ``` haskell
 type PCRE = ()
 ```
-::::
 
 That is, the foreign data is some unknown, opaque object, and we'll
 just treat it as a pointer to `()`, knowing full well that we'll never
@@ -702,10 +643,7 @@ import binding for `pcre_compile`, which must be in `IO`, as the pointer
 returned will vary on each call, even if the returned object is
 functionally equivalent:
 
-:::: captioned-content
-::: caption
 PCRE-compile.hs
-:::
 
 ``` haskell
 foreign import ccall unsafe "pcre.h pcre_compile"
@@ -716,8 +654,6 @@ foreign import ccall unsafe "pcre.h pcre_compile"
                     -> Ptr Word8
                     -> IO (Ptr PCRE)
 ```
-::::
-::::::::
 
 We can increase safety in the binding further by using a "typed"
 pointer, instead of using the `()` type. That is, a unique type,
@@ -726,15 +662,11 @@ representation. A type for which no data can be constructed, making
 dereferencing it a type error. One good way to build such provably
 uninspectable data types is with a nullary data type:
 
-:::: captioned-content
-::: caption
 PCRE-nullary.hs
-:::
 
 ``` haskell
 data PCRE
 ```
-::::
 
 This requires the `EmptyDataDecls` language extension. This type clearly
 contains no values! We can only ever construct pointers to such values,
@@ -743,15 +675,11 @@ as there are no concrete values (other than bottom) that have this type.
 We can also achieve the same thing, without requiring a language
 extension, using a recursive `newtype`:
 
-:::: captioned-content
-::: caption
 PCRE-recursive.hs
-:::
 
 ``` haskell
 newtype PCRE = PCRE (Ptr PCRE)
 ```
-::::
 
 Again, we can't really do anything with a value of this type, as it has
 no runtime representation. Using typed pointers in these ways is just
@@ -794,15 +722,11 @@ Haskell data is done with.
 We have two tools at our disposal here, the opaque `ForeignPtr` data
 type, and the `NewForeignPtr` function, which has type:
 
-:::: captioned-content
-::: caption
 ForeignPtr.hs
-:::
 
 ``` haskell
 newForeignPtr :: FinalizerPtr a -> Ptr a -> IO (ForeignPtr a)
 ```
-::::
 
 The function takes two arguments, a finalizer to run when the data goes
 out of scope, and a pointer to the associated C data. It returns a new
@@ -820,17 +744,13 @@ So with this in mind, we can hide the manually managed `Ptr PCRE` type
 inside an automatically managed data structure, yielding us the data
 type used to represent regular expressions that users will see:
 
-:::: captioned-content
-::: caption
 PCRE-compile.hs
-:::
 
 ``` haskell
 data Regex = Regex !(ForeignPtr PCRE)
                    !ByteString
         deriving (Eq, Ord, Show)
 ```
-::::
 
 This new `Regex` data types consists of two parts. The first is an
 abstract `ForeignPtr`, that we'll use to manage the underlying `pcre`
@@ -875,15 +795,11 @@ expression either as an efficient `ByteString`, or as a regular
 transparent compilation success with a value or failure with an error
 string, would be:
 
-:::: captioned-content
-::: caption
 PCRE-compile.hs
-:::
 
 ``` haskell
 compile :: ByteString -> [PCREOption] -> Either String Regex
 ```
-::::
 
 The input is a `ByteString`, available from the `Data.ByteString.Char8`
 module (and we'll import this `qualified` to avoid name clashes),
@@ -901,15 +817,11 @@ library's `useAsCString` function, which copies the input `ByteString`
 into a null-terminated C array (there is also an unsafe, zero copy
 variant, that assumes the `ByteString` is already null terminated):
 
-:::: captioned-content
-::: caption
 ForeignPtr.hs
-:::
 
 ``` haskell
 useAsCString :: ByteString -> (CString -> IO a) -> IO a
 ```
-::::
 
 This function takes a `ByteString` as input. The second argument is a
 user-defined function that will run with the resulting `CString`. We see
@@ -939,15 +851,11 @@ place its other return values. These should only exist briefly, so we
 don't need complicated allocation strategies. Such short-lifetime C
 data can be created with the `alloca` function:
 
-:::: captioned-content
-::: caption
 ForeignPtr.hs
-:::
 
 ``` haskell
 alloca :: Storable a => (Ptr a -> IO b) -> IO b
 ```
-::::
 
 This function takes a code block accepting a pointer to some C type as
 an argument and arranges to call that function with the unitialised data
@@ -986,10 +894,7 @@ function, and worked out how to get C strings to and from code
 inspecting it. So let's write the complete function for compiling PCRE
 regular expressions from Haskell:
 
-:::: captioned-content
-::: caption
 PCRE-compile.hs
-:::
 
 ``` haskell
 compile :: ByteString -> [PCREOption] -> Either String Regex
@@ -1006,22 +911,17 @@ compile str flags = unsafePerformIO $
                 reg <- newForeignPtr finalizerFree pcre_ptr -- release with free()
                 return (Right (Regex reg str))
 ```
-::::
 
 That's it! Let's carefully walk through the details here, since it is
 rather dense. The first thing that stands out is the use of
 `unsafePerformIO`, a rather infamous function, with a very unusual type,
 imported from the ominous `System.IO.Unsafe`:
 
-:::: captioned-content
-::: caption
 ForeignPtr.hs
-:::
 
 ``` haskell
 unsafePerformIO :: IO a -> a
 ```
-::::
 
 This function does something odd: it takes an `IO` value and converts it
 to a pure one! After warning about the danger of effects for so long,
@@ -1141,10 +1041,7 @@ flags let us provide book keeping structures, and space for return
 values. We can directly translate this type to the Haskell import
 declaration:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
 foreign import ccall "pcre.h pcre_exec"
@@ -1158,7 +1055,6 @@ foreign import ccall "pcre.h pcre_exec"
                     -> CInt
                     -> IO CInt
 ```
-::::
 
 We use the same method as before to create typed pointers for the
 `PCREExtra` structure, and a `newtype` to represent flags passed at
@@ -1177,10 +1073,7 @@ regular expression, including the number of patterns. We'll need to
 call this, and now, we can directly write down the Haskell type for the
 binding to `pcre_fullinfo` as:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
 foreign import ccall "pcre.h pcre_fullinfo"
@@ -1190,7 +1083,6 @@ foreign import ccall "pcre.h pcre_fullinfo"
                     -> Ptr a
                     -> IO CInt
 ```
-::::
 
 The most important arguments to this function are the compiled regular
 expression, and the `PCREInfo` flag, indicating which information we're
@@ -1205,10 +1097,7 @@ is a pointer to a location to store the information about the pattern
 Calling `pcre_fullinfo` to determine the captured pattern count is
 pretty easy:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
 capturedCount :: Ptr PCRE -> IO Int
@@ -1217,7 +1106,6 @@ capturedCount regex_ptr =
          c_pcre_fullinfo regex_ptr nullPtr info_capturecount n_ptr
          return . fromIntegral =<< peek (n_ptr :: Ptr CInt)
 ```
-::::
 
 This takes a raw PCRE pointer and allocates space for the `CInt` count
 of the matched patterns. We then call the information function and peek
@@ -1229,15 +1117,11 @@ a normal Haskell `int` and pass it back to the user.
 Let's now write the regex matching function. The Haskell type for
 matching is similar to that for compiling regular expressions:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
 match :: Regex -> ByteString -> [PCREExecOption] -> Maybe [ByteString]
 ```
-::::
 
 This function is how users will match strings against compiled regular
 expressions. Again, the main design point is that it is a pure function.
@@ -1262,10 +1146,7 @@ The implementation of the match wrapper can be broken into three parts.
 At the top level, our function takes apart the compiled `Regex`
 structure, yielding the underlying `pcre` pointer:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
 match :: Regex -> ByteString -> [PCREExecOption] -> Maybe [ByteString]
@@ -1276,7 +1157,6 @@ match (Regex pcre_fp _) subject os = unsafePerformIO $ do
     let ovec_size = (n_capt + 1) * 3
         ovec_bytes = ovec_size * sizeOf (undefined :: CInt)
 ```
-::::
 
 As it is pure, we can use `unsafePerformIO` to hide any allocation
 effects internally. After pattern matching on the `pcre` type, we need
@@ -1297,10 +1177,7 @@ to convert the input `ByteString` into a pointer to a C
 `char`{.verbatim} array. Finally, we call `pcre_exec` with all the
 required arguments:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
 allocaBytes ovec_bytes $ \ovec -> do
@@ -1317,7 +1194,6 @@ allocaBytes ovec_bytes $ \ovec -> do
                      ovec
                      (fromIntegral ovec_size)
 ```
-::::
 
 For the offset vector, we use `allocaBytes` to control exactly the size
 of the allocated array. It is like `alloca`, but rather than using the
@@ -1333,10 +1209,7 @@ We then just call `c_pcre_exec` with the raw PCRE pointer, the input
 string pointer at the correct offset, its length, and the result vector
 pointer. A status code is returned, and, finally, we analyse the result:
 
-:::: captioned-content
-::: caption
 RegexExec.hs
-:::
 
 ``` haskell
           if r < 0
@@ -1359,7 +1232,6 @@ where
           start = unsafeDrop (fromIntegral a) s
           end   = unsafeTake (fromIntegral (b-a)) start
 ```
-::::
 
 If the result value was less than zero, then there was an error, or no
 match, so we return `Nothing` to the user. Otherwise, we need a loop

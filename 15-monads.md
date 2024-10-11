@@ -21,10 +21,7 @@ Let's take another look at the `parseP5` function that we wrote in
 [Chapter 10, *Code case study: parsing a binary data
 format*](10-parsing-a-binary-data-format.org).
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 matchHeader :: L.ByteString -> L.ByteString -> Maybe L.ByteString
@@ -58,23 +55,18 @@ parseP5 s =
                             Just (bitmap, s6) ->
                               Just (Greymap width height maxGrey bitmap, s6)
 ```
-::::
 
 When we introduced this function, it threatened to march off the right
 side of the page if it got much more complicated. We brought the
 staircasing under control using the `(>>?)` function.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 (>>?) :: Maybe a -> (a -> Maybe b) -> Maybe b
 Nothing >>? _ = Nothing
 Just v  >>? f = f v
 ```
-::::
 
 We carefully chose the type of `(>>?)` to let us chain together
 functions that return a `Maybe` value. So long as the result type of one
@@ -92,10 +84,7 @@ wrapped up in a tuple. Each function in the chain put a result into one
 element of the tuple, and the unconsumed remainder of the string into
 the other.
 
-:::: captioned-content
-::: caption
 PNM.hs
-:::
 
 ``` haskell
 parseP5_take2 :: L.ByteString -> Maybe (Greymap, L.ByteString)
@@ -114,7 +103,6 @@ parseP5_take2 s =
 skipSpace :: (a, L.ByteString) -> Maybe (a, L.ByteString)
 skipSpace (a, s) = Just (a, L8.dropWhile isSpace s)
 ```
-::::
 
 Once again, we were faced with a pattern of repeated behaviour: consume
 some string, return a result, and return the remaining string for the
@@ -127,10 +115,7 @@ We addressed this by moving the responsibility for managing the current
 piece of string out of the individual functions in the chain, and into
 the function that we used to chain them together.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 (==>) :: Parse a -> (a -> Parse b) -> Parse b
@@ -143,7 +128,6 @@ firstParser ==> secondParser = Parse chainedParser
             Right (firstResult, newState) ->
                 runParse (secondParser firstResult) newState
 ```
-::::
 
 We also hid the details of the parsing state in the `ParseState` type.
 Even the `getState` and `putState` functions don't inspect the parsing
@@ -164,17 +148,13 @@ data Maybe a = Nothing
              | Just a
 ```
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 newtype Parse a = Parse {
     runParse :: ParseState -> Either String (a, ParseState)
 }
 ```
-::::
 
 The common feature of these two types is that each has a single type
 parameter on the left of the definition, which appears somewhere on the
@@ -208,16 +188,12 @@ and "injects" it into the target type. For `Maybe`, this function is
 simply the value constructor `Just`, but the injector for `Parse` is
 more complicated.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 identity :: a -> Parse a
 identity a = Parse (\s -> Right (a, s))
 ```
-::::
 
 Again, it's not the details or complexity that we're interested in,
 it's the fact that each of these types has an "injector" function,
@@ -293,16 +269,12 @@ While `(>>=)` and `return` are the core functions of the `Monad` type
 class, it also defines two other functions. The first is `(>>)`. Like
 `(>>=)`, it performs chaining, but it ignores the value on the left.
 
-:::: captioned-content
-::: caption
 Maybe.hs
-:::
 
 ``` haskell
 (>>) :: m a -> m b -> m b
 a >> f = a >>= \_ -> f
 ```
-::::
 
 We use this function when we want to perform actions in a certain order,
 but don't care what the result of one is. This might seem pointless:
@@ -344,10 +316,7 @@ fail :: String -> m a
 fail = error
 ```
 
-:::: warning
-::: title
 Warning
-:::
 
 Beware of fail
 
@@ -361,17 +330,13 @@ Even if you know that right now you're executing in a monad that has
 far too easy to cause yourself a problem later when you refactor your
 code and forget that a previously safe use of `fail` might be dangerous
 in its new context.
-::::
 
 To revisit the parser that we developed in [Chapter 10, *Code case
 study: parsing a binary data
 format*](10-parsing-a-binary-data-format.org), here is its `Monad`
 instance.
 
-:::: captioned-content
-::: caption
 Parse.hs
-:::
 
 ``` haskell
 instance Functor Parse where
@@ -386,7 +351,6 @@ instance Monad Parse where
     (>>=) = (==>)
     fail = bail
 ```
-::::
 
 We are going to see `liftM` in [the section called "Mixing pure and
 monadic code"](15-monads.org::*Mixing pure and monadic code) [the
@@ -446,24 +410,17 @@ versions of the same code.
 To start off, we'll wrap our result type with a `Logger` type
 constructor.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex :: String -> Logger String
 ```
-::::
 
 ### Information hiding
 
 We'll intentionally keep the internals of the `Logger` module abstract.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 module Logger
@@ -476,7 +433,6 @@ module Logger
 
 import Control.Monad (ap)
 ```
-::::
 
 Hiding the details like this has two benefits: it grants us considerable
 flexibility in how we implement our monad, and more importantly, it
@@ -490,30 +446,22 @@ The `Log` type is just a synonym for a list of strings, to make a few
 signatures more readable. We use a list of strings to keep the
 implementation simple.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 type Log = [String]
 ```
-::::
 
 Instead of giving our users a value constructor, we provide them with a
 function, `runLogger`, that evaluates a logged action. This returns both
 the result of an action and whatever was logged while the result was
 being computed.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 runLogger :: Logger a -> (a, Log)
 ```
-::::
 
 ### Controlled escape
 
@@ -542,15 +490,11 @@ messages.
 When executing inside a `Logger` action, user code calls `record` to
 record something.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 record :: String -> Logger ()
 ```
-::::
 
 Since recording occurs in the plumbing of our monad, our action's
 result supplies no information.
@@ -586,17 +530,13 @@ ghci> runLogger (record "hi mom!" >> return 3.1337)
 Here's how we kick off our glob-to-regexp conversion inside the
 `Logger` monad.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex cs =
     globToRegex' cs >>= \ds ->
     return ('^':ds)
 ```
-::::
 
 There are a few coding style issues worth mentioning here. The body of
 the function starts on the line after its name. By doing this, we gain
@@ -620,24 +560,17 @@ ghci> :type (globToRegex "" >>=)
 Even when we write a function that does almost nothing, we must call
 `return` to wrap the result with the correct type.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex' :: String -> Logger String
 globToRegex' "" = return "$"
 ```
-::::
 
 When we call `record` to save a log entry, we use `(>>)` instead of
 `(>>=)` to chain it with the following action.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex' ('?':cs) =
@@ -645,7 +578,6 @@ globToRegex' ('?':cs) =
     globToRegex' cs >>= \ds ->
     return ('.':ds)
 ```
-::::
 
 Recall that this is a variant of `(>>=)` that ignores the result on the
 left. We know that the result of `record` will always be `()`, so
@@ -654,10 +586,7 @@ there's no point in capturing it.
 We can use `do` notation, which we first encountered in [the section
 called "Sequencing"](7-io.org::*Sequencing)
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex' ('*':cs) = do
@@ -665,7 +594,6 @@ globToRegex' ('*':cs) = do
     ds <- globToRegex' cs
     return (".*" ++ ds)
 ```
-::::
 
 The choice of `do` notation versus explicit `(>>=)` with anonymous
 functions is mostly a matter of taste, though almost everyone's taste
@@ -677,10 +605,7 @@ blocks"](15-monads.org::*Desugaring of do blocks)
 Parsing a character class mostly follows the same pattern that we've
 already seen.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex' ('[':'!':c:cs) =
@@ -694,7 +619,6 @@ globToRegex' ('[':c:cs) =
 globToRegex' ('[':_) =
     fail "unterminated character class"
 ```
-::::
 
 ## Mixing pure and monadic code
 
@@ -745,17 +669,13 @@ class already provides the `(>>=)` and `return` functions that know how
 to unwrap and wrap a value, the `liftM` function doesn't need to know
 any details of a monad's implementation.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 liftM :: Monad m => (a -> b) -> m a -> m b
 liftM f m = m >>= \i ->
             return (f i)
 ```
-::::
 
 When we declare a type to be an instance of the `Functor` type class, we
 have to write our own version of `fmap` specially tailored to that type.
@@ -770,10 +690,7 @@ To see how `liftM` can help readability, we'll compare two otherwise
 identical pieces of code. First, the familiar kind that does not use
 `liftM`.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 charClass_wordy (']':cs) =
@@ -783,21 +700,16 @@ charClass_wordy (c:cs) =
     charClass_wordy cs >>= \ds ->
     return (c:ds)
 ```
-::::
 
 Now we can eliminate the `(>>=)` and anonymous function cruft with
 `liftM`.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 charClass (']':cs) = (']':) `liftM` globToRegex' cs
 charClass (c:cs) = (c:) `liftM` charClass cs
 ```
-::::
 
 As with `fmap`, we often use `liftM` in infix form. An easy way to read
 such an expression is "apply the pure function on the left to the
@@ -807,10 +719,7 @@ The `liftM` function is so useful that `Control.Monad` defines several
 variants, which combine longer chains of actions. We can see one in the
 last clause of our `globToRegex'` function.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 globToRegex' (c:cs) = liftM2 (++) (escape c) (globToRegex' cs)
@@ -821,14 +730,10 @@ escape c
     | otherwise           = return [c]
   where regexChars = "\\+()^$.{}]|"
 ```
-::::
 
 The `liftM2` function that we use above is defined as follows.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 liftM2 :: (Monad m) => (a -> b -> c) -> m a -> m b -> m c
@@ -837,7 +742,6 @@ liftM2 f m1 m2 =
     m2 >>= \b ->
     return (f a b)
 ```
-::::
 
 It executes the first action, then the second, then combines their
 results using the pure function `f`, and wraps that result. In addition
@@ -871,15 +775,11 @@ prepared with a few good retorts.
 
 The definition of our `Logger` type is very simple.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 newtype Logger a = Logger { execLogger :: (a, Log) } deriving Show
 ```
-::::
 
 It's a pair, where the first element is the result of an action, and
 the second is a list of messages logged while that action was run.
@@ -889,28 +789,20 @@ We've wrapped the tuple in a `newtype` to make it a distinct type. The
 that we're exporting to execute a logged action, `runLogger`, is just a
 synonym for `execLogger`.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 runLogger = execLogger
 ```
-::::
 
 Our `record` helper function creates a singleton list of the message we
 pass it.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 record s = Logger ((), [s])
 ```
-::::
 
 The result of this action is `()`, so that's the value we put in the
 result slot.
@@ -919,10 +811,7 @@ Let's begin our `Monad` instance with `return`, which is trivial: it
 logs nothing, and stores its input in the result slot of the tuple so it
 is equal to `pure`.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 instance Functor Logger where
@@ -935,16 +824,12 @@ instance Applicative Logger where
 instance Monad Logger where
     return = pure
 ```
-::::
 
 Slightly more interesting is `(>>=)`, which is the heart of the monad.
 It combines an action and a monadic function to give a new result and a
 new log.
 
-:::: captioned-content
-::: caption
 Logger.hs
-:::
 
 ``` haskell
 -- (>>=) :: Logger a -> (a -> Logger b) -> Logger b
@@ -953,7 +838,6 @@ m >>= k = let (a, w) = execLogger m
               (b, x) = execLogger n
           in Logger (b, w ++ x)
 ```
-::::
 
 Let's spell out explicitly what is going on. We use `runLogger` to
 extract the result `a` from the action `m`, and we pass it to the
@@ -1022,17 +906,13 @@ A function suitable for executing the `Maybe` monad is `maybe`.
 (Remember that "executing" a monad involves evaluating it and
 returning a result that's had the monad's type wrapper removed.)
 
-:::: captioned-content
-::: caption
 Maybe.hs
-:::
 
 ``` haskell
 maybe :: b -> (a -> b) -> Maybe a -> b
 maybe n _ Nothing  = n
 maybe _ f (Just x) = f x
 ```
-::::
 
 Its first parameter is the value to return if the result is `Nothing`.
 The second is a function to apply to a result wrapped in the `Just`
@@ -1047,10 +927,7 @@ more readable in different circumstances.
 Here's an example of `Maybe` in use as a monad. Given a customer's
 name, we want to find the billing address of their mobile phone carrier.
 
-:::: captioned-content
-::: caption
 Carrier.hs
-:::
 
 ``` haskell
 import qualified Data.Map as M
@@ -1069,15 +946,11 @@ findCarrierBillingAddress :: PersonName
                           -> M.Map MobileCarrier BillingAddress
                           -> Maybe BillingAddress
 ```
-::::
 
 Our first version is the dreaded ladder of code marching off the right
 of the screen, with many boilerplate `case` expressions.
 
-:::: captioned-content
-::: caption
 Carrier.hs
-:::
 
 ``` haskell
 variation1 person phoneMap carrierMap addressMap =
@@ -1088,14 +961,10 @@ variation1 person phoneMap carrierMap addressMap =
             Nothing -> Nothing
             Just carrier -> M.lookup carrier addressMap
 ```
-::::
 
 We can make more sensible use of `Maybe`'s status as a monad.
 
-:::: captioned-content
-::: caption
 Carrier.hs
-:::
 
 ``` haskell
 variation2 person phoneMap carrierMap addressMap = do
@@ -1104,7 +973,6 @@ variation2 person phoneMap carrierMap addressMap = do
   address <- M.lookup carrier addressMap
   return address
 ```
-::::
 
 If any of these lookups fails, the definitions of `(>>=)` and `(>>)`
 mean that the result of the function as a whole will be `Nothing`, just
@@ -1115,10 +983,7 @@ Stylistically, it makes the code look more regular, and perhaps more
 familiar to the eyes of an imperative programmer, but behaviourally
 it's redundant. Here's an equivalent piece of code.
 
-:::: captioned-content
-::: caption
 Carrier.hs
-:::
 
 ``` haskell
 variation2a person phoneMap carrierMap addressMap = do
@@ -1126,7 +991,6 @@ variation2a person phoneMap carrierMap addressMap = do
   carrier <- M.lookup number carrierMap
   M.lookup carrier addressMap
 ```
-::::
 
 When we introduced maps, we mentioned in [the section called "Partial
 application
@@ -1135,17 +999,13 @@ signatures of functions in the `Data.Map` module often make them awkward
 to partially apply. The `lookup` function is a good example. If we
 `flip` its arguments, we can write the function body as a one-liner.
 
-:::: captioned-content
-::: caption
 Carrier.hs
-:::
 
 ``` haskell
 variation3 person phoneMap carrierMap addressMap =
     lookup phoneMap person >>= lookup carrierMap >>= lookup addressMap
   where lookup = flip M.lookup
 ```
-::::
 
 ## The list monad
 
@@ -1176,16 +1036,12 @@ infinite list. The most appealing behaviour, based on what we know so
 far about monads, is the singleton list: it doesn't throw information
 away, nor does it repeat it infinitely.
 
-:::: captioned-content
-::: caption
 ListMonad.hs
-:::
 
 ``` haskell
 returnSingleton :: a -> [a]
 returnSingleton x = [x]
 ```
-::::
 
 If we perform the same substitution trick on the type of `(>>=)` as we
 did with `return`, we discover that it should have the type
@@ -1249,17 +1105,13 @@ ghci> :type \xs f -> concat (map f xs)
 
 This is exactly the definition of `(>>=)` for lists.
 
-:::: captioned-content
-::: caption
 ListMonad.hs
-:::
 
 ``` haskell
 instance Monad [] where
     return x = [x]
     xs >>= f = concat (map f xs)
 ```
-::::
 
 It applies `f` to every element in the list `xs`, and concatenates the
 results to return a single list.
@@ -1268,16 +1120,12 @@ With our two core `Monad` definitions in hand, the implementations of
 the non-core definitions that remain, `(>>)` and `fail`, ought to be
 obvious.
 
-:::: captioned-content
-::: caption
 ListMonad.hs
-:::
 
 ``` haskell
 xs >> f = concat (map (\_ -> f) xs)
 fail _ = []
 ```
-::::
 
 ### Understanding the list monad
 
@@ -1286,29 +1134,21 @@ comprehension. We can illustrate this similarity by computing the
 Cartesian product of two lists. First, we'll write a list
 comprehension.
 
-:::: captioned-content
-::: caption
 CartesianProduct.hs
-:::
 
 ``` haskell
 comprehensive xs ys = [(x,y) | x <- xs, y <- ys]
 ```
-::::
 
 For once, we'll use bracketed notation for the monadic code instead of
 layout notation. This will highlight how structurally similar the
 monadic code is to the list comprehension.
 
-:::: captioned-content
-::: caption
 CartesianProduct.hs
-:::
 
 ``` haskell
 monadic xs ys = do { x <- xs; y <- ys; return (x,y) }
 ```
-::::
 
 The only real difference is that the value we're constructing comes at
 the end of the sequence of expressions, instead of the beginning as in
@@ -1326,10 +1166,7 @@ It's easy to be baffled by the list monad early on, so let's walk
 through our monadic Cartesian product code again in more detail. This
 time, we'll rearrange the function to use layout instead of brackets.
 
-:::: captioned-content
-::: caption
 CartesianProduct.hs
-:::
 
 ``` haskell
 blockyDo xs ys = do
@@ -1337,7 +1174,6 @@ blockyDo xs ys = do
     y <- ys
     return (x, y)
 ```
-::::
 
 For every element in the list `xs`, the rest of the function is
 evaluated once, with `x` bound to a different value from the list each
@@ -1354,10 +1190,7 @@ get rid of the `do` notation, to make the underlying structure clearer.
 We've indented the code a little unusually to make the loop nesting
 more obvious.
 
-:::: captioned-content
-::: caption
 CartesianProduct.hs
-:::
 
 ``` haskell
 blockyPlain xs ys =
@@ -1372,7 +1205,6 @@ blockyPlain_reloaded xs ys =
                          ys))
             xs)
 ```
-::::
 
 If `xs` has the value `[1,2,3]`, the two lines that follow are evaluated
 with `x` bound to `1`, then to `2`, and finally to `3`. If `ys` has the
@@ -1387,10 +1219,7 @@ Here is a simple brute force constraint solver. Given an integer, it
 finds all pairs of positive integers that, when multiplied, give that
 value (this is the constraint being solved).
 
-:::: captioned-content
-::: caption
 MultiplyTo.hs
-:::
 
 ``` haskell
 guarded :: Bool -> [a] -> [a]
@@ -1404,7 +1233,6 @@ multiplyTo n = do
   guarded (x * y == n) $
     return (x, y)
 ```
-::::
 
 Let's try this in `ghci`.
 
@@ -1484,17 +1312,13 @@ What's noteworthy about this translation is that if the pattern match
 fails, the local function calls the monad's `fail` implementation.
 Here's an example using the `Maybe` monad.
 
-:::: captioned-content
-::: caption
 Do.hs
-:::
 
 ``` haskell
 robust :: [a] -> Maybe a
 robust xs = do (_:x:_) <- Just xs
                return x
 ```
-::::
 
 The `fail` implementation in the `Maybe` monad simply returns `Nothing`.
 If the pattern match in the above function fails, we thus get `Nothing`
@@ -1582,15 +1406,11 @@ ghci> :type (=<<)
 It comes in handy if we want to compose monadic functions in the usual
 Haskell right-to-left style.
 
-:::: captioned-content
-::: caption
 CartesianProduct.hs
-:::
 
 ``` haskell
 wordCount = print . length . words =<< getContents
 ```
-::::
 
 ## The state monad
 
@@ -1623,15 +1443,11 @@ Let's develop some simple code that's *almost* the `State` monad, then
 we'll take a look at the real thing. We'll start with our type
 definition, which has exactly the obvious type we described above.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 type SimpleState s a = s -> (a, s)
 ```
-::::
 
 Our monad is a function that transforms one state into another, yielding
 a result when it does so. Because of this, the `State` monad is
@@ -1647,15 +1463,11 @@ parameters. The key here is to understand that we can partially apply a
 *type* just as we can partially apply a normal function. This is easiest
 to follow with an example.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 type StringState a = SimpleState String a
 ```
-::::
 
 Here, we've bound the type variable `s` to `String`. The type
 `StringState` still has a type parameter `a`, though. It's now more
@@ -1666,16 +1478,12 @@ words, our monad's type constructor is `SimpleState s`, not
 The next ingredient we need to make a monad is a definition for the
 `return` function.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 returnSt :: a -> SimpleState s a
 returnSt a = \s -> (a, s)
 ```
-::::
 
 All this does is take the result and the current state, and "tuple them
 up". You may by now be used to the idea that a Haskell function with
@@ -1683,41 +1491,30 @@ multiple parameters is just a chain of single-parameter functions, but
 just in case you're not, here's a more familiar way of writing
 `returnSt` that makes it more obvious how simple this function is.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 returnAlt :: a -> SimpleState s a
 returnAlt a s = (a, s)
 ```
-::::
 
 Our final piece of the monadic puzzle is a definition for `(>>=)`. Here
 it is, using the actual variable names from the standard library's
 definition of `(>>=)` for `State`.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 bindSt :: (SimpleState s a) -> (a -> SimpleState s b) -> SimpleState s b
 bindSt m k = \s -> let (a, s') = m s
                    in (k a) s'
 ```
-::::
 
 Those single-letter variable names aren't exactly a boon to
 readability, so let's see if we can substitute some more meaningful
 names.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 -- m == step
@@ -1728,7 +1525,6 @@ bindAlt step makeStep oldState =
     let (result, newState) = step oldState
     in  (makeStep result) newState
 ```
-::::
 
 To understand this definition, remember that `step` is a function with
 the type `s -> (a, s)`. When we evaluate this, we get a tuple, and we
@@ -1737,17 +1533,13 @@ perhaps easier to follow if we get rid of the `SimpleState` type
 synonyms from `bindAlt`'s type signature, and examine the types of its
 parameters and result.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 bindAlt :: (s -> (a, s))        -- step
         -> (a -> s -> (b, s))   -- makeStep
         -> (s -> (b, s))        -- (makeStep result) newState
 ```
-::::
 
 ### Reading and modifying the state
 
@@ -1756,10 +1548,7 @@ as plumbing: they move a piece of state around, but they don't touch it
 in any way. We need a few other simple functions to actually do useful
 work with the state.
 
-:::: captioned-content
-::: caption
 SimpleState.hs
-:::
 
 ``` haskell
 getSt :: SimpleState s s
@@ -1768,7 +1557,6 @@ getSt = \s -> (s, s)
 putSt :: s -> SimpleState s ()
 putSt s = \_ -> ((), s)
 ```
-::::
 
 The `getSt` function simply takes the current state and returns it as
 the result, while `putSt` ignores the current state and replaces it with
@@ -1785,17 +1573,13 @@ In order to define a `Monad` instance, we have to provide a proper type
 constructor as well as definitions for `(>>=)` and `return`. This leads
 us to the following definition of `State`.
 
-:::: captioned-content
-::: caption
 State.hs
-:::
 
 ``` haskell
 newtype State s a = State {
     runState :: s -> (a, s)
 }
 ```
-::::
 
 All we've done is wrap our `s -> (a, s)` type in a `State` constructor.
 By using Haskell's record syntax to define the type, we're
@@ -1806,31 +1590,23 @@ value from its constructor. The type of `runState` is
 The definition of `return` is almost the same as for `SimpleState`,
 except we wrap our function with a `State` constructor.
 
-:::: captioned-content
-::: caption
 State.hs
-:::
 
 ``` haskell
 returnState :: a -> State s a
 returnState a = State $ \s -> (a, s)
 ```
-::::
 
 The definition of `(>>=)` is a little more complicated, because it has
 to use `runState` to remove the `State` wrappers.
 
-:::: captioned-content
-::: caption
 State.hs
-:::
 
 ``` haskell
 bindState :: State s a -> (a -> State s b) -> State s b
 bindState m k = State $ \s -> let (a, s') = runState m s
                               in runState (k a) s'
 ```
-::::
 
 This function differs from our earlier `bindSt` only in adding the
 wrapping and unwrapping of a few values. By separating the "real work"
@@ -1840,10 +1616,7 @@ happening.
 We modify the functions for reading and modifying the state in the same
 way, by adding a little wrapping.
 
-:::: captioned-content
-::: caption
 State.hs
-:::
 
 ``` haskell
 get :: State s s
@@ -1852,7 +1625,6 @@ get = State $ \s -> (s, s)
 put :: s -> State s ()
 put s = State $ \_ -> ((), s)
 ```
-::::
 
 ### Using the `State` monad: generating random values
 
@@ -1885,10 +1657,7 @@ contains several handy functions that live in the `IO` monad. For
 example, a rough equivalent of C's `rand` function would be the
 following:
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 import System.Random
@@ -1896,7 +1665,6 @@ import System.Random
 rand :: IO Int
 rand = getStdRandom (randomR (0, maxBound))
 ```
-::::
 
 (The `randomR` function takes an inclusive range within which the
 generated random value should lie.)
@@ -1931,16 +1699,12 @@ can't modify the state of the existing generator.
 If we forget about immutability and reuse the same generator within a
 function, we get back exactly the same "random" number every time.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 twoBadRandoms :: RandomGen g => g -> (Int, Int)
 twoBadRandoms gen = (fst $ random gen, fst $ random gen)
 ```
-::::
 
 Needless to say, this has unpleasant consequences.
 
@@ -1958,10 +1722,7 @@ Unfortunately, correctly passing around and using successive versions of
 the generator does not make for palatable reading. Here's a simple
 example.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 twoGoodRandoms :: RandomGen g => g -> ((Int, Int), g)
@@ -1969,7 +1730,6 @@ twoGoodRandoms gen = let (a, gen') = random gen
                          (b, gen'') = random gen'
                      in ((a, b), gen'')
 ```
-::::
 
 Now that we know about the `State` monad, though, it looks like a fine
 candidate to hide the generator. The `State` monad lets us manage our
@@ -1983,16 +1743,12 @@ code.
 Here's a state monad that carries around a `StdGen` as its piece of
 state.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 -- import Control.Mand.State at the beginning
 type RandomState a = State StdGen a
 ```
-::::
 
 The type synonym is of course not necessary, but it's handy. It saves a
 little keyboarding, and if we wanted to swap another random generator
@@ -2003,10 +1759,7 @@ Generating a random value is now a matter of fetching the current
 generator, using it, then modifying the state to replace it with the new
 generator.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 getRandom :: Random a => RandomState a
@@ -2016,22 +1769,17 @@ getRandom =
   put gen' >>
   return val
 ```
-::::
 
 We can now use some of the monadic machinery that we saw earlier to
 write a much more concise function for giving us a pair of random
 numbers.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 getTwoRandoms :: Random a => RandomState (a, a)
 getTwoRandoms = liftM2 (,) getRandom getRandom
 ```
-::::
 
 1.  Exercises
 
@@ -2054,10 +1802,7 @@ The `evalState` and `execState` functions are simply compositions of
 Here's a complete example of how to implement our `getTwoRandoms`
 function.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 runTwoRandoms :: IO (Int, Int)
@@ -2067,7 +1812,6 @@ runTwoRandoms = do
   setStdGen newState
   return result
 ```
-::::
 
 The call to `runState` follows a standard pattern: we pass it a function
 in the `State` monad and an initial state. It returns the result of the
@@ -2086,10 +1830,7 @@ multiple pieces of state at once, the usual trick is to maintain them in
 a data type. Here's an example: keeping track of the number of random
 numbers we are handing out.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 data CountedRandom = CountedRandom {
@@ -2106,23 +1847,18 @@ getCountedRandom = do
   put CountedRandom { crGen = gen', crCount = crCount st + 1 }
   return val
 ```
-::::
 
 This example happens to consume both elements of the state, and
 construct a completely new state, every time we call into it. More
 frequently, we're likely to read or modify only part of a state. This
 function gets the number of random values generated so far.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 getCount :: CRState Int
 getCount = crCount `liftM` get
 ```
-::::
 
 This example illustrates why we used record syntax to define our
 `CountedRandom` state. It gives us accessor functions that we can glue
@@ -2131,10 +1867,7 @@ together with `get` to read specific pieces of the state.
 If we want to partially update a state, the code doesn't come out quite
 so appealingly.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 putCount :: Int -> CRState ()
@@ -2142,7 +1875,6 @@ putCount a = do
   st <- get
   put st { crCount = a }
 ```
-::::
 
 Here, instead of a function, we're using record update syntax. The
 expression `st { crCount ~ a }` creates a new value that's an identical
@@ -2156,16 +1888,12 @@ steps. It takes as argument a state transformation function, but it's
 hardly more satisfactory: we still can't escape from the clumsiness of
 record update syntax.
 
-:::: captioned-content
-::: caption
 Random.hs
-:::
 
 ``` haskell
 putCountModify :: Int -> CRState ()
 putCountModify a = modify $ \st -> st { crCount = a }
 ```
-::::
 
 ## Another way of looking at monads
 
@@ -2173,17 +1901,13 @@ Now that we know enough about monads structure we can look back at the
 list monad and see something interesting. Specifically, take a look at
 the definition of `(>>=)` for lists.
 
-:::: captioned-content
-::: caption
 ListMonad.hs
-:::
 
 ``` haskell
 instance Monad [] where
     return x = [x]
     xs >>= f = concat (map f xs)
 ```
-::::
 
 Recall that `f` has type `a -> [a]`. When we call `map f xs`, we get
 back a value of type `[[a]]`, which we have to "flatten" using
@@ -2260,16 +1984,12 @@ surprise me". In principle, we could probably get away with skipping
 over them entirely. It would be a shame if we did, however, because the
 laws contain gems of wisdom that we might otherwise overlook.
 
-:::: tip
-::: title
 Tip
-:::
 
 Reading the laws
 
 You can read each law below as "the expression on the left of the `==`
 is equivalent to that on the right."
-::::
 
 The first law states that `return` is a *left identity* for `(>>=)`.
 

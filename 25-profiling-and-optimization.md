@@ -37,10 +37,7 @@ might find in any Haskell program: typically concise list manipulation
 code, and heavy use of standard library functions. It also illustrates
 several common performance trouble spots that can catch out the unwary.
 
-:::: captioned-content
-::: caption
 A.hs
-:::
 
 ``` haskell
 import System.Environment
@@ -53,7 +50,6 @@ main = do
 mean :: [Double] -> Double
 mean xs = sum xs / fromIntegral (length xs)
 ```
-::::
 
 This program is very simple: we import functions for accessing the
 system's environment (in particular, `getArgs`), and the Haskell
@@ -160,16 +156,12 @@ to collect statistics about, and GHC will generate code to compute the
 cost of evaluating the expression at each location. Cost centres can be
 added manually to instrument any expression, using the `SCC` pragma:
 
-:::: captioned-content
-::: caption
 SCC.hs
-:::
 
 ``` haskell
 mean :: [Double] -> Double
 mean xs = {-# SCC "mean" #-} sum xs / fromIntegral (length xs)
 ```
-::::
 
 Alternatively, we can have the compiler insert the cost centres on all
 top level functions for us by compiling with the `-auto-all` flag.
@@ -392,16 +384,12 @@ program run, the program finally finishes summing the list, and starts
 calculating the length. If we look at the original fragment for `mean`,
 we can see exactly why that memory is being retained:
 
-:::: captioned-content
-::: caption
 Fragment.hs
-:::
 
 ``` haskell
 mean :: [Double] -> Double
 mean xs = sum xs / fromIntegral (length xs)
 ```
-::::
 
 At first we sum our list, which triggers the allocation of list nodes,
 but we're unable to release the list nodes once we're done, as the
@@ -419,10 +407,7 @@ list only once. For example, we can write the loop as a fold over the
 list, or via explicit recursion on the list structure. Sticking to the
 high level approaches, we'll try a fold first:
 
-:::: captioned-content
-::: caption
 B.hs
-:::
 
 ``` haskell
 mean :: [Double] -> Double
@@ -431,7 +416,6 @@ mean xs = s / fromIntegral n
     (n, s)     = foldl k (0, 0) xs
     k (n, s) x = (n+1, s+x)
 ```
-::::
 
 Now, instead of taking the sum of the list, and retaining the list until
 we can take its length, we left-fold over the list, accumulating the
@@ -489,10 +473,7 @@ unfolding the list, but strictly accumulating the fold state. The
 standard approach here is to replace `foldl` with `foldl'`, from the
 `Data.List` module:
 
-:::: captioned-content
-::: caption
 C.hs
-:::
 
 ``` haskell
 mean :: [Double] -> Double
@@ -501,7 +482,6 @@ mean xs = s / fromIntegral n
     (n, s)     = foldl' k (0, 0) xs
     k (n, s) x = (n+1, s+x)
 ```
-::::
 
 However, if we run this implementation, we see we still haven't quite
 got it right:
@@ -520,10 +500,7 @@ Still not strict enough! Our loop is continuing to accumulate
 unevaluated state on the stack. The problem here is that `foldl'` is
 only outermost strict:
 
-:::: captioned-content
-::: caption
 Foldl.hs
-:::
 
 ``` haskell
 foldl' :: (a -> b -> a) -> a -> [b] -> a
@@ -531,7 +508,6 @@ foldl' f z xs = lgo z xs
     where lgo z []     = z
           lgo z (x:xs) = let z' = f z x in z' `seq` lgo z' xs
 ```
-::::
 
 This loop uses `` `seq` `` to reduce the accumulated state at each step,
 but only to the outermost constructor on the loop state. That is, `seq`
@@ -547,10 +523,7 @@ There are a number of ways to make this function fully strict. We can,
 for example, add our own strictness hints to the internal state of the
 tuple, yielding a truly tail recursive loop:
 
-:::: captioned-content
-::: caption
 D.hs
-:::
 
 ``` haskell
 mean :: [Double] -> Double
@@ -559,7 +532,6 @@ mean xs = s / fromIntegral n
     (n, s)     = foldl' k (0, 0) xs
     k (n, s) x = n `seq` s `seq` (n+1, s+x)
 ```
-::::
 
 In this variant, we step inside the tuple state, and explicitly tell the
 compiler that each state component should be reduced, on each step. This
@@ -618,10 +590,7 @@ and does so quickly.
     `using`), which unlike `seq` reduces to the fully evaluated "normal
     form" (hence its name). Such a "deep seq" fold we can write as:
 
-    :::: captioned-content
-    ::: caption
     E.hs
-    :::
 
     ``` haskell
     import System.Environment
@@ -646,7 +615,6 @@ and does so quickly.
         (n, s)     = foldl'rnf k (0, 0) xs
         k (n, s) x = (n+1, s+x) :: (Int, Double)
     ```
-    ::::
 
     We change the implementation of `foldl'` to reduce the state to
     normal form, using the `rnf` strategy. This also raises an issue we
@@ -663,15 +631,11 @@ and does so quickly.
     name comes from pronunciation of the "!" character as "bang"), a
     language extension introduced with the following pragma:
 
-    :::: captioned-content
-    ::: caption
     F.hs
-    :::
 
     ``` haskell
     {-# LANGUAGE BangPatterns #-}
     ```
-    ::::
 
     With bang patterns, we can hint at strictness on any binding form,
     making the function strict in that variable. Much as explicit type
@@ -680,10 +644,7 @@ and does so quickly.
     are enabled with the `BangPatterns` language pragma. We can now
     rewrite the loop state to be simply:
 
-    :::: captioned-content
-    ::: caption
     F.hs
-    :::
 
     ``` haskell
     mean :: [Double] -> Double
@@ -692,7 +653,6 @@ and does so quickly.
         (n, s)       = foldl' k (0, 0) xs
         k (!n, !s) x = (n+1, s+x)
     ```
-    ::::
 
     The intermediate values in the loop state are now made strict, and
     the loop runs in constant space:
@@ -740,23 +700,16 @@ and does so quickly.
     fields of a data type that then propagate through the program. We
     can declare a new strict pair type, for example:
 
-    :::: captioned-content
-    ::: caption
     G.hs
-    :::
 
     ``` haskell
     data Pair a b = Pair !a !b
     ```
-    ::::
 
     This creates a pair type whose fields will always be kept in weak
     head normal form. We can now rewrite our loop as:
 
-    :::: captioned-content
-    ::: caption
     G.hs
-    :::
 
     ``` haskell
     mean :: [Double] -> Double
@@ -765,7 +718,6 @@ and does so quickly.
         Pair n s       = foldl' k (Pair 0 0) xs
         k (Pair n s) x = Pair (n+1) (s+x)
     ```
-    ::::
 
     This implementation again has the same efficient, constant space
     behavior. At this point, to squeeze the last drops of performance
@@ -849,10 +801,7 @@ will be stored in registers. This optimization is turned on with
 We can make both representation changes by replacing the polymorphic
 strict pair type with one whose fields are fixed as `Int` and `double`:
 
-:::: captioned-content
-::: caption
 H.hs
-:::
 
 ``` haskell
 data Pair = Pair !Int !Double
@@ -863,7 +812,6 @@ mean xs = s / fromIntegral n
     Pair n s       = foldl' k (Pair 0 0) xs
     k (Pair n s) x = Pair (n+1) (s+x)
 ```
-::::
 
 Compiling this with optimizations on, and
 `-funbox-strict-fields -ddump-simpl`, we get a tighter inner loop in
@@ -971,10 +919,7 @@ We'll use the `uvector` library, which provides a suite of list-like
 operations that use stream fusion to remove intermediate data
 structures. Rewriting our program to use streams is straightforward:
 
-:::: captioned-content
-::: caption
 I.hs
-:::
 
 ``` haskell
 import System.Environment
@@ -993,7 +938,6 @@ mean xs = s / fromIntegral n
     Pair n s       = foldlU k (Pair 0 0) xs
     k (Pair n s) x = Pair (n+1) (s+x)
 ```
-::::
 
 After installing the `uvector` library, from Hackage, we can build our
 program, with `-O2 -funbox-strict-fields`, and inspect the Core that

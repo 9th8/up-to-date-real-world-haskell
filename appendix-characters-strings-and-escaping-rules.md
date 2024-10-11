@@ -52,10 +52,7 @@ When you run the `ghci` interpreter interactively, it may not be able to
 deal with international characters in character or string literals that
 you enter at the keyboard.
 
-:::: note
-::: title
 Note
-:::
 
 Note
 
@@ -68,7 +65,6 @@ conversion.
 There exist third-party libraries that will convert between the many
 different encodings used in files and Haskell's internal Unicode
 representation.
-::::
 
 ## Escaping text
 

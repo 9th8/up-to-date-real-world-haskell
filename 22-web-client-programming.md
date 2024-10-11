@@ -16,16 +16,12 @@ update operation. The podcatcher will download the RSS documents,
 examine them for audio file references, and download any audio files
 that haven't already been downloaded on behalf of this user.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 Users often call the RSS document a podcast or the podcast feed, and
 each individual audio file an episode.
-::::
 
 To make this happen, we need to have several things:
 
@@ -40,10 +36,7 @@ The last two items can be accommodated via a database we'll set up
 using HDBC. The first two can be accommodated via other library modules
 we'll introduce in this chapter.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -53,7 +46,6 @@ Haskell. hpodder has many more features than the examples presented
 here, which make it too long and complex for coverage in this book. If
 you are interested in studying hpodder, its source code is freely
 available at <http://software.complete.org/hpodder>.
-::::
 
 We'll write the code for this chapter in pieces. Each piece will be its
 own Haskell module. You'll be able to play with each piece by itself in
@@ -70,10 +62,7 @@ episodes that we have seen and processed. It's easy enough to change
 this later if needed, but since we'll be importing it just about
 everywhere, we'll define it first.
 
-:::: captioned-content
-::: caption
 PodTypes.hs
-:::
 
 ``` haskell
 module PodTypes where
@@ -92,7 +81,6 @@ data Episode =
             }
     deriving (Eq, Show, Read)
 ```
-::::
 
 We'll be storing this information in a database. Having a unique
 identifier for both a podcast and an episode makes it easy to find which
@@ -115,10 +103,7 @@ this project. For information on installing HDBC and Sqlite, consult
 [the section called "Installing HDBC and
 Drivers"](21-using-databases.org::*Installing HDBC and Drivers)
 
-:::: captioned-content
-::: caption
 PodDB.hs
-:::
 
 ``` haskell
 module PodDB where
@@ -270,7 +255,6 @@ getPodcastEpisodes dbh pc =
               Episode {epId = fromSql svId, epURL = fromSql svURL,
                        epDone = fromSql svDone, epCast = pc}
 ```
-::::
 
 In the `PodDB` module, we have defined functions to connect to the
 database, create the needed database tables, add data to the database,
@@ -335,10 +319,7 @@ title and the enclosure URLs. We use the [HaXml
 toolkit](http://www.cs.york.ac.uk/fp/HaXml/) to parse the XML file.
 Here's the source code for this component:
 
-:::: captioned-content
-::: caption
 PodParser.hs
-:::
 
 ``` haskell
 module PodParser where
@@ -446,7 +427,6 @@ contentToString =
           unesc :: Element -> Element
           unesc = xmlUnEscape stdXmlEscaper
 ```
-::::
 
 Let's look at this code. First, we declare two types: `PodItem` and
 `Feed`. We will be transforming the XML document into a `Feed`, which
@@ -501,10 +481,7 @@ we'll download the document, parse it, and update the database. For
 episode audio, we'll download the file, write it to disk, and mark it
 downloaded in the database. Here's the code:
 
-:::: captioned-content
-::: caption
 PodDownload.hs
-:::
 
 ``` haskell
 module PodDownload where
@@ -571,7 +548,6 @@ getEpisode dbh ep =
     where filename = "pod." ++ (show . castId . epCast $ ep) ++ "." ++
                      (show (epId ep)) ++ ".mp3"
 ```
-::::
 
 This module defines three functions: `downloadURL`, which simply
 downloads a URL and returns it as a `String`; `updatePodcastFromFeed`,
@@ -579,10 +555,7 @@ which downloads an XML feed file, parses it, and updates the database;
 and `getEpisode`, which downloads a given episode and marks it done in
 the database.
 
-:::: warning
-::: title
 Warning
-:::
 
 Warning
 
@@ -592,17 +565,13 @@ downloading large files such as podcasts. Other libraries are available
 that do not have this limitation. We used this one because it is stable,
 easy to install, and reasonably easy to use. We suggest mini-http,
 available from Hackage, for serious HTTP needs.
-::::
 
 ## Main Program
 
 Finally, we need a main program to tie it all together. Here's our main
 module:
 
-:::: captioned-content
-::: caption
 PodMain.hs
-:::
 
 ``` haskell
 module Main where
@@ -659,7 +628,6 @@ syntaxError = putStrLn
   \pod fetch        Updates, then downloads\n
   \pod update       Downloads podcast feeds, looks for new episodes\n"
 ```
-::::
 
 We have a very simple command-line parser with a function to indicate a
 command-line syntax error, plus small functions to handle the different
@@ -676,10 +644,7 @@ Alternatively, you could use a Cabal file as documented in [the section
 called "Creating a
 package"](5-writing-a-library.org::*Creating a package)
 
-:::: captioned-content
-::: caption
 pod.cabal
-:::
 
     Name: pod
     Version: 1.0.0
@@ -689,7 +654,6 @@ pod.cabal
     Executable: pod
     Main-Is: PodMain.hs
     GHC-Options: -O2
-::::
 
 Also, you'll want a simple `Setup.hs` file:
 

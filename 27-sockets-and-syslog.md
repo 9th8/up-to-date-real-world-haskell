@@ -257,17 +257,13 @@ will set up a UDP server on port 1514 that will use `plainHandler` to
 print out every incoming UDP packet on that port. Ctrl-C will terminate
 the program.
 
-:::: note
-::: title
 Note
-:::
 
 In case of problems
 
 Getting `bind: permission denied` when testing this? Make sure you use a
 port number greater than 1024. Some operating systems only allow the
 `root` user to bind to ports less than 1024.
-::::
 
 ## Communicating with TCP
 

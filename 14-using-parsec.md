@@ -23,13 +23,9 @@ lexical analysis and parsing.
 
 ## First Steps with Parsec: Simple CSV Parsing
 
-:::: warning
-::: title
 Warning
-:::
 
 The book uses a deprecated API of Parsec and should be updated.
-::::
 
 Let's jump right in by writing some code for parsing a CSV file. CSV
 files are often used as a plain text representation of spreadsheets or
@@ -41,10 +37,7 @@ This first example is much longer than it really needs to be. We will
 introduce more Parsec features in a little bit that will shrink the
 parser down to only four lines!
 
-:::: captioned-content
-::: caption
 csv1.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -92,7 +85,6 @@ eol = char '\n'
 parseCSV :: String -> Either ParseError [[String]]
 parseCSV input = parse csvFile "(unknown)" input
 ```
-::::
 
 Let's take a look at the code for this example. We didn't use many
 shortcuts here, so remember that this will get shorter and simpler!
@@ -230,10 +222,7 @@ the end-of-line character. We can use `sepBy` to parse cells, since the
 last cell will not end with a comma. Take a look at how much simpler our
 parser is now:
 
-:::: captioned-content
-::: caption
 csv2.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -246,7 +235,6 @@ eol = char '\n'
 parseCSV :: String -> Either ParseError [[String]]
 parseCSV input = parse csvFile "(unknown)" input
 ```
-::::
 
 This program behaves exactly the same as the first one. We can verify
 this by using `ghci` to re-run our examples from the earlier example.
@@ -282,10 +270,7 @@ how we would add support for `\n\r`.
 
 Our first attempt might look like this:
 
-:::: captioned-content
-::: caption
 csv3.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -294,7 +279,6 @@ eol :: Parser String -- To avoid the monomorphic restriction
 -- This function is not correct!
 eol = string "\n" <|> string "\n\r"
 ```
-::::
 
 This isn't quite right. Recall that the `<|>` operator always tries the
 left alternative first. Looking for the single character `\n` will match
@@ -326,10 +310,7 @@ Right ()
 As expected, we got an error from the `\n\r` ending. So the next
 temptation may be to try it this way:
 
-:::: captioned-content
-::: caption
 csv4.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -338,7 +319,6 @@ eol :: Parser String
 -- This function is not correct!
 eol = string "\n\r" <|> string "\n"
 ```
-::::
 
 This also isn't right. Recall that `<|>` only attempts the option on
 the right if the option on the left consumed no input. But by the time
@@ -362,10 +342,7 @@ showing you how to use it, let's see how you would have to write this
 to get along without it. You'd have to manually expand all the options
 after the `\n` like this:
 
-:::: captioned-content
-::: caption
 csv5.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -375,7 +352,6 @@ eol =
     do char '\n'
        char '\r' <|> return '\n'
 ```
-::::
 
 This function first looks for `\n`. If it is found, then it will look
 for `\r`, consuming it if possible. Since the return type of `char '\r'`
@@ -409,10 +385,7 @@ consuming some input. `try` only has an effect if it is on the left of a
 Here's a way to add expanded end-of-line support to our CSV parser
 using `try`:
 
-:::: captioned-content
-::: caption
 csv6.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -429,7 +402,6 @@ eol =   try (string "\n\r")
 parseCSV :: String -> Either ParseError [[String]]
 parseCSV input = parse csvFile "(unknown)" input
 ```
-::::
 
 Here we put both of the two-character endings first, and run both tests
 under `try`. Both of them occur to the left of a `<|>`, so they will do
@@ -484,15 +456,11 @@ expecting ",", "\n\r", "\r\n", "\n" or "\r"
 That's a pretty long, and technical, error message. We could make an
 attempt to resolve this by using the monad `fail` function like so:
 
-:::: captioned-content
-::: caption
 csv6.hs
-:::
 
 ``` haskell
 <|> fail "Couldn't find EOL"
 ```
-::::
 
 Under `ghci`, we can see the result:
 
@@ -513,16 +481,12 @@ situations. It is similar to `<|>` in that it first tries the parser on
 its left. Instead of trying another parser in the event of a failure, it
 presents an error message. Here's how we'd use it:
 
-:::: captioned-content
-::: caption
 csv6.hs
-:::
 
 ``` haskell
 -- <|> fail "Couldn't find EOL"
 <?> "end of line"
 ```
-::::
 
 Now, when you generate an error, you'll get more helpful output:
 
@@ -551,10 +515,7 @@ Here is a full CSV parser. You can use this from `ghci`, or if you
 compile it to a standalone program, it will parse a CSV file on standard
 input and convert it to a different format on output.
 
-:::: captioned-content
-::: caption
 csv7.hs
-:::
 
 ``` haskell
 import Text.ParserCombinators.Parsec
@@ -589,7 +550,6 @@ main =
                          print e
             Right r -> mapM_ print r
 ```
-::::
 
 That's a full-featured CSV parser in just 21 lines of code, plus an
 additional 10 lines for the `parseCSV` and `main` utility functions.
@@ -689,10 +649,7 @@ and easily do this using Parsec.
 
 Each key-value pair is separated by the `&` character.
 
-:::: captioned-content
-::: caption
 FormParse.hs
-:::
 
 ``` haskell
 import Numeric
@@ -701,17 +658,13 @@ import Text.ParserCombinators.Parsec
 p_query :: CharParser () [(String, Maybe String)]
 p_query = p_pair `sepBy` char '&'
 ```
-::::
 
 Notice that in the type signature, we're using `Maybe` to represent a
 value: the HTTP specification is unclear about whether a key *must* have
 an associated value, and we'd like to be able to distinguish between
 "no value" and "empty value".
 
-:::: captioned-content
-::: caption
 FormParse.hs
-:::
 
 ``` haskell
 p_pair :: CharParser () (String, Maybe String)
@@ -720,7 +673,6 @@ p_pair = do
   value <- optionMaybe (char '=' >> many p_char)
   return (name, value)
 ```
-::::
 
 The `many1` function is similar to `many`: it applies its parser
 repeatedly, returning a list of their results. While `many` will succeed
@@ -736,10 +688,7 @@ value", as we mentioned above.
 
 Individual characters can be encoded in one of several ways.
 
-:::: captioned-content
-::: caption
 FormParse.hs
-:::
 
 ``` haskell
 p_char :: CharParser () Char
@@ -757,7 +706,6 @@ p_hex = do
   let ((d, _):_) = readHex [a,b]
   return . toEnum $ d
 ```
-::::
 
 Some characters can be represented literally. Spaces are treated
 specially, using a `+` character. Other characters must be encoded as a
@@ -790,10 +738,7 @@ A few of our parsers above use `do` notation and bind the result of an
 intermediate parse to a variable, for later use. One such function is
 `p_pair`.
 
-:::: captioned-content
-::: caption
 FormParse.hs
-:::
 
 ``` haskell
 p_pair :: CharParser () (String, Maybe String)
@@ -802,15 +747,11 @@ p_pair = do
   value <- optionMaybe (char '=' >> many p_char)
   return (name, value)
 ```
-::::
 
 We can get rid of the need for explicit variables by using the `liftM2`
 combinator from `Control.Monad`.
 
-:::: captioned-content
-::: caption
 FormParse.hs
-:::
 
 ``` haskell
 -- Import Control.Monad at the beginning of the file
@@ -818,7 +759,6 @@ FormParse.hs
 p_pair_app1 =
     liftM2 (,) (many1 p_char) (optionMaybe (char '=' >> many p_char))
 ```
-::::
 
 This parser has exactly the same type and behaviour as `p_pair`, but
 it's one line long. Instead of writing our parser in a "procedural"
@@ -863,10 +803,7 @@ We'll begin by rewriting our existing form parser from the bottom up,
 beginning with `p_hex`, which parses a hexadecimal escape sequence.
 Here's the code in normal `do` notation style.
 
-:::: captioned-content
-::: caption
 FormApp.hs
-:::
 
 ``` haskell
 import Control.Monad
@@ -881,15 +818,11 @@ p_hex = do
   let ((d, _):_) = readHex [a,b]
   return . toEnum $ d
 ```
-::::
 
 Because Parsec includes an applicative instance it is easy to write our
 applicative version.
 
-:::: captioned-content
-::: caption
 FormApp.hs
-:::
 
 ``` haskell
 hexify :: Char -> Char -> Char
@@ -898,7 +831,6 @@ hexify a b = toEnum . fst . head .readHex $ [a, b]
 a_hex :: Parser Char
 a_hex = hexify <$> (char '%' *> hexDigit) <*> hexDigit
 ```
-::::
 
 Although the individual parsers are mostly untouched, the combinators
 that we're gluing them together with have changed. The familiar ones
@@ -912,10 +844,7 @@ The unfamiliar combinator is `(*>)`, which applies its first argument,
 throws away its result, then applies the second and returns its result.
 In other words, it's similar to `(>>)`.
 
-:::: tip
-::: title
 Tip
-:::
 
 A handy tip about angle brackets
 
@@ -927,7 +856,6 @@ side should be used.
 For example, `(*>)` returns the result on its right; `(<*>)` returns
 results from both sides; and `(<*)`, which we have not yet seen, returns
 the result on its left.
-::::
 
 Parsec's `hexDigit` parser parses a single hexadecimal digit.
 
@@ -960,10 +888,7 @@ hexify <$> (char '%' *> hexDigit)
 
 Next, we'll consider the `p_char` parser.
 
-:::: captioned-content
-::: caption
 FormApp.hs
-:::
 
 ``` haskell
 p_char :: CharParser () Char
@@ -973,52 +898,39 @@ p_char = oneOf urlBaseChars
 
 urlBaseChars = ['a'..'z']++['A'..'Z']++['0'..'9']++"$-_.!*'(),"
 ```
-::::
 
 This remains almost the same in an applicative style, save for one piece
 of convenient notation.
 
-:::: captioned-content
-::: caption
 FormApp.hs
-:::
 
 ``` haskell
 a_char = oneOf urlBaseChars
      <|> (' ' <$ char '+')
      <|> a_hex
 ```
-::::
 
 Here, the `(<$)` combinator uses the value on the left if the parser on
 the right succeeds.
 
 Finally, the equivalent of `p_pair_app1` is almost identical.
 
-:::: captioned-content
-::: caption
 FormParse.hs
-:::
 
 ``` haskell
 p_pair_app1 =
     liftM2 (,) (many1 p_char) (optionMaybe (char '=' >> many p_char))
 ```
-::::
 
 All we've changed is the combinator we use for lifting: the `liftA`
 functions act in the same ways as their `liftM` cousins.
 
-:::: captioned-content
-::: caption
 FormApp.hs
-:::
 
 ``` haskell
 a_pair :: CharParser () (String, Maybe String)
 a_pair = liftA2 (,) (many1 a_char) (optionMaybe (char '=' *> many a_char))
 ```
-::::
 
 ## Parsing JSON data
 
@@ -1028,10 +940,7 @@ that follows the definition in RFC 4627.
 
 At the top level, a JSON value must be either an object or an array.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleContexts #-}
@@ -1047,16 +956,12 @@ p_text = spaces *> text
     where text = JObject <$> p_object
              <|> JArray <$> p_array
 ```
-::::
 
 These are structurally similar, with an opening character, followed by
 one or more items separated by commas, followed by a closing character.
 We capture this similarity by writing a small helper function.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_series :: Char -> CharParser () a -> Char -> CharParser () [a]
@@ -1064,47 +969,35 @@ p_series left parser right =
     between (char left <* spaces) (char right) $
             (parser <* spaces) `sepBy` (char ',' <* spaces)
 ```
-::::
 
 Here, we finally have a use for the `(<*)` combinator that we introduced
 earlier. We use it to skip over any white space that might follow
 certain tokens. With this `p_series` function, parsing an array is
 simple.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_array :: CharParser () (JAry JValue)
 p_array = JAry <$> p_series '[' p_value ']'
 ```
-::::
 
 Dealing with a JSON object is hardly more complicated, requiring just a
 little additional effort to produce a name/value pair for each of the
 object's fields.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_object :: CharParser () (JObj JValue)
 p_object = JObj <$> p_series '{' p_field '}'
     where p_field = (,) <$> (p_string <* char ':' <* spaces) <*> p_value
 ```
-::::
 
 Parsing an individual value is a matter of calling an existing parser,
 then wrapping its result with the appropriate `JValue` constructor.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_value :: CharParser () JValue
@@ -1121,16 +1014,12 @@ p_bool :: CharParser () Bool
 p_bool = True <$ string "true"
      <|> False <$ string "false"
 ```
-::::
 
 The `choice` combinator allows us to represent this kind of
 ladder-of-alternatives as a list. It returns the result of the first
 parser to succeed.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_value_choice = value <* spaces
@@ -1143,15 +1032,11 @@ p_value_choice = value <* spaces
                        ]
                 <?> "JSON value"
 ```
-::::
 
 This leads us to the two most interesting parsers, for numbers and
 strings. We'll deal with numbers first, since they're simpler.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_number :: CharParser () Double
@@ -1160,7 +1045,6 @@ p_number = do s <- getInput
                 [(n, s')] -> n <$ setInput s'
                 _         -> empty
 ```
-::::
 
 The only piece of functionality that applicative functors are missing,
 compared to monads, is the ability to bind a value to a variable, which
@@ -1182,10 +1066,7 @@ input stream.
 
 Parsing a string isn't difficult, merely detailed.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_string :: CharParser () String
@@ -1193,29 +1074,21 @@ p_string = between (char '"') (char '"') (many jchar)
     where jchar = char '\' *> (p_escape <|> p_unicode)
               <|> satisfy (`notElem` ""\")
 ```
-::::
 
 We can parse and decode an escape sequence with the help of the `choice`
 combinator that we just met.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_escape = choice (zipWith decode "bnfrt\\"/" "\b\n\f\r\t\\"/")
     where decode c r = r <$ char c
 ```
-::::
 
 Finally, JSON lets us encode a Unicode character in a string as "`\u`"
 followed by four hexadecimal digits.
 
-:::: captioned-content
-::: caption
 JSONParsec.hs
-:::
 
 ``` haskell
 p_unicode :: CharParser () Char
@@ -1223,17 +1096,13 @@ p_unicode = char 'u' *> (decode <$> count 4 hexDigit)
     where decode x = toEnum code
               where ((code,_):_) = readHex x
 ```
-::::
 
 ## Parsing a HTTP request
 
 As another example of applicative parsing, we will develop a basic
 parser for HTTP requests.
 
-:::: captioned-content
-::: caption
 HttpRequestParser.hs
-:::
 
 ``` haskell
 module HttpRequestParser
@@ -1248,17 +1117,13 @@ import Control.Monad (liftM4)
 import Text.ParserCombinators.Parsec
 import System.IO (Handle)
 ```
-::::
 
 An HTTP request consists of a method, an identifier, a series of
 headers, and an optional body. For simplicity, we'll focus on just two
 of the six method types specified by the HTTP 1.1 standard. A `POST`
 method has a body; a `GET` has none.
 
-:::: captioned-content
-::: caption
 HttpRequestParser.hs
-:::
 
 ``` haskell
 data Method = Get | Post
@@ -1271,16 +1136,12 @@ data HttpRequest = HttpRequest {
     , reqBody :: Maybe String
     } deriving (Eq, Show)
 ```
-::::
 
 Because we're writing in an applicative style, our parser can be both
 brief and readable. Readable, that is, if you're becoming used to the
 applicative parsing notation.
 
-:::: captioned-content
-::: caption
 HttpRequestParser.hs
-:::
 
 ``` haskell
 p_request :: CharParser () HttpRequest
@@ -1292,7 +1153,6 @@ p_request = q "GET" Get (pure Nothing)
               manyTill notEOL (try $ string " HTTP/1." <* oneOf "01")
               <* crlf
 ```
-::::
 
 Briefly, the `q` helper function accepts a method name, the type
 constructor to apply to it, and a parser for a request's optional body.
@@ -1342,10 +1202,7 @@ headers. A header begins with a field name, followed by a colon,
 followed by the content. If the lines that follow begin with spaces,
 they are treated as *continuations* of the current content.
 
-:::: captioned-content
-::: caption
 HttpRequestParser.hs
-:::
 
 ``` haskell
 p_headers :: CharParser st [(String, String)]
@@ -1363,7 +1220,6 @@ crlf = (() <$ string "\r\n") <|> (() <$ newline)
 notEOL :: CharParser st Char
 notEOL = noneOf "\r\n"
 ```
-::::
 
 ### Exercises
 

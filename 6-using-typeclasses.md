@@ -16,10 +16,7 @@ equality tests. Your application consisted of a simple `Color` type, and
 so your first equality test is for this type. Your first attempt might
 look like this:
 
-:::: captioned-content
-::: caption
 NaiveEq.hs
-:::
 
 ``` haskell
 data Color = Red | Green | Blue
@@ -30,7 +27,6 @@ colorEq Green Green = True
 colorEq Blue  Blue  = True
 colorEq _     _     = False
 ```
-::::
 
 You can test this with `ghci`:
 
@@ -49,10 +45,7 @@ Now, let's say that you want to add an equality test for
 write a simple function to perform that test. For simplicity, we cheat a
 bit and use the `==` operator here to illustrate.
 
-:::: captioned-content
-::: caption
 NaiveEq.hs
-:::
 
 ``` haskell
 stringEq :: [Char] -> [Char] -> Bool
@@ -66,7 +59,6 @@ stringEq (x:xs) (y:ys) = x == y && stringEq xs ys
 -- Everything else doesn't match
 stringEq _ _ = False
 ```
-::::
 
 You should now be able to see a problem: we have to use a function with
 a different name for every different type that we want to be able to
@@ -96,16 +88,12 @@ returns a `Bool` indicating whether or not they are equal. We don't
 care what that type is, but we just want two items of that type. Here's
 our first definition of a type class:
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 class BasicEq a where
     isEqual :: a -> a -> Bool
 ```
-::::
 
 This says that we are declaring a type class named `BasicEq`, and we'll
 refer to instance types with the letter `a`. An instance type of this
@@ -113,10 +101,7 @@ type class is any type that implements the functions defined in the type
 class. This type class defines one function. That function takes two
 parameters--both corresponding to instance types--and returns a `Bool`.
 
-:::: note
-::: title
 Note
-:::
 
 When is a class not a class?
 
@@ -124,7 +109,6 @@ The keywoard to define a type class in Haskell is `class`.
 Unfortunately, this may be confusing for those of you coming from an
 object-oriented background, as we are not really defining the same
 thing.
-::::
 
 On the first line, the name of the parameter `a` was chosen arbitrarily.
 We could have used any name. The key is that, when you list the types of
@@ -144,10 +128,7 @@ instance of `BasicEq`, `isEqual` takes two parameters of type `a` and
 returns a `Bool`". Let's take a quick look at defining `isEqual` for a
 particular type.
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 instance BasicEq Bool where
@@ -155,7 +136,6 @@ instance BasicEq Bool where
     isEqual False False = True
     isEqual _     _     = False
 ```
-::::
 
 You can also use `ghci` to verify that we can now use `isEqual` on
 \~Bool\~s, but not on any other type:
@@ -189,17 +169,13 @@ let's continue to look at ways to define type classes. In this example,
 a not-equal-to function might be useful. Here's what we might say to
 define a type class with two functions:
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 class BasicEq2 a where
     isEqual2    :: a -> a -> Bool
     isNotEqual2 :: a -> a -> Bool
 ```
-::::
 
 Someone providing an instance of `BasicEq2` will be required to define
 two functions: `isEqual2` and `isNotEqual2`.
@@ -212,10 +188,7 @@ type class define both functions for all types, we can provide default
 implementations for them. Then, users will only have to implement one
 function.[^1] Here's an example that shows how to do this.
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 class BasicEq3 a where
@@ -225,7 +198,6 @@ class BasicEq3 a where
     isNotEqual3 :: a -> a -> Bool
     isNotEqual3 x y = not (isEqual3 x y)
 ```
-::::
 
 People implementing this class must provide an implementation of at
 least one function. They can implement both if they wish, but they will
@@ -264,10 +236,7 @@ classes"](6-using-typeclasses.org::*The need for type classes) let's
 see how we could make that same `Color` type a member of the `BasicEq3`
 class.
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 data Color = Red | Green | Blue
@@ -278,7 +247,6 @@ instance BasicEq3 Color where
     isEqual3 Blue Blue = True
     isEqual3 _ _ = False
 ```
-::::
 
 Notice that we provide essentially the same function as we used back in
 [the section called "The need for type
@@ -378,10 +346,7 @@ escaping suitable for inclusion in a Haskell program. `ghci` also uses
 You can define a `Show` instance for your own types easily. Here's an
 example:
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 instance Show Color where
@@ -389,7 +354,6 @@ instance Show Color where
     show Green = "Green"
     show Blue  = "Blue"
 ```
-::::
 
 This example defines an instance of `Show` for our type `Color` (see
 [the section called "The need for type
@@ -397,10 +361,7 @@ classes"](6-using-typeclasses.org::*The need for type classes)
 implementation is simple: we define a function `show` and that's all
 that's needed.
 
-:::: note
-::: title
 Note
-:::
 
 The Show type class
 
@@ -409,7 +370,6 @@ is useful for a machine to parse back with `Read`. Haskell programmers
 generally write custom functions to format data in pretty ways for
 displaying to end users, if this representation would be different than
 expected via `Show`.
-::::
 
 ### Read
 
@@ -425,10 +385,7 @@ read :: (Read a) => String -> a
 
 Here's an example illustrating the use of `read` and `show`:
 
-:::: captioned-content
-::: caption
 Read.hs
-:::
 
 ``` haskell
 main = do
@@ -437,7 +394,6 @@ main = do
     let inpDouble = (read inpStr) :: Double
     putStrLn ("Twice " ++ show inpDouble ++ " is " ++ show (inpDouble * 2))
 ```
-::::
 
 This is a simple example of `read` and `show` together. Notice that we
 gave an explicit type of `Double` when processing the `read`. That's
@@ -449,10 +405,7 @@ situations like this, it may often choose `Integer`. If we wanted to
 accept floating-point input, this wouldn't work, so we provided an
 explicit type.
 
-:::: tip
-::: title
 Tip
-:::
 
 A note about defaulting
 
@@ -461,7 +414,6 @@ the compiler would refuse to guess a common type and simply give an
 error. The fact that it could default to `Integer` here is a special
 case arising from the fact that the literal `2` is treated as an
 `Integer` unless a different type of expected for it.
-::::
 
 You can see the same effect at work if you try to use `read` on the
 `ghci` command line. `ghci` internally uses `show` to display results,
@@ -504,10 +456,7 @@ define a simple parser by providing an implementation for the
 exactly one tuple on a successful parse, or an empty list on an
 unsuccessful parse. Here's an example implementation:
 
-:::: captioned-content
-::: caption
 EqClasses.hs
-:::
 
 ``` haskell
 instance Read Color where
@@ -529,7 +478,6 @@ instance Read Color where
                       -- in the list of attempts.
                       else tryParse xs
 ```
-::::
 
 This example handles the known cases for the three colors. It returns an
 empty list (resulting in a "no parse" message) for others. The
@@ -558,10 +506,7 @@ leading spaces, that attempt would work. You could rectify this by
 modifying your `Read` instance to discard any leading spaces, which is
 common practice in Haskell programs.
 
-:::: tip
-::: title
 Tip
-:::
 
 Read is not widely used
 
@@ -569,7 +514,6 @@ While it is possible to build sophisticated parsers using the `Read`
 type class, many people find it easier to do so using Parsec, and rely
 on `Read` only for simpler tasks. Parsec is covered in detail in
 [Chapter 16, *Using Parsec*](14-using-parsec.org).
-::::
 
 ### Serialization with Read and Show
 
@@ -584,10 +528,7 @@ machine-readable. Most `show` output is also syntactically-valid
 Haskell, though it is up to people that write `Show` instances to make
 it so.
 
-:::: tip
-::: title
 Tip
-:::
 
 Parsing large strings
 
@@ -596,7 +537,6 @@ used on quite large data structures without incident. The built-in
 `read` and `show` instances in Haskell are efficient and implemented in
 pure Haskell. For information on how to handle parsing exceptions, refer
 to [Chapter 19, *Error handling*](19-error-handling.org).
-::::
 
 Let's try it out in `ghci`:
 
@@ -809,17 +749,13 @@ Anything that is an instance of `Ord` can be sorted by `Data.List.sort`.
 Almost all Haskell types are instances of `Eq`, and nearly as many are
 instances of `Ord`.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 Sometimes, the ordering in `Ord` is arbitrary. For instance, for
 `Maybe`, `Nothing` sorts before `Just x`, but this was a somewhat
 arbitrary decision.
-::::
 
 ## Automatic Derivation
 
@@ -828,28 +764,20 @@ derive instances of `Read`, `Show`, `Bounded`, `Enum`, `Eq`, and `Ord`
 for us. This saves us the effort of having to manually write code to
 compare or display our own types.
 
-:::: captioned-content
-::: caption
 ColorDerived.hs
-:::
 
 ``` haskell
 data Color = Red | Green | Blue
      deriving (Read, Show, Eq, Ord)
 ```
-::::
 
-:::: note
-::: title
 Note
-:::
 
 Which types can be automatically derived?
 
 The Haskell standard requires compilers to be able to automatically
 derive instances of these specific type classes. This automation is not
 available for other type classes.
-::::
 
 Let's take a look at how these derived instances work for us:
 
@@ -885,10 +813,7 @@ When we automatically derive an instance of some type class, the types
 that we refer to in our `data` declaration must also be instances of
 that type class (manually or automatically).
 
-:::: captioned-content
-::: caption
 AutomaticDerivation.hs
-:::
 
 ``` haskell
 data CannotShow = CannotShow
@@ -905,7 +830,6 @@ instance Show OK where
 data ThisWorks = ThisWorks OK
                  deriving (Show)
 ```
-::::
 
 ## Type classes at work: making JSON easier to use
 
@@ -937,10 +861,7 @@ some real JSON data, produced by a well known search engine.
 And here's a further slimmed down fragment of that data, represented in
 Haskell.
 
-:::: captioned-content
-::: caption
 SimpleResult.hs
-:::
 
 ``` haskell
 import SimpleJSON
@@ -958,7 +879,6 @@ result = JObject [
      ]])
   ]
 ```
-::::
 
 Because Haskell doesn't natively support lists that contain types of
 different value, we can't directly represent a JSON object that
@@ -969,10 +889,7 @@ constructor that we use to wrap it from `JNumber` to `JString`.
 
 Haskell's type classes offer a tempting solution to this problem.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 module JSONClass where
@@ -987,7 +904,6 @@ instance JSON JValue where
     toJValue = id
     fromJValue = Right
 ```
-::::
 
 Now, instead of applying a constructor like `JNumber` to a value to wrap
 it, we apply the `toJValue` function. If we change a value's type, the
@@ -1008,10 +924,7 @@ a failure occurs: we literally have `Nothing`. The `Either` type has a
 similar structure, but instead of `Nothing`, the "something bad
 happened" constructor is named `Left`, and it takes a parameter.
 
-:::: captioned-content
-::: caption
 DataEither.hs
-:::
 
 ``` haskell
 data Maybe a = Nothing
@@ -1022,17 +935,13 @@ data Either a b = Left a
                 | Right b
                   deriving (Eq, Ord, Read, Show)
 ```
-::::
 
 Quite often, the type we use for the `a` parameter value is `String`, so
 we can provide a useful description if something goes wrong. To see how
 we use the `Either` type in practice, let's look at a simple instance
 of our type class.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 instance JSON Bool where
@@ -1040,17 +949,13 @@ instance JSON Bool where
     fromJValue (JBool b) = Right b
     fromJValue _ = Left "not a JSON boolean"
 ```
-::::
 
 ### Making an instance with a type synonym
 
 The Haskell 2010 standard does not allow us to write an instance of the
 following form, even though it seems perfectly reasonable.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 instance JSON String where
@@ -1059,7 +964,6 @@ instance JSON String where
     fromJValue (JString s) = Right s
     fromJValue _           = Left "not a JSON string"
 ```
-::::
 
 Recall that `String` is a synonym for `[Char]`, which in turn is the
 type `[a]` where `Char` is substituted for the type parameter `a`.
@@ -1072,15 +976,11 @@ While GHC follows the Haskell 2010 standard by default, we can relax
 this particular restriction by placing a specially formatted comment at
 the top of our source file.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 {-# LANGUAGE TypeSynonymInstances #-}
 ```
-::::
 
 This comment is a directive to the compiler, called a *pragma*, which
 tells it to enable a language extension. The `TypeSynonymInstances`
@@ -1088,10 +988,7 @@ language extension makes the above code legal. We'll encounter a few
 other language extensions in this chapter, and a handful more later in
 this book.
 
-:::: tip
-::: title
 Tip
-:::
 
 How to know when a language extension is needed
 
@@ -1102,7 +999,6 @@ support, it will suggest that we try compiling with the
 `TypeSynonymInstances` extension. An extension can be enabled using the
 `LANGUAGE` directive in the source file or with the `-X` option in the
 command line, for example: `-XTypeSynonymInstances`.
-::::
 
 ## Flexible instances
 
@@ -1139,10 +1035,7 @@ is implied by `FlexibleInstances`.
 Haskell's type classes are intentionally designed to let us create new
 instances of a type class whenever we see fit.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 doubleToJValue :: (Double -> a) -> JValue -> Either JSONError a
@@ -1161,7 +1054,6 @@ instance JSON Double where
     toJValue = JNumber
     fromJValue = doubleToJValue id
 ```
-::::
 
 We can add new instances anywhere; they are not confined to the module
 where we define a type class. This feature of the type class system is
@@ -1173,10 +1065,7 @@ We would like to be able to turn a list into what JSON calls an array.
 We won't worry about implementation details just yet, so let's use
 `undefined` as the bodies of the instance's methods.
 
-:::: captioned-content
-::: caption
 BrokenClass.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -1187,7 +1076,6 @@ instance (JSON a) => JSON [a] where
     toJValue = undefined
     fromJValue = undefined
 ```
-::::
 
 Here the `(JSON a)` before the `=>` means that the `a` in `JSON [a]`
 must be an instance of `JSON` too.
@@ -1195,17 +1083,13 @@ must be an instance of `JSON` too.
 It would also be convenient if we could turn a list of name/value pairs
 into a JSON object.
 
-:::: captioned-content
-::: caption
 BrokenClass.hs
-:::
 
 ``` haskell
 instance (JSON a) => JSON [(String, a)] where
     toJValue = undefined
     fromJValue = undefined
 ```
-::::
 
 ### When do overlapping instances cause problems?
 
@@ -1242,10 +1126,7 @@ This problem of *overlapping instances* is a consequence of Haskell's
 open world assumption. Here's a simpler example that makes it clearer
 what's going on.
 
-:::: captioned-content
-::: caption
 Overlap.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -1262,7 +1143,6 @@ instance Borked (Int, Int) where
 instance (Borked a, Borked b) => Borked (a, b) where
     bork (a, b) = ">>" ++ bork a ++ " " ++ bork b ++ "<<"
 ```
-::::
 
 We have two instances of the type class `Borked` for pairs: one for a
 pair of `Int~s and another for a pair of anything else that's
@@ -1277,10 +1157,7 @@ However, GHC is conservative by default, and insists that there must be
 only one possible instance that it can use. It will thus report an error
 if we try to use `bork`.
 
-:::: note
-::: title
 Note
-:::
 
 When do overlapping instances matter?
 
@@ -1289,7 +1166,6 @@ several modules. GHC does not complain about the mere existence of
 overlapping instances. Instead, it only complains when we try to use a
 method of the affected type class, when it is forced to make a decision
 about which instance to use.
-::::
 
 GHC supports three other useful language extensions, which addresses
 this problem.
@@ -1300,10 +1176,7 @@ this problem.
     instance will overlap others.
 -   `OVERLAPS`: Implies both `OVERLAPPABLE` and `OVERLAPPING`.
 
-:::: captioned-content
-::: caption
 SimpleClass.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -1325,7 +1198,6 @@ instance Foo Int where
 instance {-# OVERLAPPING #-} Foo String where
     foo = id
 ```
-::::
 
 If we apply `foo` to a `String`, the compiler will use the
 `String`-specific implementation. Even though we have an instance of
@@ -1363,10 +1235,7 @@ thinking.
 In addition to the familiar `data` keyword, Haskell provides us with
 another way to create a new type, using the `newtype` keyword.
 
-:::: captioned-content
-::: caption
 Newtype.hs
-:::
 
 ``` haskell
 data DataInt = D Int
@@ -1375,16 +1244,12 @@ data DataInt = D Int
 newtype NewtypeInt = N Int
     deriving (Eq, Ord, Show)
 ```
-::::
 
 The purpose of a `newtype` declaration is to rename an existing type,
 giving it a distinct identity. As we can see, it is similar in
 appearance to a type declared using the `data` keyword.
 
-:::::: note
-::: title
 Note
-:::
 
 The type and newtype keywords
 
@@ -1396,21 +1261,16 @@ that `[Char]` and `String` names refer to the same type.
 In contrast, the `newtype` keyword exists to *hide* the nature of a
 type. Consider a `UniqueID` type.
 
-:::: captioned-content
-::: caption
 Newtype.hs
-:::
 
 ``` haskell
 newtype UniqueID = UniqueID Int
     deriving (Eq)
 ```
-::::
 
 The compiler treats `UniqueID` as a different type from `Int`. As a user
 of a `UniqueID`, we know only that we have a unique identifier; we
 cannot see that it is implemented as an `Int`.
-::::::
 
 When we declare a `newtype`, we must choose which of the underlying
 type's type class instances we want to expose. Here, we've elected to
@@ -1449,10 +1309,7 @@ and it has more restrictions on its uses than the `data` keyword.
 Specifically, a `newtype` can only have one value constructor, and that
 constructor must have exactly one field.
 
-:::: captioned-content
-::: caption
 NewtypeDiff.hs
-:::
 
 ``` haskell
 -- ok: any number of fields and constructors
@@ -1479,7 +1336,6 @@ newtype TooManyFields = Fields Int Int
 newtype TooManyCtors = Bad Int
                      | Worse Int
 ```
-::::
 
 Beyond this, there's another important difference between `data` and
 `newtype`. A type created with the `data` keyword has a book-keeping
@@ -1545,10 +1401,7 @@ matching against `N _` is in fact equivalent to matching against the
 plain wild card `_`: since the wild card always matches, the expression
 does not need to be evaluated.
 
-:::: tip
-::: title
 Tip
-:::
 
 Another perspective on newtype constructors
 
@@ -1564,7 +1417,6 @@ runtime.
 Similarly, when we match on the `N` constructor in a pattern, we coerce
 an expression from type `NewtypeInt` to `Int`, but again there's no
 overhead involved at runtime.
-::::
 
 ### Summary: the three ways of naming types
 
@@ -1593,40 +1445,29 @@ which we use for objects. These were the types that gave us problems
 before we learned about overlapping instances. We wrap up the list type
 so that the compiler will not see it as a list.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 newtype JAry a = JAry
     { fromJAry :: [a]
     } deriving (Eq, Ord, Show)
 ```
-::::
 
 When we export this type from our module, we'll export the complete
 details of the type. Our module header will look like this:
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 module JSONClass
     ( JAry(..)
     ) where
 ```
-::::
 
 The "`(..)`" following the `JAry` name means "export all details of
 this type".
 
-:::: note
-::: title
 Note
-:::
 
 A slight deviation from normal use
 
@@ -1662,30 +1503,22 @@ constructor.
 In our circumstances here, we have nothing to gain by making the array
 wrapper abstract, so we may as well simply export the entire definition
 of the type.
-::::
 
 We provide another wrapper type that hides our representation of a JSON
 object.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 newtype JObj a = JObj
     { fromJObj :: [(String, a)]
     } deriving (Eq, Ord, Show)
 ```
-::::
 
 With these types defined, we make small changes to the definition of our
 `JValue` type.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 data JValue = JString String
@@ -1696,14 +1529,10 @@ data JValue = JString String
             | JArray (JAry JValue)    -- was [JValue]
               deriving (Eq, Ord, Show)
 ```
-::::
 
 And to the module's header.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 module JSONClass
@@ -1712,16 +1541,12 @@ module JSONClass
     , JValue(..)
     ) where
 ```
-::::
 
 This change doesn't affect the instances of the JSON type class that
 we've already written, but we will want to write instances for our new
 `JAry` and `JObj` types.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 jaryFromJValue :: (JSON a) => JValue -> Either JSONError (JAry a)
@@ -1732,106 +1557,78 @@ instance (JSON a) => JSON (JAry a) where
     toJValue = jaryToJValue
     fromJValue = jaryFromJValue
 ```
-::::
 
 Let's take a slow walk through the individual steps of converting a
 `JAry` a to a `JValue`. Given a list where we know that everything
 inside is a JSON instance, converting it to a list of `JValues` is easy.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 listToJValues :: (JSON a) => [a] -> [JValue]
 listToJValues = map toJValue
 ```
-::::
 
 Taking this and wrapping it to become a `JAry JValue` is just a matter
 of applying the `newtype`'s type constructor.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 jvaluesToJAry :: [JValue] -> JAry JValue
 jvaluesToJAry = JAry
 ```
-::::
 
 (Remember, this has no performance cost. We're just telling the
 compiler to hide the fact that we're using a list.) To turn this into a
 `JValue`, we apply another type constructor.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 jaryOfJValuesToJValue :: JAry JValue -> JValue
 jaryOfJValuesToJValue = JArray
 ```
-::::
 
 Assemble these pieces using function composition, and we get a concise
 one-liner for converting to a `JValue`.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 jaryToJValue = JArray . JAry . map toJValue . fromJAry
 ```
-::::
 
 We have more work to do to convert *from* a `JValue` to a `JAry a`, but
 we'll break it into reusable parts. The basic function is
 straightforward.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 jaryFromJValue (JArray (JAry a)) =
     whenRight JAry (mapEithers fromJValue a)
 jaryFromJValue _ = Left "not a JSON array"
 ```
-::::
 
 The `whenRight` function inspects its argument: calls a function on it
 if it was created with the `Right` constructor, and leaves a `Left`
 value untouched.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 whenRight :: (b -> c) -> Either a b -> Either a c
 whenRight _ (Left err) = Left err
 whenRight f (Right a) = Right (f a)
 ```
-::::
 
 More complicated is `mapEithers`. It acts like the regular `map`
 function, but if it ever encounters a `Left` value, it returns that
 immediately, instead of continuing to accumulate a list of `Right`
 values.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 mapEithers :: (a -> Either b c) -> [a] -> Either b [c]
@@ -1842,16 +1639,12 @@ mapEithers f (x:xs) = case mapEithers f xs of
                                       Right y -> Right (y:ys)
 mapEithers _ _ = Right []
 ```
-::::
 
 Because the elements of the list hidden in the `JObj` type have a little
 more structure, the code to convert to and from a `JValue` is a bit more
 complex. Fortunately, we can reuse the functions that we just defined.
 
-:::: captioned-content
-::: caption
 JSONClass.hs
-:::
 
 ``` haskell
 import Control.Arrow (second)
@@ -1863,7 +1656,6 @@ instance (JSON a) => JSON (JObj a) where
       where unwrap (k,v) = whenRight ((,) k) (fromJValue v)
     fromJValue _ = Left "not a JSON object"
 ```
-::::
 
 ### Exercises
 
@@ -1878,15 +1670,11 @@ The Haskell 2010 standard has a subtle feature that can sometimes bite
 us in unexpected circumstances. Here's a simple function definition
 that illustrates the issue.
 
-:::: captioned-content
-::: caption
 Monomorphism.hs
-:::
 
 ``` haskell
 myShow = show
 ```
-::::
 
 If we try to load this definition into `ghci`, it issues a peculiar
 complaint.
@@ -1926,10 +1714,7 @@ We mention the monomorphism restriction here because although it isn't
 specifically related to type classes, they usually provide the
 circumstances in which it crops up.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -1939,7 +1724,6 @@ remember the details of this section. It should suffice to make a mental
 note of its existence, until eventually GHC complains at you with
 something like the above error message. If that occurs, simply remember
 that you read about the error here, and come back for guidance.
-::::
 
 We won't attempt to explain the monomorphism restriction.[^3] The
 consensus within the Haskell community is that it doesn't arise often;
@@ -1948,10 +1732,7 @@ it mostly serves to trip people up. For an example of its trickiness,
 while the definition above falls afoul of it, the following two compile
 without problems.
 
-:::: captioned-content
-::: caption
 Monomorphism.hs
-:::
 
 ``` haskell
 myShow2 value = show value
@@ -1959,7 +1740,6 @@ myShow2 value = show value
 myShow3 :: Show a => a -> String
 myShow3 = show
 ```
-::::
 
 As these alternative definitions suggest, if GHC complains about the
 monomorphism restriction, we have three easy ways to address the error.

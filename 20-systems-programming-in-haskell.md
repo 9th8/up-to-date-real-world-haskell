@@ -111,10 +111,7 @@ ghci> getDirectoryContents "/" >>= return . filter (`notElem` [".", ".."])
 ["lost+found","boot","etc","media","initrd.img","var","usr","bin","dev","home","lib","mnt","proc","root","sbin","tmp","sys","lib64","srv","opt","initrd","vmlinuz",".rnd","www","ultra60","emul",".fonts.cache-1","selinux","razor-agent.log",".svn","initrd.img.old","vmlinuz.old","ugid-survey.bulkdata","ugid-survey.brief"]
 ```
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -128,7 +125,6 @@ got also be written as `filter (\c -> not $ elem c [".", ".."])`. The
 backticks in this case effectively let us pass the second argument to
 `notElem`; see [the section called "Infix
 functions"](4-functional-programming.org::*Infix functions)
-::::
 
 You can also query the system about the location of certain directories.
 This query will ask the underlying operating system for the information.
@@ -484,10 +480,7 @@ POSIX-specific, the cross-platform `System.Directory` module does not
 provide access to it. Instead, you will need to use functions in
 `System.Posix.Files`. Here is an example function to do that:
 
-:::: captioned-content
-::: caption
 posixtime.hs
-:::
 
 ``` haskell
 import System.Posix.Files
@@ -507,7 +500,6 @@ toct :: EpochTime -> ClockTime
 toct et =
     TOD (truncate (toRational et)) 0
 ```
-::::
 
 Notice that call to `getFileStatus`. That call maps directly to the C
 function `stat()`. Its return value stores a vast assortment of
@@ -622,10 +614,7 @@ parent process as soon as possible.
 
 Here is an initial implementation of a system of piping in Haskell.
 
-:::: captioned-content
-::: caption
 RunProcessSimple.hs
-:::
 
 ``` haskell
 {-# OPTIONS_GHC -fglasgow-exts #-}
@@ -790,7 +779,6 @@ runIO cmd =
             Exited ExitSuccess -> return ()
             x -> fail $ "Exited: " ++ show x
 ```
-::::
 
 Let's experiment with this in `ghci` a bit before looking at how it
 works.
@@ -917,10 +905,7 @@ place. We need only add a few more instances of `CommandLike` to support
 this, and a few more functions similar to `runIO`. Here is a revised
 example that implements all of these features:
 
-:::: captioned-content
-::: caption
 RunProcess.hs
-:::
 
 ``` haskell
 {-# OPTIONS_GHC -fglasgow-exts #-}
@@ -1241,7 +1226,6 @@ sortLines = sort
 countLines :: String -> IO String
 countLines = return . (++) "\n" . show . length . lines
 ```
-::::
 
 Here's what has changed:
 

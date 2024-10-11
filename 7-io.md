@@ -22,10 +22,7 @@ world.
 Let's get started with I/O in Haskell by looking at a program that
 looks surprisingly similar to I/O in other languages such as C or Perl.
 
-:::: captioned-content
-::: caption
 basicio.hs
-:::
 
 ``` haskell
 main = do
@@ -33,7 +30,6 @@ main = do
        inpStr <- getLine
        putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!"
 ```
-::::
 
 You can compile this program to a standalone executable, run it with
 `runghc`, or invoke `main` from within `ghci`. Here's a sample session
@@ -79,16 +75,12 @@ to form bigger I/O actions. The `()` is an empty tuple (pronounced
 "unit"), indicating that there is no return value from `putStrLn`.
 This is similar to `void` in Java or C.[^2]
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 Actions can be created, assigned, and passed anywhere. However, they may
 only be performed (executed) from within another I/O action.
-::::
 
 Let's look at this with `ghci`:
 
@@ -106,10 +98,7 @@ Notice one other thing: `ghci` actually executed `writefoo`. This means
 that, when given an I/O action, `ghci` will perform it for you on the
 spot.
 
-:::: note
-::: title
 Note
-:::
 
 What Is An I/O Action?
 
@@ -124,7 +113,6 @@ What Is An I/O Action?
     (or it is `main`)
 -   Performing (executing) an action of type `IO t` may perform I/O and
     will ultimately deliver a result of type `t`
-::::
 
 The type of `getLine` may look strange to you. It looks like a value,
 rather than a function. And in fact, that is one way to look at it:
@@ -153,10 +141,7 @@ blocks"](15-monads.org::*Desugaring of do blocks)
 Let's consider an example of calling pure code from within an I/O
 action:
 
-:::: captioned-content
-::: caption
 callingpure.hs
-:::
 
 ``` haskell
 name2reply :: String -> String
@@ -172,7 +157,6 @@ main = do
        let outStr = name2reply inpStr
        putStrLn outStr
 ```
-::::
 
 Notice the `name2reply` function in this example. It is a regular
 Haskell function and obeys all the rules we've told you about: it
@@ -295,10 +279,7 @@ seem similar to a `while` loop that you may find in other languages.
 This isn't the best way to write it in Haskell; later, you'll see
 examples of more Haskellish approaches.
 
-:::: captioned-content
-::: caption
 toupper-imp.hs
-:::
 
 ``` haskell
 import System.IO
@@ -321,7 +302,6 @@ mainloop inh outh =
                    hPutStrLn outh (map toUpper inpStr)
                    mainloop inh outh
 ```
-::::
 
 Like every Haskell program, execution of this program begins with
 `main`. Two files are opened: `input.txt` is opened for reading, and
@@ -498,10 +478,7 @@ putStrLn = hPutStrLn stdout
 print = hPrint stdout
 ```
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -509,7 +486,6 @@ We're using partial application here. If this isn't making sense,
 consult [the section called "Partial function application and
 currying"](4-functional-programming.org::*Partial function application and currying)
 a refresher.
-::::
 
 Earlier, we told you what the three standard file handles "normally"
 correspond to. That's because some operating systems let you redirect
@@ -598,10 +574,7 @@ chapter, from some earlier chapters, and a few you haven't seen yet.
 Take a look at the program and see if you can figure out what it does
 and how it works.
 
-:::: captioned-content
-::: caption
 tempfile.hs
-:::
 
 ``` haskell
 import System.IO
@@ -685,7 +658,6 @@ withTempFile pattern func =
                (do hClose temph
                    removeFile tempfile)
 ```
-::::
 
 Let's start looking at this program from the end. The `withTempFile`
 function demonstrates that Haskell doesn't forget its functional nature
@@ -796,10 +768,7 @@ that converted the entire content of a file to uppercase. Its imperative
 algorithm was similar to what you'd see in many other languages. Here
 now is the much simpler algorithm that exploits lazy evaluation:
 
-:::: captioned-content
-::: caption
 toupper-lazy1.hs
-:::
 
 ``` haskell
 import System.IO
@@ -818,7 +787,6 @@ main = do
 processData :: String -> String
 processData = map toUpper
 ```
-::::
 
 Notice that `hGetContents` handled *all* of the reading for us. Also,
 take a look at `processData`. It's a pure function since it has no side
@@ -842,10 +810,7 @@ processData :: String -> String
 processData "Hello!" :: String
 ```
 
-:::: warning
-::: title
 Warning
-:::
 
 Warning
 
@@ -856,16 +821,12 @@ would have been forced to keep `inpStr`'s value in memory for future
 use. Here it knows that `inpStr` will never be reused, and frees the
 memory as soon as it is done with it. Just remember: memory is only
 freed after its last use.
-::::
 
 This program was a bit verbose to make it clear that there was pure code
 in use. Here's a bit more concise version, which we will build on in
 the next examples:
 
-:::: captioned-content
-::: caption
 toupper-lazy2.hs
-:::
 
 ``` haskell
 import System.IO
@@ -879,7 +840,6 @@ main = do
        hClose inh
        hClose outh
 ```
-::::
 
 You are not required to ever consume all the data from the input file
 when using `hGetContents`. Whenever the Haskell system determines that
@@ -892,10 +852,7 @@ speaking, we wouldn't have to call `hClose` at all in this example
 program. However, it is still a good practice to get into, as later
 changes to a program could make the call to `hClose` important.
 
-:::: warning
-::: title
 Warning
-:::
 
 Warning
 
@@ -906,7 +863,6 @@ consuming its results via `hGetContents`. Doing so would cause you to
 miss on some or all of the file's data. Since Haskell is lazy, you
 generally can assume that you have consumed input only after you have
 output the result of the computations involving the input.
-::::
 
 ### `readFile` and `writeFile`
 
@@ -930,10 +886,7 @@ writeFile :: FilePath -> String -> IO ()
 
 Now, here's an example program that uses `readFile` and `writeFile`:
 
-:::: captioned-content
-::: caption
 toupper-lazy3.hs
-:::
 
 ``` haskell
 import Data.Char(toUpper)
@@ -942,7 +895,6 @@ main = do
        inpStr <- readFile "input.txt"
        writeFile "output.txt" (map toUpper inpStr)
 ```
-::::
 
 Look at that--the guts of the program take up only two lines! `readFile`
 returned a lazy `String`, which we stored in `inpStr`. We then took
@@ -999,17 +951,13 @@ output.
 We can convert our example program to operate on standard input and
 standard output by using `interact`. Here's one way to do that:
 
-:::: captioned-content
-::: caption
 toupper-lazy4.hs
-:::
 
 ``` haskell
 import Data.Char(toUpper)
 
 main = interact (map toUpper)
 ```
-::::
 
 Look at that--/one/ line of code to achieve our transformation! To
 achieve the same effect as with the previous examples, you could run
@@ -1039,29 +987,21 @@ You can also write simple interactive programs using `interact`. Let's
 start with a simple example: adding a line of text before the uppercase
 output.
 
-:::: captioned-content
-::: caption
 toupper-lazy5.hs
-:::
 
 ``` haskell
 import Data.Char(toUpper)
 
 main = interact (map toUpper . (++) "Your data, in uppercase, is:\n\n")
 ```
-::::
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 If the use of the `.` operator is confusing, you might wish to refer to
 [the section called "Code reuse through
 composition"](4-functional-programming.org::*Code reuse through composition)
-::::
 
 Here we add a string at the beginning of the output. Can you spot the
 problem, though?
@@ -1069,10 +1009,7 @@ problem, though?
 Since we're calling `map` on the *result* of `(++)`, that header itself
 will appear in uppercase. We can fix that in this way:
 
-:::: captioned-content
-::: caption
 toupper-lazy6.hs
-:::
 
 ``` haskell
 import Data.Char(toUpper)
@@ -1080,7 +1017,6 @@ import Data.Char(toUpper)
 main = interact ((++) "Your data, in uppercase, is:\n\n" .
                  map toUpper)
 ```
-::::
 
 This moved the header outside of the `map`.
 
@@ -1091,15 +1027,11 @@ This moved the header outside of the `map`.
     that contains the character "a". Here's how you might do that
     with `interact`:
 
-    :::: captioned-content
-    ::: caption
     filter.hs
-    :::
 
     ``` haskell
     main = interact (unlines . filter (elem 'a') . lines)
     ```
-    ::::
 
     This may have introduced three functions that you aren't familiar
     with yet. Let's inspect their types with `ghci`:
@@ -1187,10 +1119,7 @@ You can store and pass actions in pure code if you wish, though this
 isn't frequently done. An action doesn't do anything until it is
 invoked. Let's look at an example of this:
 
-:::: captioned-content
-::: caption
 actions.hs
-:::
 
 ``` haskell
 str2action :: String -> IO ()
@@ -1222,7 +1151,6 @@ main = do str2action "Start of the program"
           printitall
           str2action "Done!"
 ```
-::::
 
 `str2action` is a function that takes one parameter and returns an
 `IO ()`. As you can see at the end of `main`, you could use this
@@ -1264,10 +1192,7 @@ Data: Done!
 We can actually write this in a much more compact way. Consider this
 revision of the example:
 
-:::: captioned-content
-::: caption
 actions2.hs
-:::
 
 ``` haskell
 str2message :: String -> String
@@ -1283,7 +1208,6 @@ main = do str2action "Start of the program"
           mapM_ (str2action . show) numbers
           str2action "Done!"
 ```
-::::
 
 Notice in `str2action` the use of the standard function composition
 operator. In `main`, there's a call to `mapM_`. This function is
@@ -1300,17 +1224,13 @@ ghci> :type mapM_
 mapM_ :: (Monad m) => (a -> m b) -> [a] -> m ()
 ```
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 These functions actually work for more than just I/O; they work for any
 `Monad`. For now, wherever you see "M", just think "IO". Also,
 functions that end with an underscore typically discard their result.
-::::
 
 Why a `mapM` when we already have `map`? Because `map` is a pure
 function that returns a list. It doesn't--and can't--actually execute
@@ -1353,10 +1273,7 @@ back out.
 Let's re-write one of our examples to avoid `do` blocks. Remember this
 example from the start of the chapter?
 
-:::: captioned-content
-::: caption
 basicio.hs
-:::
 
 ``` haskell
 main = do
@@ -1364,14 +1281,10 @@ main = do
        inpStr <- getLine
        putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!"
 ```
-::::
 
 Let's write that without a `do` block:
 
-:::: captioned-content
-::: caption
 basicio-nodo.hs
-:::
 
 ``` haskell
 main =
@@ -1379,22 +1292,17 @@ main =
     getLine >>=
     (\ inpStr -> putStrLn $ "Welcome to Haskell, " ++ inpStr ++ "!")
 ```
-::::
 
 The Haskell compiler internally performans a translation just like this
 when you define a `do` block.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 Forgetting how to use `\` (lambda expressions)? See [the section called
 "Anonymous (lambda)
 functions"](4-functional-programming.org::*Anonymous (lambda) functions)
-::::
 
 ### The True Nature of Return
 
@@ -1412,10 +1320,7 @@ function that performs I/O, then a pure computation, we will need to use
 `return` to make this pure computation the proper return value of the
 function. Otherwise, a type error would occur. Here's an example:
 
-:::: captioned-content
-::: caption
 return1.hs
-:::
 
 ``` haskell
 import Data.Char(toUpper)
@@ -1426,7 +1331,6 @@ isGreen =
        inpStr <- getLine
        return ((toUpper . head $ inpStr) == 'Y')
 ```
-::::
 
 We have a pure computation that yields a `Bool`. That computation is
 passed to `return`, which puts it into the IO monad. Since it is the
@@ -1437,10 +1341,7 @@ Here's a version of the same program with the pure computation broken
 out into a separate function. This helps keep the pure code separate,
 and can also make the intent more clear.
 
-:::: captioned-content
-::: caption
 return2.hs
-:::
 
 ``` haskell
 import Data.Char(toUpper)
@@ -1454,16 +1355,12 @@ isGreen =
        inpStr <- getLine
        return (isYes inpStr)
 ```
-::::
 
 Finally, here's a contrived example to show that `return` truly does
 not have to occur at the end of a `do` block. In practice, it usually
 is, but it need not be so.
 
-:::: captioned-content
-::: caption
 return3.hs
-:::
 
 ``` haskell
 returnTest :: IO ()
@@ -1472,7 +1369,6 @@ returnTest =
        let two = 2
        putStrLn $ show (one + two)
 ```
-::::
 
 Notice that we used `<-` in combination with `return`, but `let` in
 combination with the simple literal. That's because we needed both

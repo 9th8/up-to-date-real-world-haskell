@@ -38,10 +38,7 @@ Nothing
 The `lookup` function is really simple. Here's one way we could write
 it:
 
-:::: captioned-content
-::: caption
 lookup.hs
-:::
 
 ``` haskell
 myLookup :: Eq a => a -> [(a, b)] -> Maybe b
@@ -51,7 +48,6 @@ myLookup key ((thiskey,thisval):rest) =
        then Just thisval
        else myLookup key rest
 ```
-::::
 
 This function returns `Nothing` if passed the empty list. Otherwise, it
 compares the key with the key we're looking for. If a match is found,
@@ -64,10 +60,7 @@ usernames, UIDs, home directories, and various other data. We will write
 a program that parses such a file, creates an association list, and lets
 the user look up a username by giving a UID.
 
-:::: captioned-content
-::: caption
 passwd-al.hs
-:::
 
 ``` haskell
 import Data.List
@@ -126,7 +119,6 @@ split delim str =
                            -- call split recursively to process it
                            split delim (tail x)
 ```
-::::
 
 Let's look at this program. The heart of it is `findByUID`, which is a
 simple function that parses the input one line at a time, then calls
@@ -169,10 +161,7 @@ the prelude. Therefore, we will import it with
 in that module. Let's start our tour of `Data.Map` by taking a look at
 some ways to build a map.
 
-:::: captioned-content
-::: caption
 buildmap.hs
-:::
 
 ``` haskell
 import qualified Data.Map as Map
@@ -198,7 +187,6 @@ mapManual =
     Map.insert 1 "one" .
     Map.insert 3 "three" $ Map.empty
 ```
-::::
 
 Functions like `Map.insert` work in the usual Haskell way: they return a
 copy of the input data, with the requested change applied. This is quite
@@ -239,10 +227,7 @@ Part of Haskell's power is the ease with which it lets us create and
 manipulate functions. Let's take a look at a record that stores a
 function as one of its fields:
 
-:::: captioned-content
-::: caption
 funcrecs.hs
-:::
 
 ``` haskell
 {- | Our usual CustomColor type to play with -}
@@ -267,7 +252,6 @@ purple = CustomColor 255 0 255
 plus5 = FuncRec {name = "plus5", colorCalc = plus5func purple}
 always0 = FuncRec {name = "always0", colorCalc = \_ -> (purple, 0)}
 ```
-::::
 
 Notice the type of the `colorCalc` field: it's a function. It takes an
 `Int` and returns a tuple of `(CustomColor, Int)`. We create two
@@ -299,10 +283,7 @@ That worked well enough, but you might wonder how to do something more
 advanced, such as making a piece of data available in multiple places. A
 type construction function can be helpful. Here's an example:
 
-:::: captioned-content
-::: caption
 funcrecs2.hs
-:::
 
 ``` haskell
 data FuncRec =
@@ -319,7 +300,6 @@ mkFuncRec name calcfunc =
 plus5 = mkFuncRec "plus5" (+ 5)
 always0 = mkFuncRec "always0" (\_ -> 0)
 ```
-::::
 
 Here we have a function called `mkFuncRec` that takes a `String` and
 another function as parameters, and returns a new `FuncRec` record.
@@ -357,10 +337,7 @@ structures together, we've prepared an extended example. This example
 parses and stores entries from files in the format of a typical
 `/etc/passwd` file.
 
-:::: captioned-content
-::: caption
 passwdmap.hs
-:::
 
 ``` haskell
 import Data.List
@@ -489,7 +466,6 @@ mainMenu maps@(uidmap, usermap) = do
            \4   Quit\n\n
            \Your selection: "
 ```
-::::
 
 This example maintains two maps: one from username to `PasswdEntry` and
 another one from UID to `PasswdEntry`. Database developers may find it
@@ -654,10 +630,7 @@ expressions.
 We can therefore think of an expression as a sort of tree. Let's start
 with some simple types.
 
-:::: captioned-content
-::: caption
 numsimple.hs
-:::
 
 ``` haskell
 -- The "operators" that we're going to support
@@ -682,7 +655,6 @@ instance Num a => Num (SymbolicManip a) where
     signum _ = error "signum is unimplemented"
     fromInteger i = Number (fromInteger i)
 ```
-::::
 
 First, we define a type called `Op`. This type simply represents some of
 the operations we will support. Next, there is a definition for
@@ -734,10 +706,7 @@ Here is the completed `num.hs`, which was used with the `ghci` examples
 at the beginning of this chapter. Let's look at this code one piece at
 a time.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 import Data.List
@@ -763,7 +732,6 @@ data SymbolicManip a =
         | UnaryArith String (SymbolicManip a)
           deriving (Eq)
 ```
-::::
 
 In this section of code, we define an `Op` that is identical to the one
 we used before. We also define `SymbolicManip`, which is similar to what
@@ -771,10 +739,7 @@ we used before. In this version, we now support unary arithmetic
 operations (those which take only one parameter) such as `abs` or `cos`.
 Next we define our instance of `Num`.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- SymbolicManip will be an instance of Num.  Define how the Num
@@ -789,17 +754,13 @@ instance Num a => Num (SymbolicManip a) where
     signum _ = error "signum is unimplemented"
     fromInteger i = Number (fromInteger i)
 ```
-::::
 
 This is pretty straightforward and also similar to our earlier code.
 Note that earlier we weren't able to properly support `abs`, but now
 with the `UnaryArith` constructor, we can. Next we define some more
 instances.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Make SymbolicManip an instance of Fractional -}
@@ -828,16 +789,12 @@ instance (Floating a) => Floating (SymbolicManip a) where
     acosh a = UnaryArith "acosh" a
     atanh a = UnaryArith "atanh" a
 ```
-::::
 
 This section of code defines some fairly straightforward instances of
 `Fractional` and `Floating`. Now let's work on converting our
 expressions to strings for display.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Show a SymbolicManip as a String, using conventional
@@ -878,7 +835,6 @@ simpleParen x@(UnaryArith _ _) = prettyShow x
 instance (Show a, Num a) => Show (SymbolicManip a) where
     show a = prettyShow a
 ```
-::::
 
 We start by defining a function `prettyShow`. It renders an expression
 using conventional style. The algorithm is fairly simple: bare numbers
@@ -891,10 +847,7 @@ parenthesis to keep precedence clear in the result. Finally, we make
 that. Now let's implement an algorithm that converts an expression to s
 string in RPN format.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Show a SymbolicManip using RPN.  HP calculator users may
@@ -910,7 +863,6 @@ rpnShow i =
         join delim l = concat (intersperse delim l)
     in join " " (toList i)
 ```
-::::
 
 Fans of RPN will note how much simpler this algorithm is compared to the
 algorithm to render with conventional notation. In particular, we
@@ -919,10 +871,7 @@ by definition, only be evaluated one way. Next, let's see how we might
 implement a function to do some rudimentary simplification on
 expressions.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Perform some basic algebraic simplifications on a SymbolicManip. -}
@@ -944,7 +893,6 @@ simplify (BinaryArith op ia ib) =
 simplify (UnaryArith op a) = UnaryArith op (simplify a)
 simplify x = x
 ```
-::::
 
 This function is pretty simple. For certain binary arithmetic
 operations---for instance, multiplying any value by 1---we are able to
@@ -957,10 +905,7 @@ From here on, we will add support for units of measure to our
 established library. This will let us represent quantities such as "5
 meters". We start, as before, by defining a type.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- New data type: Units.  A Units type contains a number
@@ -969,16 +914,12 @@ A simple label would be something like (Symbol "m") -}
 data Units a = Units a (SymbolicManip a)
            deriving (Eq)
 ```
-::::
 
 So, a `Units` contains a number and a label. The label is itself a
 `SymbolicManip`. Next, it will probably come as no surprise to see an
 instance of `Num` for `Units`.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Implement Units for Num.  We don't know how to convert between
@@ -996,7 +937,6 @@ instance (Num a, Eq a) => Num (Units a) where
     signum (Units xa _) = Units (signum xa) (Number 1)
     fromInteger i = Units (fromInteger i) (Number 1)
 ```
-::::
 
 Now it may become clear why we use a `SymbolicManip` instead of a
 `String` to store the unit of measure. As calculations such as
@@ -1005,10 +945,7 @@ we multiply 5 meters by 2 meters, we obtain 10 square meters. We force
 the units for addition to match, and implement subtraction in terms of
 addition. Let's look at more type class instances for `Units`.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Make Units an instance of Fractional -}
@@ -1057,16 +994,12 @@ instance (Floating a, Eq a) => Floating (Units a) where
     acosh = error "acosh not yet implemented in Units"
     atanh = error "atanh not yet implemented in Units"
 ```
-::::
 
 We didn't supply implementations for every function, but quite a few
 have been defined. Now let's define a few utility functions for working
 with units.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- A simple function that takes a number and a String and returns an
@@ -1082,7 +1015,6 @@ dropUnits (Units x _) = x
 deg2rad x = 2 * pi * x / 360
 rad2deg x = 360 * x / (2 * pi)
 ```
-::::
 
 First, we have `units`, which makes it easy to craft simple expressions.
 It's faster to say `units 5 "m"` than `Units 5 (Symbol "m")`. We also
@@ -1091,10 +1023,7 @@ returns the embedded bare `Num`. Finally, we define some functions for
 use by our earlier instances to convert between degrees and radians.
 Next, we just define a `Show` instance for `Units`.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 {- Showing units: we show the numeric component, an underscore,
@@ -1102,21 +1031,16 @@ then the prettyShow version of the simplified units -}
 instance (Show a, Num a, Eq a) => Show (Units a) where
     show (Units xa ua) = show xa ++ "_" ++ prettyShow (simplify ua)
 ```
-::::
 
 That was simple. For one last piece, we define a variable `test` to
 experiment with.
 
-:::: captioned-content
-::: caption
 num.hs
-:::
 
 ``` haskell
 test :: (Num a) => a
 test = 2 * 5 + 3
 ```
-::::
 
 So, looking back over all this code, we have done what we set out to
 accomplish: implemented more instances for `SymbolicManip`. We have also
@@ -1164,17 +1088,13 @@ stay pure. Since pure data is immutable, we can't go around modifying
 lists in place. Haskell's `(++)` operator appends two lists by creating
 a new one.
 
-:::: captioned-content
-::: caption
 Append.hs
-:::
 
 ``` haskell
 (++) :: [a] -> [a] -> [a]
 (x:xs) ++ ys = x : xs ++ ys
 _      ++ ys = ys
 ```
-::::
 
 From inspecting the code, we can see that the cost of creating a new
 list depends on the length of the initial list[^2].
@@ -1273,17 +1193,13 @@ Our first step is to use a `newtype` declaration to hide the underlying
 type from our users. We'll create a new type, and call it `DList`. Like
 a regular list, it will be a parameterised type.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 newtype DList a = DL {
     unDL :: [a] -> [a]
 }
 ```
-::::
 
 The `unDL` function is our deconstructor, which removes the `DL`
 constructor. When we go back and decide what we want to export from our
@@ -1291,16 +1207,12 @@ module, we will omit our data constructor and deconstruction function,
 so the `DList` type will be completely opaque to our users. They'll
 only be able to work with the type using the other functions we export.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 append :: DList a -> DList a -> DList a
 append xs ys = DL (unDL xs . unDL ys)
 ```
-::::
 
 Our `append` function may seem a little complicated, but it's just
 performing some book-keeping around the same use of the `(.)` operator
@@ -1312,24 +1224,17 @@ will have the right type.
 Here's another way of writing the same function, in which we perform
 the unwrapping of `xs` and `ys` via pattern matching.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 append' :: DList a -> DList a -> DList a
 append' (DL xs) (DL ys) = DL (xs . ys)
 ```
-::::
 
 Our `DList` type won't be much use if we can't convert back and forth
 between the `DList` representation and a regular list.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 fromList :: [a] -> DList a
@@ -1338,7 +1243,6 @@ fromList xs = DL (xs ++)
 toList :: DList a -> [a]
 toList (DL xs) = xs []
 ```
-::::
 
 Once again, compared to the original versions of these functions that we
 wrote, all we're doing is a little book-keeping to hide the plumbing.
@@ -1346,10 +1250,7 @@ wrote, all we're doing is a little book-keeping to hide the plumbing.
 If we want to make `DList` useful as a substitute for regular lists, we
 need to provide some more of the common list operations.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 empty :: DList a
@@ -1363,7 +1264,6 @@ infixr `cons`
 dfoldr :: (a -> b -> b) -> b -> DList a -> b
 dfoldr f z xs = foldr f z (toList xs)
 ```
-::::
 
 Although the `DList` approach makes appends cheap, not all list-like
 operations are easily available. The `head` function has constant cost
@@ -1372,10 +1272,7 @@ for lists. Our `DList` equivalent requires that we convert the entire
 counterpart: its cost is linear in the number of appends we have
 performed to construct the DList.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 safeHead :: DList a -> Maybe a
@@ -1383,15 +1280,11 @@ safeHead xs = case toList xs of
                 (y:_) -> Just y
                 _ -> Nothing
 ```
-::::
 
 To support an equivalent of `map`, we can make our `DList` type a
 functor.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 dmap :: (a -> b) -> DList a -> DList b
@@ -1401,16 +1294,12 @@ dmap f = dfoldr go empty
 instance Functor DList where
     fmap = dmap
 ```
-::::
 
 Once we decide that we have written enough equivalents of list
 functions, we go back to the top of our source file, and add a module
 header.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 module DList
@@ -1424,7 +1313,6 @@ module DList
     , dfoldr
     ) where
 ```
-::::
 
 ### Lists, difference lists, and monoids
 
@@ -1449,56 +1337,41 @@ integers form a different monoid.
 Monoids are ubiquitous in Haskell[^3]. The `Monoid` type class is
 defined in the `Data.Monoid` module.
 
-:::: captioned-content
-::: caption
 Monoid.hs
-:::
 
 ``` haskell
 class Monoid a where
     mempty  :: a                -- the identity
     mappend :: a -> a -> a      -- associative binary operator
 ```
-::::
 
 If we take `(++)` as the binary operator and `[]` as the identity, lists
 form a monoid.
 
-:::: captioned-content
-::: caption
 Monoid.hs
-:::
 
 ``` haskell
 instance Monoid [a] where
     mempty  = []
     mappend = (++)
 ```
-::::
 
 Since lists and `DLists` are so closely related, it follows that our
 `DList` type must be a monoid, too.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 instance Monoid (DList a) where
     mempty = empty
     mappend = append
 ```
-::::
 
 When working with a GHC version prior to 8.4 then that should be enough
 and the module is ready to be load in `ghci`. When working with GHC 8.4
 or later then you must make `DList` an instance of `Semigroup` too.
 
-:::: captioned-content
-::: caption
 DList.hs
-:::
 
 ``` haskell
 instance Semigroup (DList a) where
@@ -1507,23 +1380,18 @@ instance Semigroup (DList a) where
 instance Monoid (DList a) where
     mempty = empty
 ```
-::::
 
 A semigroup is a mathematical object with and associative binary
 operator, i. e. every monoid is also a semigroup (but not al semigroups
 are monoids) and that's what GHC 8.4 is forcing us to express.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 If we need compatibility with GHC prior to version 8.4 we can [write
 compatible
 code](https://prime.haskell.org/wiki/Libraries/Proposals/SemigroupMonoid#Writingcompatiblecode).
-::::
 
 Let's try our the methods of the `Monoid` type class in `ghci`.
 
@@ -1536,10 +1404,7 @@ ghci> mempty `mappend` [1]
 [1]
 ```
 
-:::::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -1551,10 +1416,7 @@ In those rare cases where we really need several `Monoid` instances for
 the same type, we can use some `newtype` trickery to create distinct
 types for the purpose.
 
-:::: captioned-content
-::: caption
 Monoid.hs
-:::
 
 ``` haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -1579,7 +1441,6 @@ instance Semigroup MInt where
 instance Monoid MInt where
     mempty = 1
 ```
-::::
 
 We'll then get different behaviour depending on the type we use.
 
@@ -1589,16 +1450,12 @@ M {unM = 10}
 ghci> 2 `mappend` 5 :: AInt
 A {unA = 7}
 ```
-::::::
 
 We will have more to say about difference lists and their monoidal
 nature in [the section called "The writer monad and
 lists"](16-programming-with-monads.org::*The writer monad and lists)
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -1606,7 +1463,6 @@ As with the rules for functors, Haskell cannot check the rules for
 monoids on our behalf. If we're defining a `Monoid` instance, we can
 easily write QuickCheck properties to give us high statistical
 confidence that our code is following the monoid rules.
-::::
 
 # General purpose sequences
 
@@ -1618,15 +1474,11 @@ good performance for a wider variety of operations.
 As with other modules, `Data.Sequence` is intended to be used via
 qualified import.
 
-:::: captioned-content
-::: caption
 DataSequence.hs
-:::
 
 ``` haskell
 import qualified Data.Sequence as Seq
 ```
-::::
 
 We can construct an empty `Seq` using `empty`, and a single-element
 container using `singleton`.
@@ -1659,15 +1511,11 @@ fromList [1,2]
 If we import the operators explicitly, we can avoid the need to qualify
 them.
 
-:::: captioned-content
-::: caption
 DataSequence.hs
-:::
 
 ``` haskell
 import Data.Sequence ((><), (<|), (|>))
 ```
-::::
 
 By removing the qualification from the operator, we improve the
 readability of our code.
@@ -1697,15 +1545,11 @@ fromList [1,3,3,7,1]
 If we want to create a list from a `Seq`, we must use the
 `Data.Foldable` module, which is best imported qualified.
 
-:::: captioned-content
-::: caption
 DataSequence.hs
-:::
 
 ``` haskell
 import qualified Data.Foldable as Foldable
 ```
-::::
 
 This module defines a type class, `Foldable`, which `Seq` implements.
 

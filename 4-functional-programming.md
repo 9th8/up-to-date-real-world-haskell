@@ -31,10 +31,7 @@ and the outside world. Our framework simply reads the contents of one
 file, applies a function to the file, and writes the result to another
 file.
 
-:::: captioned-content
-::: caption
 InteractWith.hs
-:::
 
 ``` haskell
 -- Save this in a source file, e.g. Interact.hs
@@ -55,7 +52,6 @@ main = mainWith myFunction
         -- replace "id" with the name of our function below
         myFunction = id
 ```
-::::
 
 This is all we need to write simple, but complete, file processing
 programs. This is a complete program. We can compile it to an executable
@@ -139,24 +135,17 @@ Haskell.
 Since we are still early in our career of reading Haskell code, we will
 discuss our Haskell implementation in quite some detail.
 
-:::: captioned-content
-::: caption
 SplitLines.hs
-:::
 
 ``` haskell
 splitLines :: String -> [String]
 ```
-::::
 
 Our function's type signature indicates that it accepts a single
 string, the contents of a file with some unknown line ending convention.
 It returns a list of strings, representing each line from the file.
 
-:::: captioned-content
-::: caption
 SplitLines.hs
-:::
 
 ``` haskell
 splitLines [] = []
@@ -170,7 +159,6 @@ splitLines cs =
 
 isLineTerminator c = c == '\r' || c == '\n'
 ```
-::::
 
 Before we dive into detail, notice first how we have organized our code.
 We have presented the important pieces of code first, keeping the
@@ -290,16 +278,12 @@ the list of lines back together. The prelude provides an `unlines`
 function that concatenates a list of strings, adding a newline to the
 end of each.
 
-:::: captioned-content
-::: caption
 SplitLines.hs
-:::
 
 ``` haskell
 fixLines :: String -> String
 fixLines input = unlines (splitLines input)
 ```
-::::
 
 If we replace the `id` function with `fixLines`, we can compile an
 executable that will convert a text file to our system's native line
@@ -348,10 +332,7 @@ To define or apply a function or value constructor using infix notation,
 we enclose its name in backtick characters (sometimes known as
 backquotes). Here are simple infix definitions of a function and a type.
 
-:::: captioned-content
-::: caption
 Plus.hs
-:::
 
 ``` haskell
 a `plus` b = a + b
@@ -363,7 +344,6 @@ data a `Pair` b = a `Pair` b
 foo = Pair 1 2
 bar = True `Pair` "quux"
 ```
-::::
 
 Since infix notation is purely a syntactic convenience, it does not
 change a function's behavior.
@@ -423,10 +403,7 @@ versus prefix notation, although prefix notation is far more common.
 It's best to choose whichever makes your code more readable in a
 specific situation.
 
-:::: note
-::: title
 Note
-:::
 
 Beware familiar notation in an unfamiliar language
 
@@ -439,7 +416,6 @@ The only legal thing we can do with backticks in Haskell is wrap them
 around the name of a function. We can't, for example, use them to
 enclose a complex expression whose value is a function. It might be
 convenient if we could, but that's not how the language is today.
-::::
 
 ## Working with lists
 
@@ -555,17 +531,13 @@ blow up on us if we pass in an empty list, the temptation might
 initially be strong to check the length of the list before we call
 `head`. Let's construct an artificial example to illustrate our point.
 
-:::: captioned-content
-::: caption
 EfficientList.hs
-:::
 
 ``` haskell
 myDumbExample xs = if length xs > 0
                    then head xs
                    else 'Z'
 ```
-::::
 
 If we're coming from a language like Perl or Python, this might seem
 like a perfectly natural way to write this test. Behind the scenes,
@@ -590,10 +562,7 @@ in constant time. Better yet, using `null` makes our code indicate what
 property of the list we really care about. Here are two improved ways of
 expressing `myDumbExample`.
 
-:::: captioned-content
-::: caption
 EfficientList.hs
-:::
 
 ``` haskell
 mySmartExample xs = if not (null xs)
@@ -603,7 +572,6 @@ mySmartExample xs = if not (null xs)
 myOtherExample (x:_) = x
 myOtherExample [] = 'Z'
 ```
-::::
 
 ### Partial and total functions
 
@@ -898,10 +866,7 @@ ghci> unwords ["jumps", "over", "the", "lazy", "dog"]
     functions, but make sure that yours never fail. As a hint, you might
     want to consider using the following types.
 
-    :::: captioned-content
-    ::: caption
     exercises.hs
-    :::
 
     ``` haskell
     safeHead :: [a] -> Maybe a
@@ -909,21 +874,16 @@ ghci> unwords ["jumps", "over", "the", "lazy", "dog"]
     safeLast :: [a] -> Maybe a
     safeInit :: [a] -> Maybe [a]
     ```
-    ::::
 
 2.  Write a function `splitWith` that acts similarly to `words`, but
     takes a predicate and a list of any type, and splits its input list
     on every element for which the predicate returns `False`.
 
-    :::: captioned-content
-    ::: caption
     exercises.hs
-    :::
 
     ``` haskell
     splitWith :: (a -> Bool) -> [a] -> [[a]]
     ```
-    ::::
 
 3.  Using the command framework from [the section called "A simple
     command line
@@ -961,34 +921,26 @@ this?
 We don't have to start off by writing a type signature, but it helps to
 remind us of what we're working with.
 
-:::: captioned-content
-::: caption
 IntParse.hs
-:::
 
 ``` haskell
 import Data.Char (digitToInt) -- we'll need ord shortly
 
 asInt :: String -> Int
 ```
-::::
 
 The C code computes the result incrementally as it traverses the string;
 the Haskell code can do the same. However, in Haskell, we can express
 the equivalent of a loop as a function. We'll call ours `loop` just to
 keep things nice and explicit.
 
-:::: captioned-content
-::: caption
 IntParse.hs
-:::
 
 ``` haskell
 loop :: Int -> String -> Int
 
 asInt xs = loop 0 xs
 ```
-::::
 
 That first parameter to `loop` is the accumulator variable we'll be
 using. Passing zero into it is equivalent to initialising the `acc`
@@ -1004,15 +956,11 @@ We can express this structural thinking directly by pattern matching on
 the list type's constructors. It's often handy to think about the easy
 cases first: here, that means we will consider the empty-list case.
 
-:::: captioned-content
-::: caption
 IntParse.hs
-:::
 
 ``` haskell
 loop acc [] = acc
 ```
-::::
 
 An empty list doesn't just mean "the input string is empty"; it's
 also the case we'll encounter when we traverse all the way to the end
@@ -1024,26 +972,19 @@ The other case we have to consider arises when the input list is not
 empty. We need to do something with the current element of the list, and
 something with the rest of the list.
 
-:::: captioned-content
-::: caption
 IntParse.hs
-:::
 
 ``` haskell
 loop acc (x:xs) = let acc' = acc * 10 + digitToInt x
                   in loop acc' xs
 ```
-::::
 
 We compute a new value for the accumulator, and give it the name `acc'`.
 We then call the `loop` function again, passing it the updated value
 `acc'` and the rest of the input list; this is equivalent to the loop
 starting another round in C.
 
-:::: note
-::: title
 Note
-:::
 
 Single quotes in variable names
 
@@ -1060,7 +1001,6 @@ rare. Indeed, even one single quote can be easy to miss, which can lead
 to confusion on the part of readers. It might be better to think of the
 use of single quotes as a coding convention that you should be able to
 recognize, and less as one that you should actually follow.
-::::
 
 Each time the `loop` function calls itself, it has a new value for the
 accumulator, and it consumes one element of the input list. Eventually,
@@ -1104,10 +1044,7 @@ As a useful technique, structural recursion is not confined to lists; we
 can use it on other algebraic data types, too. We'll have more to say
 about it later.
 
-:::: note
-::: title
 Note
-:::
 
 In an imperative language, a loop executes in constant space. Lacking
 loops, we use tail recursive functions in Haskell instead. Normally, a
@@ -1124,7 +1061,6 @@ transform tail recursive calls to run in constant space; this is called
 Few imperative language implementations perform TCO; this is why using
 any kind of ambitiously functional style in an imperative language often
 leads to memory leaks and poor performance.
-::::
 
 ### Transforming every piece of input
 
@@ -1144,10 +1080,7 @@ This contains a straightforward and common kind of loop, one that does
 exactly the same thing to every element of its input array. How might we
 write this loop in Haskell?
 
-:::: captioned-content
-::: caption
 Map.hs
-:::
 
 ``` haskell
 square :: [Double] -> [Double]
@@ -1155,7 +1088,6 @@ square :: [Double] -> [Double]
 square (x:xs) = x*x : square xs
 square []     = []
 ```
-::::
 
 Our `square` function consists of two pattern matching equations. The
 first "deconstructs" the beginning of a non-empty list, to get its
@@ -1190,10 +1122,7 @@ char *uppercase(const char *in)
 
 Let's look at a Haskell equivalent.
 
-:::: captioned-content
-::: caption
 Map.hs
-:::
 
 ``` haskell
 import Data.Char (toUpper)
@@ -1203,7 +1132,6 @@ upperCase :: String -> String
 upperCase (x:xs) = toUpper x : upperCase xs
 upperCase []     = []
 ```
-::::
 
 Here, we're importing the `toUpper` function from the standard
 `Data.Char` module, which contains lots of useful functions for working
@@ -1232,10 +1160,7 @@ list constructed from the results of these applications.
 
 Here are our `square` and `upperCase` functions rewritten to use `map`.
 
-:::: captioned-content
-::: caption
 Map.hs
-:::
 
 ``` haskell
 square2 xs = map squareOne xs
@@ -1243,7 +1168,6 @@ square2 xs = map squareOne xs
 
 upperCase2 xs = map toUpper xs
 ```
-::::
 
 This is our first close look at a function that takes another function
 as its argument. We can learn a lot about what `map` does by simply
@@ -1268,10 +1192,7 @@ Since `map` abstracts out the pattern common to our `square` and
 can look at what those functions have in common and figure out how to
 implement it ourselves.
 
-:::: captioned-content
-::: caption
 Map.hs
-:::
 
 ``` haskell
 myMap :: (a -> b) -> [a] -> [b]
@@ -1279,12 +1200,8 @@ myMap :: (a -> b) -> [a] -> [b]
 myMap f (x:xs) = f x : myMap f xs
 myMap _ _      = []
 ```
-::::
 
-:::: note
-::: title
 Note
-:::
 
 What are those wild cards doing there?
 
@@ -1306,7 +1223,6 @@ As a matter of style, it is fine to use wild cards for well known simple
 types like lists and `Maybe`. For more complicated or less familiar
 types, it can be safer and more readable to name constructors
 explicitly.
-::::
 
 We try out our `myMap` function to give ourselves some assurance that it
 behaves similarly to the standard `map`.
@@ -1335,10 +1251,7 @@ case that's a bit more complex than our earlier functions: it only puts
 a number in the list it returns if the number is odd. Using a guard
 expresses this nicely.
 
-:::: captioned-content
-::: caption
 Filter.hs
-:::
 
 ``` haskell
 oddList :: [Int] -> [Int]
@@ -1347,7 +1260,6 @@ oddList (x:xs) | odd x     = x : oddList xs
                | otherwise = oddList xs
 oddList _                  = []
 ```
-::::
 
 Let's see that in action.
 
@@ -1378,17 +1290,13 @@ right"](4-functional-programming.org::*Folding from the right)
 Another common thing to do with a collection is reduce it to a single
 value. A simple example of this is summing the values of a list.
 
-:::: captioned-content
-::: caption
 Sum.hs
-:::
 
 ``` haskell
 mySum xs = helper 0 xs
     where helper acc (x:xs) = helper (acc + x) xs
           helper acc _      = acc
 ```
-::::
 
 Our `helper` function is tail recursive, and uses an accumulator
 parameter, `acc`, to hold the current partial sum of the list. As we
@@ -1426,10 +1334,7 @@ Although Adler-32 is a simple checksum, this code isn't particularly
 easy to read on account of the bit-twiddling involved. Can we do any
 better with a Haskell implementation?
 
-:::: captioned-content
-::: caption
 Adler32.hs
-:::
 
 ``` haskell
 import Data.Char (ord)
@@ -1443,7 +1348,6 @@ adler32 xs = helper 1 0 xs
                               in helper a' b' xs
           helper a b _      = (b `shiftL` 16) .|. a
 ```
-::::
 
 This code isn't exactly easier to follow than the Java code, but let's
 look at what's going on. First of all, we've introduced some new
@@ -1459,10 +1363,7 @@ If we take a step back, we can restructure our Haskell `adler32` to more
 closely resemble our earlier `mySum` function. Instead of two
 accumulator parameters, we can use a pair as the accumulator.
 
-:::: captioned-content
-::: caption
 Adler32.hs
-:::
 
 ``` haskell
 adler32_try2 xs = helper (1,0) xs
@@ -1472,7 +1373,6 @@ adler32_try2 xs = helper (1,0) xs
               in helper (a',b') xs
           helper (a,b) _      = (b `shiftL` 16) .|. a
 ```
-::::
 
 Why would we want to make this seemingly meaningless structural change?
 Because as we've already seen with `map` and `filter`, we can extract
@@ -1489,10 +1389,7 @@ the left (the start) and `foldr` for folding from the right (the end).
 
 Here is the definition of `foldl`.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldl :: (a -> b -> a) -> a -> [b] -> a
@@ -1500,7 +1397,6 @@ foldl :: (a -> b -> a) -> a -> [b] -> a
 foldl step zero (x:xs) = foldl step (step zero x) xs
 foldl _    zero []     = zero
 ```
-::::
 
 The `foldl` function takes a "step" function, an initial value for its
 accumulator, and a list. The "step" takes an accumulator and an
@@ -1514,31 +1410,23 @@ left (the head) to right.
 
 Here's a rewrite of `mySum` using `foldl`.
 
-:::: captioned-content
-::: caption
 Sum.hs
-:::
 
 ``` haskell
 foldlSum xs = foldl step 0 xs
     where step acc x = acc + x
 ```
-::::
 
 That local function `step` just adds two numbers, so let's simply use
 the addition operator instead, and eliminate the unnecessary `where`
 clause.
 
-:::: captioned-content
-::: caption
 Sum.hs
-:::
 
 ``` haskell
 niceSum :: [Integer] -> Integer
 niceSum xs = foldl (+) 0 xs
 ```
-::::
 
 Notice how much simpler this code is than our original `mySum`? We're
 no longer using explicit recursion, because `foldl` takes care of that
@@ -1551,10 +1439,7 @@ understand.
 Let's take a deeper look at what `foldl` is doing here, by manually
 writing out each step in its evaluation when we call `niceSum [1,2,3]`.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldl (+) 0 (1:2:3:[])
@@ -1563,15 +1448,11 @@ foldl (+) 0 (1:2:3:[])
           == foldl (+) (((0 + 1) + 2) + 3) []
           ==           (((0 + 1) + 2) + 3)
 ```
-::::
 
 We can rewrite `adler32_try2` using `foldl` to let us focus on the
 details that are important.
 
-:::: captioned-content
-::: caption
 Adler32.hs
-:::
 
 ``` haskell
 adler32_foldl xs = let (a, b) = foldl step (1, 0) xs
@@ -1579,7 +1460,6 @@ adler32_foldl xs = let (a, b) = foldl step (1, 0) xs
     where step (a, b) x = let a' = a + (ord x .&. 0xff)
                           in (a' `mod` base, (a' + b) `mod` base)
 ```
-::::
 
 Here, our accumulator is a pair, so the result of `foldl` will be, too.
 We pull the final accumulator apart when `foldl` returns, and
@@ -1612,26 +1492,19 @@ order functions in mind, we'll produce concise code more quickly.
 The counterpart to `foldl` is `foldr`, which folds from the right of a
 list.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldr :: (a -> b -> b) -> b -> [a] -> b
 foldr step zero (x:xs) = step x (foldr step zero xs)
 foldr _    zero []     = zero
 ```
-::::
 
 Let's follow the same manual evaluation process with
 `foldr (+) 0 [1,2,3]` as we did with `niceSum` in [the section called
 "The left fold"](4-functional-programming.org::*The left fold)
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldr (+) 0 (1:2:3:[])
@@ -1640,7 +1513,6 @@ foldr (+) 0 (1:2:3:[])
           == 1 + (2 + (3 + foldr (+) 0 []))
           == 1 + (2 + (3 + 0))
 ```
-::::
 
 The difference between `foldl` and `foldr` should be clear from looking
 at where the parentheses and the "empty list" elements show up. With
@@ -1652,16 +1524,12 @@ There is a lovely intuitive explanation of how `foldr` works: it
 replaces the empty list with the `zero` value, and every constructor in
 the list with an application of the step function.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 1 : (2 : (3 : []))
 1 + (2 + (3 + 0 ))
 ```
-::::
 
 At first glance, `foldr` might seem less useful than `foldl`: what use
 is a function that folds from the right? But consider the prelude's
@@ -1670,10 +1538,7 @@ is a function that folds from the right? But consider the prelude's
 input"](4-functional-programming.org::*Selecting pieces of input)
 `filter` using explicit recursion, it will look something like this.
 
-:::: captioned-content
-::: caption
 Filter.hs
-:::
 
 ``` haskell
 filter :: (a -> Bool) -> [a] -> [a]
@@ -1682,22 +1547,17 @@ filter p (x:xs)
     | p x       = x : filter p xs
     | otherwise = filter p xs
 ```
-::::
 
 Perhaps surprisingly, though, we can write `filter` as a fold, using
 `foldr`.
 
-:::: captioned-content
-::: caption
 Filter.hs
-:::
 
 ``` haskell
 myFilter p xs = foldr step [] xs
     where step x ys | p x       = x : ys
                     | otherwise = ys
 ```
-::::
 
 This is the sort of definition that could cause us a headache, so let's
 examine it in a little depth. Like `foldl`, `foldr` takes a function and
@@ -1718,36 +1578,25 @@ The class of functions that we can express using `foldr` is called
 functions are primitive recursive. For example, here's `map` written in
 terms of `foldr`.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 myMap :: (a -> b) -> [a] -> [b]
 myMap f xs = foldr step [] xs
     where step x ys = f x : ys
 ```
-::::
 
 In fact, we can even write `foldl` using `foldr`!
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
 myFoldl f z xs = foldr step id xs z
     where step x g a = g (f a x)
 ```
-::::
 
-:::: tip
-::: title
 Tip
-:::
 
 Understanding foldl in terms of foldr
 
@@ -1762,7 +1611,6 @@ outlined above to see what `foldl` and `foldr` were really doing. If you
 get stuck, you may find the task easier after reading [the section
 called "Partial function application and
 currying"](4-functional-programming.org::*Partial function application and currying)
-::::
 
 Returning to our earlier intuitive explanation of what `foldr` does,
 another useful way to think about it is that it *transforms* its input
@@ -1774,16 +1622,12 @@ The "identity" transformation with `foldr` thus replaces the empty
 list with itself, and applies the list constructor to each head/tail
 pair:
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 identity :: [a] -> [a]
 identity xs = foldr (:) [] xs
 ```
-::::
 
 It transforms a list into a copy of itself.
 
@@ -1803,16 +1647,12 @@ ghci> [1,2,3] ++ [4,5,6]
 All we have to do to append a list onto another is substitute that
 second list for the end of our first list.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 append :: [a] -> [a] -> [a]
 append xs ys = foldr (:) ys xs
 ```
-::::
 
 Let's try this out.
 
@@ -1843,10 +1683,7 @@ The reason has to do with Haskell's non-strict evaluation. If we apply
 `(((0 + 1) + 2) + 3)`. We can see this occur if we revisit the way in
 which the function gets expanded.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldl (+) 0 (1:2:3:[])
@@ -1855,7 +1692,6 @@ foldl (+) 0 (1:2:3:[])
           == foldl (+) (((0 + 1) + 2) + 3) []
           ==           (((0 + 1) + 2) + 3)
 ```
-::::
 
 The final expression will not be evaluated to `6` until its value is
 demanded. Before it is evaluated, it must be stored as a thunk. Not
@@ -1922,15 +1758,11 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
     section called "Explicit
     recursion"](4-functional-programming.org::*Explicit recursion)
 
-    :::: captioned-content
-    ::: caption
     exercises.hs
-    :::
 
     ``` haskell
     asInt_fold :: String -> Int
     ```
-    ::::
 
     Your function should behave as follows.
 
@@ -1961,16 +1793,12 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
 2.  The `asInt_fold` function uses `error`, so its callers cannot handle
     errors. Rewrite it to fix this problem.
 
-    :::: captioned-content
-    ::: caption
     exercises.hs
-    :::
 
     ``` haskell
     type ErrorMessage = String
     asInt_either :: String -> Either ErrorMessage Int
     ```
-    ::::
 
     ```
     ghci> asInt_either "33"
@@ -1982,15 +1810,11 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
 3.  The Prelude function `concat` concatenates a list of lists into a
     single list, and has the following type.
 
-    :::: captioned-content
-    ::: caption
     exercises.hs
-    :::
 
     ``` haskell
     concat :: [[a]] -> [a]
     ```
-    ::::
 
     Write your own definition of `concat` using `foldr`.
 
@@ -2000,15 +1824,11 @@ unnecessarily inefficient. Instead, import `Data.List` and use `foldl'`.
 5.  The `Data.List` module defines a function, `groupBy`, which has the
     following type.
 
-    :::: captioned-content
-    ::: caption
     exercises.hs
-    :::
 
     ``` haskell
     groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
     ```
-    ::::
 
     Use `ghci` to load the `Data.List` module and figure out what
     `groupBy` does, then write your own implementation using a fold.
@@ -2036,16 +1856,12 @@ explicit recursion into folds.
 In many of the function definitions we've seen so far, we've written
 short helper functions.
 
-:::: captioned-content
-::: caption
 Partial.hs
-:::
 
 ``` haskell
 isInAny needle haystack = any inSequence haystack
     where inSequence s = needle `isInfixOf` s
 ```
-::::
 
 Haskell lets us write completely anonymous functions, which we can use
 to avoid the need to give names to our helper functions. Anonymous
@@ -2058,15 +1874,11 @@ the function's arguments (which can include patterns), then an arrow
 Lambdas are most easily illustrated by example. Here's a rewrite of
 `isInAny` using an anonymous function.
 
-:::: captioned-content
-::: caption
 Partial.hs
-:::
 
 ``` haskell
 isInAny2 needle haystack = any (\s -> needle `isInfixOf` s) haystack
 ```
-::::
 
 We've wrapped the lambda in parentheses here so that Haskell can tell
 where the function body ends.
@@ -2081,29 +1893,21 @@ The limitation to a single clause restricts how we can use patterns in
 the definition of a lambda. We'll usually write a normal function with
 several clauses to cover different pattern matching possibilities.
 
-:::: captioned-content
-::: caption
 Lambda.hs
-:::
 
 ``` haskell
 safeHead (x:_) = Just x
 safeHead _ = Nothing
 ```
-::::
 
 But as we can't write multiple clauses to define a lambda, we must be
 certain that any patterns we use will match.
 
-:::: captioned-content
-::: caption
 Lambda.hs
-:::
 
 ``` haskell
 unsafeHead = \(x:_) -> x
 ```
-::::
 
 This definition of `unsafeHead` will explode in our faces if we call it
 with a value on which pattern matching fails.
@@ -2241,15 +2045,11 @@ the `isInAny` function we defined there, here's how we'd use a
 partially applied function instead of a named helper function or a
 lambda.
 
-:::: captioned-content
-::: caption
 Partial.hs
-:::
 
 ``` haskell
 isInAny3 needle haystack = any (isInfixOf needle) haystack
 ```
-::::
 
 Here, the expression `isInfixOf needle` is the partially applied
 function. We're taking the function `isInfixOf`, and "fixing" its
@@ -2264,31 +2064,23 @@ As another example of currying in use, let's return to the list-summing
 function we wrote in [the section called "The left
 fold"](4-functional-programming.org::*The left fold)
 
-:::: captioned-content
-::: caption
 Sum.hs
-:::
 
 ``` haskell
 niceSum :: [Integer] -> Integer
 niceSum xs = foldl (+) 0 xs
 ```
-::::
 
 We don't need to fully apply `foldl`; we can omit the list `xs` from
 both the parameter list and the parameters to `foldl`, and we'll end up
 with a more compact function that has the same type.
 
-:::: captioned-content
-::: caption
 Sum.hs
-:::
 
 ``` haskell
 nicerSum :: [Integer] -> Integer
 nicerSum = foldl (+) 0
 ```
-::::
 
 ### Sections
 
@@ -2338,15 +2130,11 @@ False
 If we use this style, we can further improve the readability of our
 earlier `isInAny3` function.
 
-:::: captioned-content
-::: caption
 Partial.hs
-:::
 
 ``` haskell
 isInAny4 needle haystack = any (needle `isInfixOf`) haystack
 ```
-::::
 
 ## As-patterns
 
@@ -2378,17 +2166,13 @@ returns the non-empty suffixes? One possibility would be for us to write
 our own version by hand. We'll use a new piece of notation, the `@`
 symbol.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 suffixes :: [a] -> [[a]]
 suffixes xs@(_:xs') = xs : suffixes xs'
 suffixes _ = []
 ```
-::::
 
 The pattern `xs @ (_ : xs')` is called an *as-pattern*, and it means
 "bind the variable `xs` to the value that matches the right side of the
@@ -2409,17 +2193,13 @@ ghci> suffixes "foo"
 The as-pattern makes our code more readable. To see how it helps, let us
 compare a definition that lacks an as-pattern.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 noAsPattern :: [a] -> [[a]]
 noAsPattern (x:xs) = (x:xs) : noAsPattern xs
 noAsPattern _ = []
 ```
-::::
 
 Here, the list that we've deconstructed in the pattern match just gets
 put right back together in the body of the function.
@@ -2444,15 +2224,11 @@ Recall the `init` function we introduced in [the section called
 lists"](4-functional-programming.org::*Working with lists) last element
 of a list.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 suffixes2 xs = init (tails xs)
 ```
-::::
 
 This `suffixes2` function behaves identically to `suffixes`, but it's a
 single line of code.
@@ -2466,56 +2242,40 @@ If we take a step back, we see the glimmer of a pattern here: we're
 applying a function, then applying another function to its result.
 Let's turn that pattern into a function definition.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 compose :: (b -> c) -> (a -> b) -> a -> c
 compose f g x = f (g x)
 ```
-::::
 
 We now have a function, `compose`, that we can use to "glue" two other
 functions together.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 suffixes3 xs = compose init tails xs
 ```
-::::
 
 Haskell's automatic currying lets us drop the `xs` variable, so we can
 make our definition even shorter.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 suffixes4 = compose init tails
 ```
-::::
 
 Fortunately, we don't need to write our own `compose` function.
 Plugging functions into each other like this is so common that the
 Prelude provides function composition via the `(.)` operator.
 
-:::: captioned-content
-::: caption
 SuffixTree.hs
-:::
 
 ``` haskell
 suffixes5 = init . tails
 ```
-::::
 
 The `(.)` operator isn't a special piece of language syntax; it's just
 a normal operator.
@@ -2588,10 +2348,7 @@ contains a large number definitions of the following form.
 
 Our goal is to extract names such as `DLT_EN10MB` and `DLT_AX25`.
 
-:::: captioned-content
-::: caption
 dlts.hs
-:::
 
 ``` haskell
 import Data.List (isPrefixOf)
@@ -2600,16 +2357,12 @@ dlts :: String -> [String]
 
 dlts = foldr step [] . lines
 ```
-::::
 
 We treat an entire file as a string, split it up with `lines`, then
 apply `foldr step []` to the resulting list of lines. The `step` helper
 function operates on a single line.
 
-:::: captioned-content
-::: caption
 dlts.hs
-:::
 
 ``` haskell
 where step l ds
@@ -2617,7 +2370,6 @@ where step l ds
         | otherwise                     = ds
       secondWord = head . tail . words
 ```
-::::
 
 If we match a macro definition with our guard expression, we cons the
 name of the macro onto the head of the list we're returning; otherwise,
@@ -2728,10 +2480,7 @@ where space leaks can arise in Haskell code. We will use it to
 illustrate how non-strict evaluation can sometimes be problematic, and
 how to solve the difficulties that can arise.
 
-:::: tip
-::: title
 Tip
-:::
 
 Do you need to know all of this right now?
 
@@ -2739,7 +2488,6 @@ It is perfectly reasonable to skip this section until you encounter a
 space leak "in the wild". Provided you use `foldr` if you are
 generating a list, and `foldl'` instead of `foldl` otherwise, space
 leaks are unlikely to bother you in practice for a while.
-::::
 
 ### Avoiding space leaks with seq
 
@@ -2747,10 +2495,7 @@ We refer to an expression that is not evaluated lazily as *strict*, so
 `foldl'` is a strict left fold. It bypasses Haskell's usual non-strict
 evaluation through the use of a special function named `seq`.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldl' _    zero []     = zero
@@ -2758,7 +2503,6 @@ foldl' step zero (x:xs) =
     let new = step zero x
     in  new `seq` foldl' step new xs
 ```
-::::
 
 This `seq` function has a peculiar type, hinting that it is not playing
 by the usual rules.
@@ -2774,53 +2518,37 @@ doesn't actually do anything with the first argument: `seq` exists
 solely as a way to force that value to be evaluated. Let's walk through
 a brief application to see what happens.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldl' (+) 1 (2:[])
 ```
-::::
 
 This expands as follows.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 let new = 1 + 2
 in new `seq` foldl' (+) new []
 ```
-::::
 
 The use of `seq` forcibly evaluates `new` to `3`, and returns its second
 argument.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 foldl' (+) 3 []
 ```
-::::
 
 We end up with the following result.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 3
 ```
-::::
 
 Thanks to `seq`, there are no thunks in sight.
 
@@ -2832,10 +2560,7 @@ effectively. Here are some useful rules for using it well.
 To have any effect, a `seq` expression must be the first thing evaluated
 in an expression.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 -- incorrect: seq is hidden by the application of someFunc
@@ -2849,34 +2574,25 @@ hiddenByLet x y z = let a = x `seq` someFunc y
 -- correct: seq will be evaluated first, forcing evaluation of x
 onTheOutside x y = x `seq` someFunc y
 ```
-::::
 
 To strictly evaluate several values, chain applications of `seq`
 together.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 chained x y z = x `seq` y `seq` someFunc z
 ```
-::::
 
 A common mistake is to try to use `seq` with two unrelated expressions.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 badExpression step zero (x:xs) =
     seq (step zero x)
         (badExpression step (step zero x) xs)
 ```
-::::
 
 Here, the apparent intention is to evaluate `step zero x` strictly.
 Since the expression is duplicated in the body of the function, strictly
@@ -2897,17 +2613,13 @@ pair's constructor.
 If necessary, we can use normal functional programming techniques to
 work around these limitations.
 
-:::: captioned-content
-::: caption
 Fold.hs
-:::
 
 ``` haskell
 strictPair (a,b) = a `seq` b `seq` (a,b)
 strictList (x:xs) = x `seq` x : strictList xs
 strictList []     = []
 ```
-::::
 
 It is important to understand that `seq` isn't free: it has to perform
 a check at runtime to see if an expression has been evaluated. Use it

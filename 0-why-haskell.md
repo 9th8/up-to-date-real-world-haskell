@@ -73,17 +73,13 @@ elements.
 Better yet, our Haskell code that operates so efficiently is tiny, and
 uses standard library functions.
 
-:::: captioned-content
-::: caption
 KMinima.hs
-:::
 
 ``` haskell
 -- lines beginning with "--" are comments.
 
 minima k xs = take k (sort xs)
 ```
-::::
 
 It can take a while to develop an intuitive feel for when lazy
 evaluation is important, but when we exploit it, the resulting code is

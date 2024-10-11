@@ -81,10 +81,7 @@ to handle a user's input quickly enough that they will perceive our
 program as responding immediately. If we use `forkIO` to write the file
 out in a separate thread, we can do both simultaneously.
 
-:::: captioned-content
-::: caption
 Compressor.hs
-:::
 
 ``` haskell
 import Control.Concurrent (forkIO)
@@ -109,7 +106,6 @@ main = do
            main
   where compressFile path = L.writeFile (path ++ ".gz") . compress
 ```
-::::
 
 Because we're using lazy `ByteString` I/O here, all we really do in the
 main thread is open the file. The actual reading occurs on demand in the
@@ -149,10 +145,7 @@ is put to sleep until another thread takes the value out. Similarly, if
 we try to take a value from an empty `MVar`, our thread is put to sleep
 until some other thread puts a value in.
 
-:::: captioned-content
-::: caption
 MVarExample.hs
-:::
 
 ``` haskell
 import Control.Concurrent
@@ -165,7 +158,6 @@ communicate = do
   putStrLn "sending"
   putMVar m "wake up!"
 ```
-::::
 
 The `newEmptyMVar` function has a descriptive name. To create an `MVar`
 that starts out non-empty, we'd use `newMVar`.
@@ -210,10 +202,7 @@ we must make special arrangements to ensure that the main thread
 doesn't complete until the others do. Let's develop a small library
 that makes this easy to do.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 import Control.Concurrent
@@ -240,7 +229,6 @@ waitFor :: ThreadManager -> ThreadId -> IO (Maybe ThreadStatus)
 -- | Block until all managed threads terminate.
 waitAll :: ThreadManager -> IO ()
 ```
-::::
 
 We keep our `ThreadManager` type abstract using the usual recipe: we
 wrap it in a `newtype`, and prevent clients from creating values of this
@@ -248,10 +236,7 @@ type. Among our module's exports, we list the type constructor and the
 `IO` action that constructs a manager, but we do not export the data
 constructor.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 module NiceFork
@@ -264,15 +249,11 @@ module NiceFork
     , waitAll
     ) where
 ```
-::::
 
 For the implementation of `ThreadManager`, we maintain a map from thread
 `ID` to thread state. We'll refer to this as the *thread map*.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 newtype ThreadManager =
@@ -281,7 +262,6 @@ newtype ThreadManager =
 
 newManager = Mgr `fmap` newMVar M.empty
 ```
-::::
 
 We have two levels of `MVar` use here. We keep the `Map` in an `MVar`.
 This lets us "modify" the map by replacing it with a new version. We
@@ -296,10 +276,7 @@ this information into the `MVar`.
 To create a thread and watch its status, we must perform a little bit of
 book-keeping.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 forkManaged (Mgr mgr) body =
@@ -310,7 +287,6 @@ forkManaged (Mgr mgr) body =
         putMVar state (either Threw (const Finished) result)
       return (M.insert tid state m, tid)
 ```
-::::
 
 ### Safely modifying an `MVar`
 
@@ -363,10 +339,7 @@ functions makes this style of coding visually unobtrusive.
 Here's the definition of `modifyMVar`, so that you can see a specific
 form of this pattern.
 
-:::: captioned-content
-::: caption
 ModifyMVar.hs
-:::
 
 ``` haskell
 import Control.Concurrent (MVar, putMVar, takeMVar)
@@ -382,7 +355,6 @@ modifyMVar m io =
     putMVar m b
     return r
 ```
-::::
 
 You should easily be able to adapt this to your particular needs,
 whether you're working with network connections, database handles, or
@@ -394,10 +366,7 @@ Our `getStatus` function tells us the current state of a thread. If the
 thread is no longer managed (or was never managed in the first place),
 it returns `Nothing`.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 getStatus (Mgr mgr) tid =
@@ -408,7 +377,6 @@ getStatus (Mgr mgr) tid =
                    Nothing -> return (m, Just Running)
                    Just sth -> return (M.delete tid m, Just sth)
 ```
-::::
 
 If the thread is still running, it returns `Just Running`. Otherwise, it
 indicates why the thread terminated, *and* stops managing the thread.
@@ -427,10 +395,7 @@ The `waitFor` function behaves similarly, but instead of returning
 immediately, it blocks until the given thread terminates before
 returning.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 waitFor (Mgr mgr) tid = do
@@ -442,7 +407,6 @@ waitFor (Mgr mgr) tid = do
     Nothing -> return Nothing
     Just st -> Just `fmap` takeMVar st
 ```
-::::
 
 It first extracts the `MVar` that holds the thread's state, if it
 exists. The `Map` type's `updateLookupWithKey` function is useful: it
@@ -463,16 +427,12 @@ thread's exit status from the `MVar` and return it.
 Our final useful function simply waits for all currently managed threads
 to complete, and ignores their exit statuses.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 waitAll (Mgr mgr) = modifyMVar mgr elems >>= mapM_ takeMVar
     where elems m = return (M.empty, M.elems m)
 ```
-::::
 
 ### Writing tighter code
 
@@ -496,10 +456,7 @@ expression by having the first one return the `IO` action that we should
 perform once we return from `modifyMVar`. We'll use `join` to execute
 the action.
 
-:::: captioned-content
-::: caption
 NiceFork.hs
-:::
 
 ``` haskell
 waitFor2 (Mgr mgr) tid =
@@ -508,7 +465,6 @@ waitFor2 (Mgr mgr) tid =
       (Nothing, _) -> (m, return Nothing)
       (Just st, m') -> (m', Just `fmap` takeMVar st)
 ```
-::::
 
 This is an interesting idea: we can create a monadic function or action
 in pure code, then pass it around until we end up in a monad where we
@@ -521,10 +477,7 @@ For one-shot communications between threads, an `MVar` is perfectly
 good. Another type, `Chan`, provides a one-way communication channel.
 Here is a simple example of its use.
 
-:::: captioned-content
-::: caption
 Chan.hs
-:::
 
 ``` haskell
 import Control.Concurrent
@@ -538,7 +491,6 @@ chanExample = do
   readChan ch >>= print
   readChan ch >>= print
 ```
-::::
 
 If a `Chan` is empty, `readChan` blocks until there is a value to read.
 The `writeChan` function never blocks: it writes a new value into a
@@ -561,10 +513,7 @@ leak. Here's a plausible scenario to consider.
 We fork off a thread to perform some expensive computation on another
 core.
 
-:::: captioned-content
-::: caption
 Expensive.hs
-:::
 
 ``` haskell
 import Control.Concurrent
@@ -576,14 +525,10 @@ notQuiteRight = do
   result <- takeMVar mv
   print result
 ```
-::::
 
 It *seems* to do something, and puts its result back into the `MVar`.
 
-:::: captioned-content
-::: caption
 Expensive.hs
-:::
 
 ``` haskell
 expensiveComputation mv = do
@@ -592,7 +537,6 @@ expensiveComputation mv = do
       c = "all that expensive"
   putMVar mv (a ++ b ++ c)
 ```
-::::
 
 When we take the result from the `MVar` in the parent thread and attempt
 to do something with it, our thread starts computing furiously, because
@@ -603,10 +547,7 @@ potential for a problem: we add strictness to the forked thread, to
 ensure that the computation occurs there. This strictness is best added
 in one place, to avoid the possibility that we might forget to add it.
 
-:::: captioned-content
-::: caption
 ModifyMVarStrict.hs
-:::
 
 ``` haskell
 {-# LANGUAGE BangPatterns #-}
@@ -622,19 +563,14 @@ modifyMVar_strict m io = block $ do
         putMVar m a >> throw e
   putMVar m b
 ```
-::::
 
-:::: tip
-::: title
 Tip
-:::
 
 It's always worth checking Hackage
 
 In the Hackage package database, you will find a library,
 `strict-concurrency`, that provides strict versions of the `MVar` and
 `Chan` types.
-::::
 
 The `!` pattern above is simple to use, but it is not always sufficient
 to ensure that our data is evaluated. For a more complete approach, see
@@ -668,10 +604,7 @@ acquire locks. This kind of bug is so common, it has a name: *lock order
 inversion*. While Haskell doesn't provide locks, the `MVar` type is
 prone to the order inversion problem. Here's a simple example.
 
-:::: captioned-content
-::: caption
 LockHierarchy.hs
-:::
 
 ``` haskell
 import Control.Concurrent
@@ -689,7 +622,6 @@ main = do
   forkIO $ nestedModification a b
   forkIO $ nestedModification b a
 ```
-::::
 
 If we run this in `ghci`, it will usually---but not always---print
 nothing, indicating that both threads have gotten stuck.
@@ -798,10 +730,7 @@ The module `GHC.Conc` exports a variable, `numCapabilities`, that tells
 us how many cores the runtime system has been given with the
 `-N`{.verbatim} RTS option.
 
-:::: captioned-content
-::: caption
 NumCapabilities.hs
-:::
 
 ``` haskell
 import GHC.Conc (numCapabilities)
@@ -812,7 +741,6 @@ main = do
   putStrLn $ "command line arguments: " ++ show args
   putStrLn $ "number of cores: " ++ show numCapabilities
 ```
-::::
 
 If we compile and run the above program, we can see that the options to
 the runtime system are not visible to the program, but that it can see
@@ -891,10 +819,7 @@ abstruse to concern us here.
 Here is a normal Haskell function that sorts a list using a
 divide-and-conquer approach.
 
-:::: captioned-content
-::: caption
 Sorting.hs
-:::
 
 ``` haskell
 sort :: (Ord a) => [a] -> [a]
@@ -903,7 +828,6 @@ sort (x:xs) = lesser ++ x:greater
           greater = sort [y | y <- xs, y >= x]
 sort _ = []
 ```
-::::
 
 This function is inspired by the well-known Quicksort algorithm, and it
 is a classic among Haskell programmers: it is often presented as a
@@ -928,10 +852,7 @@ Here is a very brief description of how `sort` operates.
 The parallel version of the function is only a little more complicated
 than the initial version.
 
-:::: captioned-content
-::: caption
 Sorting.hs
-:::
 
 ``` haskell
 module Sorting where
@@ -945,7 +866,6 @@ parSort (x:xs)    = force greater `par` (force lesser `pseq`
           greater = parSort [y | y <- xs, y >= x]
 parSort _         = []
 ```
-::::
 
 We have barely perturbed the code: all we have added are three
 functions, `par`, `pseq`, and `force`.
@@ -983,10 +903,7 @@ evaluation can get in the way of this, which is why we use the `force`
 function in our parallel sort. To best explain what the `force` function
 is for, we will first look at a mistaken example.
 
-:::: captioned-content
-::: caption
 Sorting.hs
-:::
 
 ``` haskell
 sillySort (x:xs) = greater `par` (lesser `pseq`
@@ -995,7 +912,6 @@ sillySort (x:xs) = greater `par` (lesser `pseq`
           greater  = sillySort [y | y <- xs, y >= x]
 sillySort _        = []
 ```
-::::
 
 Take a look at the small changes in each use of `par`. Instead of
 `force lesser` and `force greater`, here we evaluate `lesser` and
@@ -1013,10 +929,7 @@ sequential.
 We avoid this with our `force` function by forcing the entire spine of a
 list to be evaluated before we give back a constructor.
 
-:::: captioned-content
-::: caption
 Sorting.hs
-:::
 
 ``` haskell
 force :: [a] -> ()
@@ -1024,7 +937,6 @@ force xs = go xs `pseq` ()
     where go (_:xs) = go xs
           go [] = 1
 ```
-::::
 
 Notice that we don't care what's in the list; we walk down its spine
 to the end, then use `pseq` once. There is clearly no magic involved
@@ -1062,10 +974,7 @@ To try our code out, let's save `sort`, `parSort`, and `parSort2` to a
 module named `Sorting.hs`. We create a small driver program that we can
 use to time the performance of one of those sorting function.
 
-:::: captioned-content
-::: caption
 SortMain.hs
-:::
 
 ``` haskell
 module Main where
@@ -1097,7 +1006,6 @@ main = do
   end <- getCurrentTime
   putStrLn $ show (end `diffUTCTime` start) ++ " elapsed."
 ```
-::::
 
 For simplicity, we choose the sorting function to benchmark at
 compilation time, via the `testFunction` variable.
@@ -1197,10 +1105,7 @@ are using it too much. To help us to distinguish between the two
 possibilities, here is a sort is identical to `parSort`, but it uses
 `pseq` instead of `par`.
 
-:::: captioned-content
-::: caption
 Sorting.hs
-:::
 
 ``` haskell
 seqSort :: (Ord a) => [a] -> [a]
@@ -1210,7 +1115,6 @@ seqSort (x:xs) = lesser `pseq` (greater `pseq`
           greater = seqSort [y | y <- xs, y >= x]
 seqSort _ = []
 ```
-::::
 
 We also drop the use of `force`, so compared to our original `sort`, we
 should only be measuring the cost of using `pseq`. What effect does
@@ -1235,10 +1139,7 @@ is not *free*. When we recursively apply `parSort`, we eventually apply
 using `par` outweighs any possible usefulness. To reduce this effect, we
 switch to our non-parallel `sort` after passing some threshold.
 
-:::: captioned-content
-::: caption
 Sorting.hs
-:::
 
 ``` haskell
 parSort2 :: (Ord a) => Int -> [a] -> [a]
@@ -1251,7 +1152,6 @@ parSort2 d list@(x:xs)
             d' = d - 1
 parSort2 _ _            = []
 ```
-::::
 
 Here, we stop recursing and sparking new parallel evaluations at a
 controllable depth. If we knew the size of the data we were dealing
@@ -1285,17 +1185,13 @@ than with a single core. As we write this book, a parallel garbage
 collector is under development for GHC, which should help considerably
 with the performance of allocation-heavy code on multicore systems.
 
-:::: warning
-::: title
 Warning
-:::
 
 Beware a GC bug in GHC 6.8.2
 
 The garbage collector in release 6.8.2 of GHC has a bug that can cause
 programs using `par` to crash. If you want to use `par` and you are
 using 6.8.2, we suggest upgrading to at least 6.8.3.
-::::
 
 ### Exercises
 
@@ -1355,10 +1251,7 @@ clutter of `par` and `pseq` annotations. As an example, this function
 operates similarly to `map`, but evaluates each element to weak head
 normal form (WHNF) in parallel as it goes.
 
-:::: captioned-content
-::: caption
 ParMap.hs
-:::
 
 ``` haskell
 import Control.Parallel (par)
@@ -1368,7 +1261,6 @@ parallelMap f (x:xs) = let r = f x
                        in r `par` r : parallelMap f xs
 parallelMap _ _      = []
 ```
-::::
 
 The type `b` might be a list, or some other type for which evaluation to
 WHNF doesn't do a useful amount of work. We'd prefer not to have to
@@ -1379,17 +1271,13 @@ To address this problem, we will begin by considering a simpler problem:
 how to force a value to be evaluated. Here is a function that forces
 every element of a list to be evaluated to WHNF.
 
-:::: captioned-content
-::: caption
 ParMap.hs
-:::
 
 ``` haskell
 forceList :: [a] -> ()
 forceList (x:xs) = x `pseq` forceList xs
 forceList _      = ()
 ```
-::::
 
 Our function performs no computation on the list. (In fact, from
 examining its type signature, we can tell that it *cannot* perform any
@@ -1399,25 +1287,18 @@ head normal form. The only place that it makes any sense to apply this
 function is in the first argument of `seq` or `par`, for example as
 follows.
 
-:::: captioned-content
-::: caption
 ParMap.hs
-:::
 
 ``` haskell
 stricterMap :: (a -> b) -> [a] -> [b]
 stricterMap f xs = forceList xs `seq` map f xs
 ```
-::::
 
 This still leaves us with the elements of the list evaluated only to
 WHNF. We address this by adding a function as parameter that can force
 an element to be evaluated more deeply.
 
-:::: captioned-content
-::: caption
 ParMap.hs
-:::
 
 ``` haskell
 forceListAndElts :: (a -> ()) -> [a] -> ()
@@ -1425,88 +1306,64 @@ forceListAndElts forceElt (x:xs) =
     forceElt x `seq` forceListAndElts forceElt xs
 forceListAndElts _        _      = ()
 ```
-::::
 
 The `Control.Parallel.Strategies` module generalizes this idea into
 something we can use as a library. It introduces the idea of an
 *evaluation strategy*.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 type Done = ()
 
 type Strategy a = a -> Done
 ```
-::::
 
 An evaluation strategy performs no computation; it simply ensures that a
 value is evaluated to some extent. The simplest strategy is named `r0`,
 and does nothing at all.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 r0 :: Strategy a
 r0 _ = ()
 ```
-::::
 
 Next is `whnf`, which evaluates a value to weak head normal form.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 rwhnf :: Strategy a
 rwhnf x = x `seq` ()
 ```
-::::
 
 To evaluate a value to normal form, the module provides a type class
 with a method named `rnf`.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 class NFData a where
   rnf :: Strategy a
   rnf = rwhnf
 ```
-::::
 
-:::: tip
-::: title
 Tip
-:::
 
 Remembering those names
 
 If the names of these functions and types are not sticking in your head,
 look at them as acronyms. The name `rwhnf` expands to "reduce to weak
 head normal form"; NFData becomes "normal form data"; and so on.
-::::
 
 For the basic types, such as `Int`, weak head normal form and normal
 form are the same thing, which is why the `NFData` type class uses
 `rwhnf` as the default implementation of `rnf`. For many common types,
 the `Control.Parallel.Strategies` module provides instances of `NFData`.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 instance NFData Char
@@ -1518,7 +1375,6 @@ instance NFData a => NFData (Maybe a) where
 
 {- ... and so on ... -}
 ```
-::::
 
 From these examples, it should be clear how you might write an `NFData`
 instance for a type of your own. Your implementation of `rnf` must
@@ -1532,30 +1388,22 @@ strategies. Many are already provided by `Control.Parallel.Strategies`.
 For instance, `parList` applies an evaluation strategy in parallel to
 every element of a list.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 parList :: Strategy a -> Strategy [a]
 parList strat []     = ()
 parList strat (x:xs) = strat x `par` (parList strat xs)
 ```
-::::
 
 The module uses this to define a parallel `map` function.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 parMap :: Strategy b -> (a -> b) -> [a] -> [b]
 parMap strat f xs = map f xs `using` parList strat
 ```
-::::
 
 This is where the code becomes interesting. On the left of `using`, we
 have a normal application of `map`. On the right, we have an evaluation
@@ -1563,31 +1411,23 @@ strategy. The `using` combinator tells us how to apply a strategy to a
 value, allowing us to keep the code separate from how we plan to
 evaluate it.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 using :: a -> Strategy a -> a
 using x s = s x `seq` x
 ```
-::::
 
 The `Control.Parallel.Strategies` module provides many other functions
 that provide fine control over evaluation. For instance, `parZipWith`
 that applies `zipWith` in parallel, using an evaluation strategy.
 
-:::: captioned-content
-::: caption
 Strat.hs
-:::
 
 ``` haskell
 vectorSum' :: (NFData a, Num a) => [a] -> [a] -> [a]
 vectorSum' = parZipWith rnf (+)
 ```
-::::
 
 ### Writing a simple MapReduce definition
 
@@ -1601,10 +1441,7 @@ processing needs.
 
 If we plug these types together, the complete type looks like this.
 
-:::: captioned-content
-::: caption
 MapReduce.hs
-:::
 
 ``` haskell
 simpleMapReduce
@@ -1613,19 +1450,14 @@ simpleMapReduce
     -> [a]           -- list to map over
     -> c
 ```
-::::
 
 The code that goes with the type is extremely simple.
 
-:::: captioned-content
-::: caption
 MapReduce.hs
-:::
 
 ``` haskell
 simpleMapReduce mapFunc reduceFunc = reduceFunc . map mapFunc
 ```
-::::
 
 ### MapReduce and strategies
 
@@ -1635,10 +1467,7 @@ of the work should occur in parallel. We'll achieve this using
 strategies, passing in a strategy for the map phase and one for the
 reduction phase.
 
-:::: captioned-content
-::: caption
 MapReduce.hs
-:::
 
 ``` haskell
 mapReduce
@@ -1649,15 +1478,11 @@ mapReduce
     -> [a]           -- list to map over
     -> c
 ```
-::::
 
 Both the type and the body of the function must grow a little in size to
 accommodate the strategy parameters.
 
-:::: captioned-content
-::: caption
 MapReduce.hs
-:::
 
 ``` haskell
 mapReduce mapStrat mapFunc reduceStrat reduceFunc input =
@@ -1665,7 +1490,6 @@ mapReduce mapStrat mapFunc reduceStrat reduceFunc input =
   where mapResult    = parMap mapStrat mapFunc input
         reduceResult = reduceFunc mapResult `using` reduceStrat
 ```
-::::
 
 ### Sizing work appropriately
 
@@ -1680,10 +1504,7 @@ file ought to contain only ASCII text, we will see excellent performance
 with a lazy `ByteString`: this type is highly efficient, and consumes
 little memory when we stream it from a file.
 
-:::: captioned-content
-::: caption
 LineChunks.hs
-:::
 
 ``` haskell
 module LineChunks
@@ -1719,7 +1540,6 @@ chunkedReadWith :: (NFData a) =>
 chunkedReadWith func path =
     withChunks (lineChunks (numCapabilities * 4)) func path
 ```
-::::
 
 We consume each chunk in parallel, taking careful advantage of lazy I/O
 to ensure that we can stream these chunks safely.
@@ -1752,10 +1572,7 @@ to ensure that we can stream these chunks safely.
 
     With these ideas in mind, let's fill out the lazy I/O picture.
 
-    :::: captioned-content
-    ::: caption
     LineChunks.hs
-    :::
 
     ``` haskell
     chunkedRead :: (FilePath -> IO [ChunkSpec])
@@ -1769,7 +1586,6 @@ to ensure that we can stream these chunks safely.
         chunk <- LB.take (chunkLength spec) `liftM` LB.hGetContents h
         return (chunk, h)
     ```
-    ::::
 
     We avoid the starvation problem by explicitly closing file handles.
     We allow multiple threads to read different chunks at once by
@@ -1784,10 +1600,7 @@ to ensure that we can stream these chunks safely.
     program, it is often best to "firewall" it like this, so that it
     cannot cause problems in unexpected parts of your code.
 
-    :::: tip
-    ::: title
     Tip
-    :::
 
     Processing chunks via a fold
 
@@ -1796,7 +1609,6 @@ to ensure that we can stream these chunks safely.
     traversal"](9-a-library-for-searching-the-file-system.org::*Another way of looking at traversal)
     stream-based file processing. While this requires more work than the
     lazy I/O approach, it nicely avoids the above problems.
-    ::::
 
 ### Efficiently finding line-aligned chunks
 
@@ -1812,10 +1624,7 @@ the approximate position of the end of a chunk, then scan forwards until
 we reach a newline character. We then start the next chunk after the
 newline, and repeat the procedure.
 
-:::: captioned-content
-::: caption
 LineChunks.hs
-:::
 
 ``` haskell
 lineChunks :: Int -> FilePath -> IO [ChunkSpec]
@@ -1841,7 +1650,6 @@ lineChunks numChunks path = do
           findNewline newOffset
     findChunks 0
 ```
-::::
 
 The last chunk will end up a little shorter than its predecessors, but
 this difference will be insignificant in practice.
@@ -1851,10 +1659,7 @@ this difference will be insignificant in practice.
 This simple example illustrates how to use the scaffolding we have
 built.
 
-:::: captioned-content
-::: caption
 LineCount.hs
-:::
 
 ``` haskell
 module Main where
@@ -1878,7 +1683,6 @@ main = do
     numLines <- chunkedReadWith lineCount path
     putStrLn $ path ++ ": " ++ show numLines
 ```
-::::
 
 If we compile this program with `ghc -O2 --make -threaded`, it should
 perform well after an initial run to "warm" the filesystem cache. On a
@@ -1894,10 +1698,7 @@ original paper discussing MapReduce. In the *map* phase, for each chunk,
 we create a `Map` from URL to the number of times it was accessed. In
 the *reduce* phase, we union-merge these maps into one.
 
-:::: captioned-content
-::: caption
 CommonURLs.hs
-:::
 
 ``` haskell
 module Main where
@@ -1924,7 +1725,6 @@ countURLs = mapReduce rwhnf (foldl' augment M.empty . L.lines)
         strict  = S.concat . L.toChunks
         pattern = S.pack ""(?:GET|POST|HEAD) ([^ ]+) HTTP/"
 ```
-::::
 
 To pick a URL out of a line of the log file, we use the bindings to the
 PCRE regular expression library that we developed in [Chapter 17,

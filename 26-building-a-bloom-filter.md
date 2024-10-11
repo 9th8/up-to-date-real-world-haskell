@@ -87,10 +87,7 @@ The data structure that we use for our Haskell Bloom filter is a direct
 translation of the simple description we gave earlier: a bit array and a
 function that computes hashes.
 
-:::: captioned-content
-::: caption
 BloomFilter/Internal.hs
-:::
 
 ``` haskell
 module BloomFilter.Internal
@@ -108,7 +105,6 @@ data Bloom a = B {
     , blmArray :: UArray Word32 Bool
     }
 ```
-::::
 
 When we create our Cabal package, we will not be exporting this
 `BoomFilter.Internal` module. It exists purely to let us control the
@@ -143,10 +139,7 @@ performance, but sacrifices the ability to represent a thunk or ⊥. Since
 it can be denser than a normal Haskell array, an array of unboxed values
 is an excellent choice for numeric data and bits.
 
-:::: note
-::: title
 Note
-:::
 
 Boxing and lifting
 
@@ -159,7 +152,6 @@ must exist, so it does not need to account for the possibility of ⊥.
 This array type is thus boxed, but not lifted. Boxed but unlifted types
 only show up at the lowest level of runtime hacking. We will never
 encounter them in normal use.
-::::
 
 GHC implements a `UArray` of `Bool` values by packing eight array
 elements into each byte, so this type is perfect for our needs.
@@ -210,10 +202,7 @@ we can return it, and a mutable reference cannot escape at all.
 The public interfaces that we provide for working with Bloom filters are
 worth a little discussion.
 
-:::: captioned-content
-::: caption
 BloomFilter/Mutable.hs
-:::
 
 ``` haskell
 module BloomFilter.Mutable
@@ -234,7 +223,6 @@ import Prelude hiding (elem, length, notElem)
 
 import BloomFilter.Internal (MutBloom(..))
 ```
-::::
 
 We export several names that clash with names exported by the Prelude.
 This is deliberate: we expect users of our modules to import them with
@@ -271,10 +259,7 @@ our module, just for ourselves as the authors of what ought to be a
 We put type declaration for our mutable Bloom filter in the
 `BoomFilter.Internal` module, along with the immutable Bloom type.
 
-:::: captioned-content
-::: caption
 BloomFilter/Internal.hs
-:::
 
 ``` haskell
 data MutBloom s a = MB {
@@ -282,23 +267,18 @@ data MutBloom s a = MB {
     , mutArray :: STUArray s Word32 Bool
     }
 ```
-::::
 
 The `STUArray` type gives us a mutable unboxed array that we can work
 with in the `ST` monad. To create an `STUArray`, we use the `newArray`
 function. The `new` function belongs in the `BloomFilter.Mutable`
 function.
 
-:::: captioned-content
-::: caption
 BloomFilter/Mutable.hs
-:::
 
 ``` haskell
 new :: (a -> [Word32]) -> Word32 -> ST s (MutBloom s a)
 new hash numBits = MB hash `liftM` newArray (0,numBits-1) False
 ```
-::::
 
 Most of the methods of `STUArray` are actually implementations of the
 `MArray` type class, which is defined in the `Data.Array.MArray` module.
@@ -309,26 +289,19 @@ instance's `getBounds` function has a monadic type. We also have to add
 one to the answer, as the upper bound of the array is one less than its
 actual length.
 
-:::: captioned-content
-::: caption
 BloomFilter/Mutable.hs
-:::
 
 ``` haskell
 length :: MutBloom s a -> ST s Word32
 length filt = (succ . snd) `liftM` getBounds (mutArray filt)
 ```
-::::
 
 To add an element to the Bloom filter, we set all of the bits indicated
 by the hash function. We use the `mod` function to ensure that all of
 the hashes stay within the bounds of our array, and isolate our code
 that computes offsets into the bit array in one function.
 
-:::: captioned-content
-::: caption
 BloomFilter/Mutable.hs
-:::
 
 ``` haskell
 insert :: MutBloom s a -> a -> ST s ()
@@ -340,16 +313,12 @@ indices filt elt = do
   modulus <- length filt
   return $ map (`mod` modulus) (mutHash filt elt)
 ```
-::::
 
 Testing for membership is no more difficult. If every bit indicated by
 the hash function is set, we consider an element to be present in the
 Bloom filter.
 
-:::: captioned-content
-::: caption
 BloomFilter/Mutable.hs
-:::
 
 ``` haskell
 elem, notElem :: a -> MutBloom s a -> ST s Bool
@@ -359,15 +328,11 @@ elem elt filt = indices filt elt >>=
 
 notElem elt filt = not `liftM` elem elt filt
 ```
-::::
 
 We need to write a small supporting function: a monadic version of
 `all`, which we will call `allM`.
 
-:::: captioned-content
-::: caption
 BloomFilter/Mutable.hs
-:::
 
 ``` haskell
 allM :: Monad m => (a -> m Bool) -> [a] -> m Bool
@@ -378,17 +343,13 @@ allM p (x:xs) = do
     else return False
 allM _ [] = return True
 ```
-::::
 
 ## The immutable API
 
 Our interface to the immutable Bloom filter has the same structure as
 the mutable API.
 
-:::: captioned-content
-::: caption
 BloomFilter.hs
-:::
 
 ``` haskell
 module BloomFilter
@@ -420,16 +381,12 @@ elt `elem` filt   = all test (blmHash filt elt)
 notElem :: a -> Bloom a -> Bool
 elt `notElem` filt = not (elt `elem` filt)
 ```
-::::
 
 We provide an easy-to-use means to create an immutable Bloom filter, via
 a `fromList` function. This hides the `ST` monad from our users, so that
 they only see the immutable type.
 
-:::: captioned-content
-::: caption
 BloomFilter.hs
-:::
 
 ``` haskell
 fromList :: (a -> [Word32])    -- family of hash functions to use
@@ -442,7 +399,6 @@ fromList hash numBits values =
          mapM_ (insert mb) values
          return (mutArray mb)
 ```
-::::
 
 The key to this function is `runSTUArray`. We mentioned earlier that in
 order to return an immutable array from the `ST` monad, we must freeze a
@@ -469,10 +425,7 @@ important decisions unresolved. We still have to choose a function that
 can generate many hash values, and determine what the capacity of a
 Bloom filter should be.
 
-:::: captioned-content
-::: caption
 BloomFilter/Easy.hs
-:::
 
 ``` haskell
 easyList :: (Hashable a)
@@ -480,7 +433,6 @@ easyList :: (Hashable a)
          -> [a]           -- values to populate the filter with
          -> Either String (B.Bloom a)
 ```
-::::
 
 Here is a possible "friendlier" way to create a Bloom filter. It
 leaves responsibility for hashing values in the hands of a type class,
@@ -530,10 +482,7 @@ to them. The specific source file that we need from that site is named
 [`lookup3.c`](http://burtleburtle.net/bob/c/lookup3.c). We create a
 `cbits` directory and download it to there.
 
-:::: note
-::: title
 Note
-:::
 
 A little editing
 
@@ -542,7 +491,6 @@ a macro named `SELF_TEST` defined. To use this source file as a library,
 you *must* delete this line or comment it out. If you forget to do so,
 the `main` function defined near the bottom of the file will supersede
 the `main` of any Haskell program you link this library against.
-::::
 
 There remains one hitch: we will frequently need seven or even ten hash
 functions. We really don't want to scrape together that many different
@@ -583,10 +531,7 @@ accept two salts.
 
 Here are our Haskell bindings to these functions.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 {-# LANGUAGE BangPatterns, ForeignFunctionInterface #-}
@@ -614,7 +559,6 @@ foreign import ccall unsafe "lookup3.h hashword2" hashWord2
 foreign import ccall unsafe "lookup3.h hashlittle2" hashLittle2
 
 ```
-::::
 
 We have specified that the definitions of the functions can be found in
 the `lookup3.h` header file that we just created.
@@ -623,10 +567,7 @@ For convenience and efficiency, we will combine the 32-bit salts
 consumed, and the hash values computed, by the Jenkins hash functions
 into a single 64-bit value.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 hashIO :: Ptr a    -- value to hash
@@ -644,7 +585,6 @@ hashIO ptr bytes salt =
           | otherwise        = hashLittle2 ptr bytes p1 p2
         words = bytes `div` 4
 ```
-::::
 
 Without explicit types around to describe what is happening, the above
 code is not completely obvious. The `with` function allocates room for
@@ -669,10 +609,7 @@ We don't want clients of this module to be stuck fiddling with
 low-level details, so we use a type class to provide a clean, high-level
 interface.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 class Hashable a where
@@ -683,15 +620,11 @@ class Hashable a where
 hash :: Hashable a => a -> Word64
 hash = hashSalt 0x106fc397cf62f64d3
 ```
-::::
 
 We also provide a number of useful implementations of this type class.
 To hash basic types, we must write a little boilerplate code.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 hashStorable :: Storable a => Word64 -> a -> Word64
@@ -702,21 +635,16 @@ instance Hashable Char   where hashSalt = hashStorable
 instance Hashable Int    where hashSalt = hashStorable
 instance Hashable Double where hashSalt = hashStorable
 ```
-::::
 
 We might prefer to use the `Storable` type class to write just one
 declaration, as follows:
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 instance Storable a => Hashable a where
     hashSalt = hashStorable
 ```
-::::
 
 Unfortunately, Haskell does not permit us to write instances of this
 form, as allowing them would make the type system *undecidable*: they
@@ -725,10 +653,7 @@ restriction on undecidable types forces us to write out individual
 declarations. It does not, however, pose a problem for a definition such
 as this one.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 hashList :: (Storable a) => Word64 -> [a] -> IO Word64
@@ -740,7 +665,6 @@ hashList salt xs =
 instance (Storable a) => Hashable [a] where
     hashSalt salt xs = unsafePerformIO $ hashList salt xs
 ```
-::::
 
 The compiler will accept this instance, so we gain the ability to hash
 values of many list types[^3]. Most importantly, since `Char` is an
@@ -750,10 +674,7 @@ For tuple types, we take advantage of function composition. We take a
 salt in at one end of the composition pipeline, and use the result of
 hashing each tuple element as the salt for the next element.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 hash2 :: (Hashable a) => a -> Word64 -> Word64
@@ -765,16 +686,12 @@ instance (Hashable a, Hashable b) => Hashable (a,b) where
 instance (Hashable a, Hashable b, Hashable c) => Hashable (a,b,c) where
     hashSalt salt (a,b,c) = hash2 c . hash2 b . hash2 a $ salt
 ```
-::::
 
 To hash `ByteString` types, we write special instances that plug
 straight into the internals of the `ByteString` types. This gives us
 excellent hashing performance.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 hashByteString :: Word64 -> Strict.ByteString -> IO Word64
@@ -796,7 +713,6 @@ instance Hashable Lazy.ByteString where
     hashSalt salt bs = unsafePerformIO $
                        foldM hashByteString salt (rechunk bs)
 ```
-::::
 
 Since a lazy `ByteString` is represented as a series of chunks, we must
 be careful with the boundaries between those chunks. The string
@@ -816,10 +732,7 @@ functions, yielding many more hashes. The resulting hashes are of good
 enough quality for our needs, and far cheaper than computing many
 distinct hashes.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 doubleHash :: Hashable a => Int -> a -> [Word32]
@@ -829,17 +742,13 @@ doubleHash numHashes value = [h1 + h2 * i | i <- [0..num]]
           h2  = fromIntegral h
           num = fromIntegral numHashes
 ```
-::::
 
 ### Implementing the easy creation function
 
 In the `BloomFilter.Easy` module, we use our new `doubleHash` function
 to define the `easyList` function whose type we defined earlier.
 
-:::: captioned-content
-::: caption
 BloomFilter/Easy.hs
-:::
 
 ``` haskell
 module BloomFilter.Easy
@@ -867,17 +776,13 @@ easyList errRate values =
       Right (bits,hashes) -> Right filt
         where filt = B.fromList (doubleHash hashes) bits values
 ```
-::::
 
 This depends on a `suggestSizing` function that estimates the best
 combination of filter size and number of hashes to compute, based on our
 desired false positive rate and the maximum number of elements that we
 expect the filter to contain.
 
-:::: captioned-content
-::: caption
 BloomFilter/Easy.hs
-:::
 
 ``` haskell
 suggestSizing
@@ -900,7 +805,6 @@ sizings capacity errRate =
     [(((-k) * cap / log (1 - (errRate ** (1 / k)))), k) | k <- [1..50]]
   where cap = fromIntegral capacity
 ```
-::::
 
 We perform some rather paranoid checking. For instance, the `sizings`
 function suggests pairs of array size and hash count, but it does not
@@ -978,17 +882,13 @@ The `extra-source-files` directive has no effect on a build: it directs
 Cabal to bundle some extra files if we run `runhaskell
 Setup sdist` to create a source tarball for redistribution.
 
-:::: tip
-::: title
 Tip
-:::
 
 Property names are case insensitive
 
 When reading a property (the text before a "`:`" character), Cabal
 ignores case, so it treats `extra-source-files` and `Extra-Source-Files`
 as the same.
-::::
 
 ### Dealing with different build setups
 
@@ -1145,10 +1045,7 @@ file. We must also tell it to *install* the header file
 (`Install-Includes`), as otherwise client code will fail to find the
 header file when we try to build it.
 
-:::: tip
-::: title
 Tip
-:::
 
 The value of `-fvia-C` with the FFI
 
@@ -1164,7 +1061,6 @@ code. As an example, on most 64-bit machines, a `CInt` is 32 bits wide,
 and a `CSize` is 64 bits wide. If we accidentally use one type to
 describe a parameter for an FFI binding when we should use the other, we
 are likely to cause data corruption or a crash.
-::::
 
 ## Testing with QuickCheck
 
@@ -1172,10 +1068,7 @@ Before we pay any attention to performance, we want to establish that
 our Bloom filter behaves correctly. We can easily use QuickCheck to test
 some basic properties.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -1189,15 +1082,11 @@ import qualified BloomFilter.Easy as B
 import qualified Data.ByteString as Strict
 import qualified Data.ByteString.Lazy as Lazy
 ```
-::::
 
 We will not use the normal `quickCheck` function to test our properties,
 as the 100 test inputs that it generates do not provide much coverage.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 handyCheck :: Testable a => Int -> a -> IO ()
@@ -1206,7 +1095,6 @@ handyCheck limit = check defaultConfig {
                    , configEvery   = \_ _ -> ""
                    }
 ```
-::::
 
 Our first task is to ensure that if we add a value to a Bloom filter, a
 subsequent membership test will always report it as present, no matter
@@ -1237,10 +1125,7 @@ Following this idea, when we generate desired false positive rates, we
 could eliminate zeroes and ones from whatever QuickCheck gives us, but
 instead we construct values in an interval that will always be valid.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 falsePositive :: Gen Double
@@ -1255,7 +1140,6 @@ prop_one_present _ elt =
       B.easyList errRate [elt] =~> \filt ->
         elt `B.elem` filt
 ```
-::::
 
 Our small combinator, `(=~>)`, lets us filter out failures of
 `easyList`: if it fails, the test automatically passes.
@@ -1305,10 +1189,7 @@ ghci> handyCheck 5000 $ prop_one_present (undefined :: Double)
 If we populate a Bloom filter with many elements, they should all be
 present afterwards.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 prop_all_present _ xs =
@@ -1316,7 +1197,6 @@ prop_all_present _ xs =
       B.easyList errRate xs =~> \filt ->
         all (`B.elem` filt) xs
 ```
-::::
 
 This test also succeeds.
 
@@ -1335,10 +1215,7 @@ The QuickCheck library does not provide `Arbitrary` instances for
 `ByteString` directly, we will use a `pack` function to create one from
 a `[Word8]`.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 instance Arbitrary Lazy.ByteString where
@@ -1349,16 +1226,12 @@ instance Arbitrary Strict.ByteString where
     arbitrary = Strict.pack `fmap` arbitrary
     coarbitrary = coarbitrary . Strict.unpack
 ```
-::::
 
 Also missing from QuickCheck are `Arbitrary` instances for the
 fixed-width types defined in `Data.Word` and `Data.Int`. We need to at
 least create an `Arbitrary` instance for `Word8`.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 instance Random Word8 where
@@ -1369,15 +1242,11 @@ instance Arbitrary Word8 where
     arbitrary = choose (minBound, maxBound)
     coarbitrary = integralCoarbitrary
 ```
-::::
 
 We support these instances with a few common functions so that we can
 reuse them when writing instances for other integral types.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 integralCoarbitrary n =
@@ -1397,7 +1266,6 @@ instance Arbitrary Word32 where
     arbitrary = choose (minBound, maxBound)
     coarbitrary = integralCoarbitrary
 ```
-::::
 
 With these `Arbitrary` instances created, we can try our existing
 properties on the `ByteString` types.
@@ -1439,10 +1307,7 @@ between these values is not easy to predict.
 
 We can try to ignore the complexity.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 prop_suggest_try1 =
@@ -1452,7 +1317,6 @@ prop_suggest_try1 =
         Left err -> False
         Right (bits,hashes) -> bits > 0 && bits < maxBound && hashes > 0
 ```
-::::
 
 Not surprisingly, this gives us a test that is not actually useful.
 
@@ -1485,10 +1349,7 @@ Since we can't easily predict which combinations will cause this
 problem, we must resort to eliminating sizes and false positive rates
 before they bite us.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 prop_suggest_try2 =
@@ -1500,7 +1361,6 @@ prop_suggest_try2 =
   where sane (bits,hashes) = bits > 0 && bits < maxBound && hashes > 0
         maxWord32 = maxBound :: Word32
 ```
-::::
 
 If we try this with a small number of tests, it seems to work well.
 
@@ -1525,10 +1385,7 @@ ghci> handyCheck 10000 $ prop_suggest_try2
 To deal with this, we try to reduce the likelihood of generating inputs
 that we will subsequently reject.
 
-:::: captioned-content
-::: caption
 BloomCheck.hs
-:::
 
 ``` haskell
 prop_suggestions_sane =
@@ -1540,7 +1397,6 @@ prop_suggestions_sane =
   where sane (bits,hashes) = bits > 0 && bits < maxBound && hashes > 0
         maxWord32 = maxBound :: Word32
 ```
-::::
 
 Finally, we have a robust looking property.
 
@@ -1561,10 +1417,7 @@ that we haven't inadvertently broken anything.
 Our first step is to write a small test application that we can use for
 timing.
 
-:::: captioned-content
-::: caption
 WordTest.hs
-:::
 
 ``` haskell
 module Main where
@@ -1591,7 +1444,6 @@ instance NFData BS.ByteString where
 instance NFData (B.Bloom a) where
     rnf filt = B.length filt `seq` ()
 ```
-::::
 
 We borrow the `rnf` function that we introduced in [the section called
 "Separating algorithm from
@@ -1603,10 +1455,7 @@ evaluating it.
 The application creates a Bloom filter from the contents of a file,
 treating each line as an element to add to the filter.
 
-:::: captioned-content
-::: caption
 WordTest.hs
-:::
 
 ``` haskell
 main = do
@@ -1635,7 +1484,6 @@ main = do
     timed "query every element" $
       mapM_ print $ filter (not . (`B.elem` filt)) words
 ```
-::::
 
 We use `timed` to account for the costs of three distinct phases:
 reading and splitting the data into lines; populating the Bloom filter;
@@ -1709,10 +1557,7 @@ length                         BloomFilter.Mutable    1.5    1.0
 Our `doubleHash` function immediately leaps out as a huge time and
 memory sink.
 
-:::: tip
-::: title
 Tip
-:::
 
 Always profile before---and while---you tune!
 
@@ -1720,14 +1565,10 @@ Before our first profiling run, we did not expect `doubleHash` to even
 appear in the top ten of "hot" functions, much less to dominate it.
 Without this knowledge, we would probably have started tuning something
 entirely irrelevant.
-::::
 
 Recall that the body of `doubleHash` is an innocuous list comprehension.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 doubleHash :: Hashable a => Int -> a -> [Word32]
@@ -1737,7 +1578,6 @@ doubleHash numHashes value = [h1 + h2 * i | i <- [0..num]]
           h2  = fromIntegral h
           num = fromIntegral numHashes
 ```
-::::
 
 Since the function returns a list, it makes *some* sense that it
 allocates so much memory, but when code this simple performs so badly,
@@ -1865,10 +1705,7 @@ behaviours.
 To address these problems, we make a few tiny changes to our
 `doubleHash` function.
 
-:::: captioned-content
-::: caption
 BloomFilter/Hash.hs
-:::
 
 ``` haskell
 doubleHash :: Hashable a => Int -> a -> [Word32]
@@ -1882,7 +1719,6 @@ doubleHash numHashes value = go 0
           h   = hashSalt 0x9150a946c4a8966e value
           num = fromIntegral numHashes
 ```
-::::
 
 We have manually fused the `[0..num]` expression and the code that
 consumes it into a single loop. We have added strictness annotations to

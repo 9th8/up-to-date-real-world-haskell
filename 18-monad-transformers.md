@@ -45,10 +45,7 @@ written using techniques we are already familiar with. The function
 below recurses into a directory tree, and returns a list of the number
 of entries it finds at each level of the tree.
 
-:::: captioned-content
-::: caption
 CountEntries.hs
-:::
 
 ``` haskell
 module CountEntries (listDirectory, countEntriesTrad) where
@@ -72,7 +69,6 @@ countEntriesTrad path = do
               else return []
   return $ (path, length contents) : concat rest
 ```
-::::
 
 We'll now look at using the `Writer` monad to achieve the same goal.
 Since this monad lets us record a value wherever we want, we don't need
@@ -99,10 +95,7 @@ combination of monad transformer and underlying monad will thus have the
 type `WriterT [(FilePath, Int)] IO a`. This stack of monad transformer
 and monad is itself a monad.
 
-:::: captioned-content
-::: caption
 CountEntriesT.hs
-:::
 
 ``` haskell
 module CountEntriesT (listDirectory, countEntries) where
@@ -123,7 +116,6 @@ countEntries path = do
     isDir <- liftIO . doesDirectoryExist $ newName
     when isDir $ countEntries newName
 ```
-::::
 
 This code is not terribly different from our earlier version. We use
 `liftIO` to expose the `IO` monad where necessary, and `tell` to record
@@ -187,10 +179,7 @@ environment using the `r -> r` function, and executes its action in the
 modified environment. To make this idea more concrete, here is a simple
 example.
 
-:::: captioned-content
-::: caption
 LocalReader.hs
-:::
 
 ``` haskell
 import Control.Monad.Reader
@@ -206,7 +195,6 @@ localExample = do
   c <- myName "Third"
   return (a, b, c)
 ```
-::::
 
 If we execute the `localExample` action in `ghci`, we can see that the
 effect of modifying the environment is confined to one place.
@@ -259,10 +247,7 @@ reworking of the `countEntries` function we developed earlier. We will
 modify it to recurse no deeper into a directory tree than a given
 amount, and to record the maximum depth it reaches.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 import System.Directory
@@ -278,21 +263,16 @@ data AppState = AppState {
       stDeepestReached :: Int
     } deriving (Show)
 ```
-::::
 
 We use `ReaderT` to store configuration data, in the form of the maximum
 depth of recursion we will perform. We also use `StateT` to record the
 maximum depth we reach during an actual traversal.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 type App = ReaderT AppConfig (StateT AppState IO)
 ```
-::::
 
 Our transformer stack has `IO` on the bottom, then `StateT`, with
 `ReaderT` on top. In this particular case, it doesn't matter whether we
@@ -302,25 +282,18 @@ Even a small stack of monad transformers quickly develops an unwieldy
 type name. We can use a `type` alias to reduce the lengths of the type
 signatures that we write.
 
-:::::: note
-::: title
 Note
-:::
 
 Where's the missing type parameter?
 
 You might have noticed that our `type` synonym doesn't have the usual
 type parameter `a` that we associate with a monadic type:
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 type App2 a = ReaderT AppConfig (StateT AppState IO) a
 ```
-::::
 
 Both `App` and `App2` work fine in normal type signatures. The
 difference arises when we try to construct another type from one of
@@ -337,14 +310,10 @@ create another type.
 This restriction is limited to type synonyms. When we create a monad
 transformer stack, we usually wrap it with a `newtype` (as we will see
 below). As a result, we will rarely run into this problem in practice.
-::::::
 
 The execution function for our monad stack is simple.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 runApp :: App a -> Int -> IO (a, AppState)
@@ -353,7 +322,6 @@ runApp k maxDepth =
         state = AppState 0
     in runStateT (runReaderT k config) state
 ```
-::::
 
 Our application of `runReaderT` removes the `ReaderT` transformer
 wrapper, while `runStateT` removes the `StateT` wrapper, leaving us with
@@ -363,10 +331,7 @@ Compared to earlier versions, the only complications we have added to
 our traversal function are slight: we track our current depth, and
 record the maximum depth we reach.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 constrainedCount :: Int -> FilePath -> App [(FilePath, Int)]
@@ -386,7 +351,6 @@ constrainedCount curDepth path = do
               else return []
   return $ (path, length contents) : concat rest
 ```
-::::
 
 Our use of monad transformers here is admittedly a little contrived.
 Because we're writing a single straightforward function, we're not
@@ -404,10 +368,7 @@ state to manage, but we'd still use `StateT` to encapsulate it.
 We can use the usual `newtype` technique to erect a solid barrier
 between the implementation of our custom monad and its interface.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 newtype MyApp a = MyA {
@@ -421,7 +382,6 @@ runMyApp k maxDepth =
         state = AppState 0
     in runStateT (runReaderT (runA k) config) state
 ```
-::::
 
 If we export the `MyApp` type constructor and the `runMyApp` execution
 function from a module, client code will not be able to tell that the
@@ -520,44 +480,32 @@ system to the level we're currently working in.
 Let's revisit the `App` monad stack we defined earlier (before we
 wrapped it with a `newtype`).
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 type App = ReaderT AppConfig (StateT AppState IO)
 ```
-::::
 
 If we want to access the `AppState` carried by the `StateT`, we would
 usually rely on `mtl`'s type classes and instances to handle the
 plumbing for us.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 implicitGet :: App AppState
 implicitGet = get
 ```
-::::
 
 The `lift` function lets us achieve the same effect, by lifting `get`
 from `StateT` into `ReaderT`.
 
-:::: captioned-content
-::: caption
 UglyStack.hs
-:::
 
 ``` haskell
 explicitGet :: App AppState
 explicitGet = lift get
 ```
-::::
 
 Obviously, when we can let `mtl` do this work for us, we end up with
 cleaner code, but this is not always possible.
@@ -568,53 +516,38 @@ One case in which we *must* use `lift` is when we create a monad
 transformer stack in which instances of the same type class appear at
 multiple levels.
 
-:::: captioned-content
-::: caption
 StackStack.hs
-:::
 
 ``` haskell
 type Foo = StateT Int (State String)
 ```
-::::
 
 If we try to use the `put` action of the `MonadState` type class, the
 instance we will get is that of `StateT Int`, because it's at the top
 of the stack.
 
-:::: captioned-content
-::: caption
 StackStack.hs
-:::
 
 ``` haskell
 outerPut :: Int -> Foo ()
 outerPut = put
 ```
-::::
 
 In this case, the only way we can access the underlying `State` monad's
 `put` is through use of `lift`.
 
-:::: captioned-content
-::: caption
 StackStack.hs
-:::
 
 ``` haskell
 innerPut :: String -> Foo ()
 innerPut = lift . put
 ```
-::::
 
 Sometimes, we need to access a monad more than one level down the stack,
 in which case we must compose calls to `lift`. Each composed use of
 `lift` gives us access to one deeper level.
 
-:::: captioned-content
-::: caption
 StackStack.hs
-:::
 
 ``` haskell
 type Bar = ReaderT Bool Foo
@@ -622,7 +555,6 @@ type Bar = ReaderT Bool Foo
 barPut :: String -> Bar ()
 barPut = lift . lift . put
 ```
-::::
 
 When we need to use `lift`, it can be good style to write wrapper
 functions that do the lifting for us, as above, and to use those. The
@@ -646,32 +578,24 @@ This monad transformer modifies the behaviour of an underlying monad
 In order to turn `m (Maybe a)` into a `Monad` instance, we must make it
 a distinct type, via a `newtype` declaration.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 newtype MaybeT m a = MaybeT {
       runMaybeT :: m (Maybe a)
     }
 ```
-::::
 
 We now need to define the three standard monad functions. The most
 complex is `(>>=)`, and its innards shed the most light on what we are
 actually doing. Before we delve into its operation, let us first take a
 look at its type.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 bindMT :: (Monad m) => MaybeT m a -> (a -> MaybeT m b) -> MaybeT m b
 ```
-::::
 
 To understand this type signature, hark back to our discussion of
 multi-parameter type classes in [the section called "Multi-parameter
@@ -685,10 +609,7 @@ The trick to understanding the body of our `(>>=)` implementation is
 that everything inside the `do` block executes in the *underlying* monad
 `m`, whatever that is.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 x `bindMT` f = MaybeT $ do
@@ -697,7 +618,6 @@ x `bindMT` f = MaybeT $ do
                    Nothing -> return Nothing
                    Just y -> runMaybeT (f y)
 ```
-::::
 
 Our `runMaybeT` function unwraps the result contained in `x`. Next,
 recall that the `<-` symbol desugars to `(>>=)`: a monad transformer's
@@ -711,25 +631,18 @@ that we are relying on the underlying monad's `(>>=)` implementation.
 Here is a more idiomatic version of `(>>=)` for `MaybeT` that makes this
 clearer.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 x `altBindMT` f =
     MaybeT $ runMaybeT x >>= maybe (return Nothing) (runMaybeT . f)
 ```
-::::
 
 Now that we understand what `(>>=)` is doing, our implementations of
 `return` and `fail` need no explanation, and neither does our `Monad`
 instance.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 returnMT :: (Monad m) => a -> MaybeT m a
@@ -743,7 +656,6 @@ instance (Monad m) => Monad (MaybeT m) where
   (>>=) = bindMT
   fail = failMT
 ```
-::::
 
 ### Creating a monad transformer
 
@@ -751,16 +663,12 @@ To turn our type into a monad transformer, we must provide an instance
 of the `MonadTrans` class, so that a user can access the underlying
 monad.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 instance MonadTrans MaybeT where
     lift m = MaybeT (Just `liftM` m)
 ```
-::::
 
 The underlying monad starts out with a type parameter of a: we
 "inject" the `Just` constructor so it will acquire the type that we
@@ -771,10 +679,7 @@ need, `Maybe a`. We then hide the monad with our `MaybeT` constructor.
 Once we have an instance for `MonadTrans` defined, we can use it to
 define instances for the umpteen other `mtl` type classes.
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 instance (MonadIO m) => MonadIO (MaybeT m) where
@@ -786,7 +691,6 @@ instance (MonadState s m) => MonadState s (MaybeT m) where
 
 -- ... and so on for MonadReader, MonadWriter, etc ...
 ```
-::::
 
 Because several of the `mtl` type classes use functional dependencies,
 some of our instance declarations require us to considerably relax
@@ -794,16 +698,12 @@ GHC's usual strict type checking rules. (If we were to forget any of
 these directives, the compiler would helpfully advise us which ones we
 needed in its error messages.)
 
-:::: captioned-content
-::: caption
 MaybeT.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses,
              UndecidableInstances #-}
 ```
-::::
 
 Is it better to use `lift` explicitly, or to spend time writing these
 boilerplate instances? That depends on what we expect to do with our
@@ -823,10 +723,7 @@ called "Implicit
 state"](10-parsing-a-binary-data-format.org::*Implicit state)
 customised to our needs.
 
-:::: captioned-content
-::: caption
 MaybeTParse.hs
-:::
 
 ``` haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -854,7 +751,6 @@ newtype Parse a = P {
 evalParse :: Parse a -> L.ByteString -> Maybe a
 evalParse m s = evalState (runMaybeT (runP m)) (ParseState s 0)
 ```
-::::
 
 ### Exercises
 
@@ -867,10 +763,7 @@ evalParse m s = evalState (runMaybeT (runP m)) (ParseState s 0)
     implement a more capable `Parse` monad that can report an error
     message if parsing fails.
 
-    :::: tip
-    ::: title
     Tip
-    :::
 
     Tip
 
@@ -883,7 +776,6 @@ evalParse m s = evalState (runMaybeT (runP m)) (ParseState s 0)
 
     *Hint*: If you follow this suggestion, you'll probably need to use
     the `FlexibleInstances` language extension in your definition.
-    ::::
 
 ## Transformer stacking order is important
 
@@ -902,10 +794,7 @@ Here's a case that more dramatically demonstrates the importance of
 ordering. Suppose we have a computation that might fail, and we want to
 log the circumstances under which it does so.
 
-:::: captioned-content
-::: caption
 MTComposition.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleContexts #-}
@@ -917,14 +806,10 @@ problem = do
   tell ["this is where i fail"]
   fail "oops"
 ```
-::::
 
 Which of these monad stacks will give us the information we need?
 
-:::: captioned-content
-::: caption
 MTComposition.hs
-:::
 
 ``` haskell
 type A = WriterT [String] Maybe
@@ -937,7 +822,6 @@ a = problem
 b :: B ()
 b = problem
 ```
-::::
 
 Let's try the alternatives in `ghci`.
 
@@ -1032,10 +916,7 @@ One of the principal reasons that we use monads is that they let us
 specify an ordering for effects. Look again at a small snippet of code
 we wrote earlier.
 
-:::: captioned-content
-::: caption
 MTComposition.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleContexts #-}
@@ -1047,7 +928,6 @@ problem = do
   tell ["this is where i fail"]
   fail "oops"
 ```
-::::
 
 Because we are executing in a monad, we are guaranteed that the effect
 of the `tell` will occur before the effect of `fail`. The problem is

@@ -82,10 +82,7 @@ Nothing
 The function that calls `divBy` can now use a `case` statement to see if
 the call was successful, just as `divBy` does when it calls itself.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -102,7 +99,6 @@ divBy numerator denominators =
 
 We will be avoiding the monadic implementation in this chapter for
 simplicity, but wanted to point out that it exists.
-::::
 
 1.  Loss and Preservation of Laziness
 
@@ -383,17 +379,13 @@ Left "divBy: division by 0"
     Left DivBy0
     ```
 
-    :::: warning
-    ::: title
     Warning
-    :::
 
     Warning
 
     All of these `Either` examples suffer from the lack of laziness that
     our early `Maybe` examples suffered from. We address that with an
     exercise question at the end of this chapter.
-    ::::
 
 2.  Monadic Use of `Either`
 
@@ -550,17 +542,13 @@ Left divide by zero
 There, that's what was expected. This worked for both `undefined` and
 our division by zero example.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 Remember: whenever you are trying to catch exceptions thrown by pure
 code, use `evaluate` instead of `return` inside your exception-catching
 function.
-::::
 
 ### Using handle
 
@@ -862,16 +850,12 @@ throwSqlErrorIO state nativeerror errormsg =
     evaluate (throwSqlError state nativeerror errormsg)
 ```
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 As a reminder, `evaluate`{.verbatim} is like `return` but forces the
 evaluation of its argument.
-::::
 
 This completes our dynamic exception support. That was a lot of code,
 and you may not have needed that much, but we wanted to give you an
@@ -937,17 +921,13 @@ its own special exception machinery, separate from that provided the
     We will not be kicked out to the `IO` monad.
 -   We control the type our exceptions will have.
 
-:::: note
-::: title
 Note
-:::
 
 Do not confuse `ErrorT` with regular exceptions
 
 If we use the `throw` function from `Control.Exception` inside `ErrorT`
 (or if we use `error` or `undefined`), we will *still* be bounced out to
 the `IO` monad.
-::::
 
 As with other `mtl` monads, the interface that `ErrorT` provides is
 defined by a type class.

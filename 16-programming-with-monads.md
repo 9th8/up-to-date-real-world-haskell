@@ -38,10 +38,7 @@ parsed an `application/x-www-form-urlencoded` string, and represented
 the result as an alist of `[(String, Maybe String)]`. Let's say we want
 to use one of these alists to fill out a data structure.
 
-:::: captioned-content
-::: caption
 MovieReview.hs
-:::
 
 ``` haskell
 import Control.Monad
@@ -52,14 +49,10 @@ data MovieReview = MovieReview {
     , revReview :: String
     }
 ```
-::::
 
 We'll begin by belabouring the obvious with a naive function.
 
-:::: captioned-content
-::: caption
 MovieReview.hs
-:::
 
 ``` haskell
 simpleReview :: [(String, Maybe String)] -> Maybe MovieReview
@@ -75,7 +68,6 @@ simpleReview alist =
         _ -> Nothing -- no user
     _ -> Nothing -- no title
 ```
-::::
 
 It only returns a `MovieReview` if the alist contains all of the
 necessary values, and they're all non-empty strings. However, the fact
@@ -86,10 +78,7 @@ intimate details of the representation of an alist.
 Since we're now well acquainted with the `Maybe` monad, we can tidy up
 the staircasing.
 
-:::: captioned-content
-::: caption
 MovieReview.hs
-:::
 
 ``` haskell
 maybeReview alist = do
@@ -102,7 +91,6 @@ lookup1 key alist = case lookup key alist of
                       Just (Just s@(_:_)) -> Just s
                       _ -> Nothing
 ```
-::::
 
 Although this is much tidier, we're still repeating ourselves. We can
 take advantage of the fact that the `MovieReview` constructor acts as a
@@ -110,10 +98,7 @@ normal, pure function by *lifting* it into the monad, as we discussed in
 [the section called "Mixing pure and monadic
 code"](15-monads.org::*Mixing pure and monadic code)
 
-:::: captioned-content
-::: caption
 MovieReview.hs
-:::
 
 ``` haskell
 liftedReview alist =
@@ -121,7 +106,6 @@ liftedReview alist =
                        (lookup1 "user" alist)
                        (lookup1 "review" alist)
 ```
-::::
 
 We still have some repetition here, but it is dramatically reduced, and
 also more difficult to remove.
@@ -166,10 +150,7 @@ which case the result type will be
 `Maybe (String -> (String -> MovieReview))`. We can pass this, in turn,
 to `ap`, and continue to chain until we end up with this definition.
 
-:::: captioned-content
-::: caption
 MovieReview.hs
-:::
 
 ``` haskell
 apReview alist =
@@ -177,7 +158,6 @@ apReview alist =
                    `ap` lookup1 "user" alist
                    `ap` lookup1 "review" alist
 ```
-::::
 
 We can chain applications of `ap` like this as many times as we need to,
 thereby bypassing the `liftM` family of functions.
@@ -201,10 +181,7 @@ are synonyms.
 
 Here's a simple representation of a person's phone numbers.
 
-:::: captioned-content
-::: caption
 VCard.hs
-:::
 
 ``` haskell
 import Control.Monad
@@ -221,16 +198,12 @@ nils = [(Mobile, "+47-922-55-512"), (Business, "+47-922-12-121"),
 
 twalumba = [(Business, "+260-02-55-5121")]
 ```
-::::
 
 Suppose we want to get in touch with someone to make a personal call. We
 don't want their business number, and we'd prefer to use their home
 number (if they have one) instead of their mobile number.
 
-:::: captioned-content
-::: caption
 VCard.hs
-:::
 
 ``` haskell
 onePersonalPhone :: [(Context, Phone)] -> Maybe Phone
@@ -238,16 +211,12 @@ onePersonalPhone ps = case lookup Home ps of
                         Nothing -> lookup Mobile ps
                         Just n -> Just n
 ```
-::::
 
 Of course, if we use `Maybe` as the result type, we can't accommodate
 the possibility that someone might have more than one number that meet
 our criteria. For that, we switch to a list.
 
-:::: captioned-content
-::: caption
 VCard.hs
-:::
 
 ``` haskell
 allBusinessPhones :: [(Context, Phone)] -> [Phone]
@@ -258,7 +227,6 @@ allBusinessPhones ps = map snd numbers
 
 contextIs a (b, _) = a == b
 ```
-::::
 
 Notice that these two functions structure their `case` expressions
 similarly: one alternative handles the case where the first lookup
@@ -276,26 +244,19 @@ ghci> allBusinessPhones nils
 Haskell's `Control.Monad` module defines a type class, `MonadPlus`,
 that lets us abstract the common pattern out of our `case` expressions.
 
-:::: captioned-content
-::: caption
 MonadPlus.hs
-:::
 
 ``` haskell
 class Monad m => MonadPlus m where
    mzero :: m a
    mplus :: m a -> m a -> m a
 ```
-::::
 
 The value `mzero` represents an empty result, while `mplus` combines two
 results into one. Here are the standard definitions of `mzero` and
 `mplus` for `Maybe` and lists.
 
-:::: captioned-content
-::: caption
 MonadPlus.hs
-:::
 
 ``` haskell
 instance MonadPlus [] where
@@ -308,15 +269,11 @@ instance MonadPlus Maybe where
    Nothing `mplus` ys  = ys
    xs      `mplus` _ = xs
 ```
-::::
 
 We can now use `mplus` to get rid of our `case` expressions entirely.
 For variety, let's fetch one business and all personal phone numbers.
 
-:::: captioned-content
-::: caption
 VCard.hs
-:::
 
 ``` haskell
 oneBusinessPhone :: [(Context, Phone)] -> Maybe Phone
@@ -326,7 +283,6 @@ allPersonalPhones :: [(Context, Phone)] -> [Phone]
 allPersonalPhones ps = map snd $ filter (contextIs Home) ps `mplus`
                                  filter (contextIs Mobile) ps
 ```
-::::
 
 In these functions, because we know that `lookup` returns a value of
 type `Maybe`, and `filter` returns a list, it's obvious which version
@@ -347,10 +303,7 @@ lookup k ((x,y):xys) | x == k    = Just y
 We can easily generalise the result type to any instance of `MonadPlus`
 as follows.
 
-:::: captioned-content
-::: caption
 VCard.hs
-:::
 
 ``` haskell
 lookupM :: (MonadPlus m, Eq a) => a -> [(a, b)] -> m b
@@ -359,7 +312,6 @@ lookupM k ((x,y):xys)
     | x == k    = return y `mplus` lookupM k xys
     | otherwise = lookupM k xys
 ```
-::::
 
 This lets us get either no result or one, if our result type is `Maybe`;
 all results, if our result type is a list; or something more appropriate
@@ -429,31 +381,23 @@ we need to, and computation will short circuit at that point.
 In the `Control.Monad` module, the standard function `guard` packages up
 this idea in a convenient form.
 
-:::: captioned-content
-::: caption
 MonadPlus.hs
-:::
 
 ``` haskell
 guard        :: (MonadPlus m) => Bool -> m ()
 guard True   =  return ()
 guard False  =  mzero
 ```
-::::
 
 As a simple example, here's a function that takes a number `x` and
 computes its value modulo some other number `n`. If the result is zero,
 it returns `x`, otherwise the current monad's `mzero`.
 
-:::: captioned-content
-::: caption
 MonadPlus.hs
-:::
 
 ``` haskell
 x `zeroMod` n = guard ((x `mod` n) == 0) >> return x
 ```
-::::
 
 ## Adventures in hiding the plumbing
 
@@ -496,15 +440,11 @@ our monad is `Supply`. We'll provide the execution function,
 `runSupply`, with a list of values; it will be up to us to ensure that
 each one is unique.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 runSupply :: Supply s a -> [s] -> (a, [s])
 ```
-::::
 
 The monad won't care what the values are: they might be random numbers,
 or names for temporary files, or identifiers for HTTP cookies.
@@ -514,23 +454,16 @@ action will take the next one from the list and give it to the consumer.
 Each value is wrapped in a `Maybe` constructor in case the list isn't
 long enough to satisfy the demand.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 next :: Supply s (Maybe s)
 ```
-::::
 
 To hide our plumbing, in our module declaration we only export the type
 constructor, the execution function, and the `next` action.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 module Supply
@@ -540,7 +473,6 @@ module Supply
     , runSupply
     ) where
 ```
-::::
 
 Since a module that imports the library can't see the internals of the
 monad, it can't manipulate them.
@@ -548,17 +480,13 @@ monad, it can't manipulate them.
 Our plumbing is exceedingly simple: we use a `newtype` declaration to
 wrap the existing `State` monad.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 import Control.Monad.State
 
 newtype Supply s a = S (State [s] a)
 ```
-::::
 
 The `s` parameter is the type of the unique values we are going to
 supply, and `a` is the usual type parameter that we must provide in
@@ -577,10 +505,7 @@ All we'd be doing is wrapping and unwrapping the `State` monad's
 versions of `(>>=)` and `return` using our `s` value constructor. Here
 is how such code would look.
 
-:::: captioned-content
-::: caption
 AltSupply.hs
-:::
 
 ``` haskell
 import Control.Monad.State
@@ -600,22 +525,17 @@ instance Applicative (Supply s) where
 instance Monad (Supply s) where
     s >>= m = S (unwrapS s >>= unwrapS . m)
 ```
-::::
 
 Haskell programmers are not fond of boilerplate, and sure enough, GHC
 has a lovely language extension that eliminates the work. To use it, we
 add the following directive to the top of our source file, before the
 module header.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 ```
-::::
 
 Usually, we can only automatically derive instances of a handful of
 standard type classes, such as `Show` and `Eq`. As its name suggests,
@@ -625,15 +545,11 @@ declarations. If the type we're wrapping is an instance of any type
 class, the extensions can automatically make our new type an instance of
 that type class as follows.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 deriving (Monad)
 ```
-::::
 
 This takes the underlying type's implementations of `(>>=)` and
 `return`, adds the necessary wrapping and unwrapping with our `s` data
@@ -649,10 +565,7 @@ Sadly currently GHC is not able to automatically derive the required
 functor and applicative instance of our monad so we still need a little
 bit of boilerplate:
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 instance Functor (Supply s) where
@@ -662,15 +575,11 @@ instance Applicative (Supply s) where
     pure = return
     (<*>) = ap
 ```
-::::
 
 Now that we've seen the `GeneralizedNewtypeDeriving` technique, all
 that remains is to provide definitions of `next` and `runSupply`.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 next = S $ do st <- get
@@ -681,7 +590,6 @@ next = S $ do st <- get
 
 runSupply (S m) xs = runState m xs
 ```
-::::
 
 If we load our module into `ghci`, we can try it out in a few simple
 ways.
@@ -733,10 +641,7 @@ Using the `split` function, we can use one `StdGen` to generate an
 infinite list of random numbers to feed to `runSupply`, while we give
 the other back to the `IO` monad.
 
-:::: captioned-content
-::: caption
 RandomSupply.hs
-:::
 
 ``` haskell
 module RandomSupply where
@@ -750,7 +655,6 @@ randomsIO =
         let (a, b) = split g
         in (randoms a, b)
 ```
-::::
 
 If we've written this function properly, our example ought to print a
 different random number on each invocation.
@@ -796,10 +700,7 @@ instances"](6-using-typeclasses.org::*JSON type classes without overlapping inst
 We can use `first` to golf our definition of `randomsIO`, turning it
 into a one-liner.
 
-:::: captioned-content
-::: caption
 RandomGolf.hs
-:::
 
 ``` haskell
 import Control.Arrow (first)
@@ -808,7 +709,6 @@ import System.Random
 randomsIO_golfed :: Random a => IO [a]
 randomsIO_golfed = getStdRandom (first randoms . split)
 ```
-::::
 
 ## Separating interface from implementation
 
@@ -829,10 +729,7 @@ aside, though, and consider an alternative approach, one that is useful
 in many settings. We will separate the actions we can perform with the
 monad from how it works using a type class.
 
-:::: captioned-content
-::: caption
 SupplyClass.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -844,7 +741,6 @@ import qualified Supply as S
 class (Monad m) => MonadSupply s m | m -> s where
     next :: m (Maybe s)
 ```
-::::
 
 This type class defines the interface that any supply monad must
 implement. It bears careful inspection, since it uses several unfamiliar
@@ -895,16 +791,12 @@ simply give up with an error message.
 It's hard to picture what the relationship between `m` and `s` really
 means, so let's look at an instance of this type class.
 
-:::: captioned-content
-::: caption
 SupplyClass.hs
-:::
 
 ``` haskell
 instance MonadSupply s (S.Supply s) where
     next = S.next
 ```
-::::
 
 Here, the type variable `m` is replaced by the type `S.Supply s`. Thanks
 to our functional dependency, the type checker now knows that when it
@@ -935,10 +827,7 @@ If we save our type class and instance in a source file named
 `SupplyClass.hs`, we'll need to add a module header such as the
 following.
 
-:::: captioned-content
-::: caption
 SupplyClass.hs
-:::
 
 ``` haskell
 module SupplyClass
@@ -948,7 +837,6 @@ module SupplyClass
     , S.runSupply
     ) where
 ```
-::::
 
 Notice that we're re-exporting the `runSupply` and `Supply` names from
 this module. It's perfectly legal to export a name from one module even
@@ -962,10 +850,7 @@ user of our code needs to keep in mind.
 Here is a simple function that fetches two values from our `Supply`
 monad, formats them as a string, and returns them.
 
-:::: captioned-content
-::: caption
 Supply.hs
-:::
 
 ``` haskell
 showTwo :: (Show s) => Supply s String
@@ -974,17 +859,13 @@ showTwo = do
   b <- next
   return (show "a: " ++ show a ++ ", b: " ++ show b)
 ```
-::::
 
 This code is tied by its result type to our `Supply` monad. We can
 easily generalize to any monad that implements our `MonadSupply`
 interface by modifying our function's type. Notice that the body of the
 function remains unchanged.
 
-:::: captioned-content
-::: caption
 SupplyClass.hs
-:::
 
 ``` haskell
 showTwo_class :: (Show s, Monad m, MonadSupply s m) => m String
@@ -993,7 +874,6 @@ showTwo_class = do
   b <- next
   return (show "a: " ++ show a ++ ", b: " ++ show b)
 ```
-::::
 
 ## The reader monad
 
@@ -1012,10 +892,7 @@ as its result. The overall type we want is `e -> a`.
 To turn this type into a convenient `Monad` instance, we'll wrap it in
 a `newtype`.
 
-:::: captioned-content
-::: caption
 SupplyInstance.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -1029,14 +906,10 @@ import SupplyClass
 
 newtype Reader e a = R { runReader :: e -> a }
 ```
-::::
 
 Making this into a `Monad` instance doesn't take much work.
 
-:::: captioned-content
-::: caption
 SupplyInstance.hs
-:::
 
 ``` haskell
 instance Functor (Reader a) where
@@ -1049,7 +922,6 @@ instance Applicative (Reader a) where
 instance Monad (Reader e) where
     m >>= k = R $ \r -> runReader (k (runReader m r)) r
 ```
-::::
 
 We can think of our value of type `e` as an *environment* in which
 we're evaluating some expression. The `return` action should have the
@@ -1064,16 +936,12 @@ into.
 How does a piece of code executing in this monad find out what's in its
 environment? It simply has to `ask`.
 
-:::: captioned-content
-::: caption
 SupplyInstance.hs
-:::
 
 ``` haskell
 ask :: Reader e e
 ask = R id
 ```
-::::
 
 Within a given chain of actions, every invocation of `ask` will return
 the same value, since the value stored in the environment doesn't
@@ -1122,10 +990,7 @@ type an instance of both of the type classes we care about. With the
 `GeneralizedNewtypeDeriving` extension enabled, GHC will do most of the
 hard work for us.
 
-:::: captioned-content
-::: caption
 SupplyInstance.hs
-:::
 
 ``` haskell
 newtype MySupply e a = MySupply { runMySupply :: Reader e a }
@@ -1146,7 +1011,6 @@ instance MonadSupply e (MySupply e) where
     -- more concise:
     -- next = MySupply (Just `liftM` ask)
 ```
-::::
 
 Notice that we must make our type an instance of `MonadSupply e`, not
 `MonadSupply`. If we omit the type variable, the compiler will complain.
@@ -1154,10 +1018,7 @@ Notice that we must make our type an instance of `MonadSupply e`, not
 To try out our `MySupply` type, we'll first create a simple function
 that should work with any `MonadSupply` instance.
 
-:::: captioned-content
-::: caption
 SupplyInstance.hs
-:::
 
 ``` haskell
 xy :: (Num s, MonadSupply s m) => m s
@@ -1166,22 +1027,17 @@ xy = do
   Just y <- next
   return (x * y)
 ```
-::::
 
 If we use this with our `Supply` monad and `randomsIO` function, we get
 a different answer every time, as we expect.
 
-:::: captioned-content
-::: caption
 RandomSupplyInstance.hs
-:::
 
 ``` haskell
 import Supply
 import SupplyInstance
 import RandomSupply
 ```
-::::
 
 ```
 ghci> :l RandomSupplyInstance.hs
@@ -1200,16 +1056,12 @@ ghci> (fst . runSupply xy) `fmap` randomsIO
 Because our `MySupply` monad has two layers of `newtype` wrapping, we
 can make it easier to use by writing a custom execution function for it.
 
-:::: captioned-content
-::: caption
 SupplyInstance.hs
-:::
 
 ``` haskell
 runMS :: MySupply i a -> i -> a
 runMS = runReader . runMySupply
 ```
-::::
 
 When we apply our `xy` action using this execution function, we get the
 same answer every time. Our code remains the same, but because we are
@@ -1262,10 +1114,7 @@ plain `IO` monad, because it won't restrict us.
 Let's create a module that provides a small set of functionality for
 reading and writing files.
 
-:::: captioned-content
-::: caption
 HandleIO.hs
-:::
 
 ``` haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -1287,15 +1136,11 @@ import System.Directory (removeFile)
 import System.IO (Handle, IOMode(..))
 import qualified System.IO
 ```
-::::
 
 Our first approach to creating a restricted version of `IO` is to wrap
 it with a `newtype`.
 
-:::: captioned-content
-::: caption
 HandleIO.hs
-:::
 
 ``` haskell
 newtype HandleIO a = HandleIO { runHandleIO :: IO a }
@@ -1308,7 +1153,6 @@ instance Applicative HandleIO where
     pure = return
     (<*>) = ap
 ```
-::::
 
 We do the by-now familiar trick of exporting the type constructor and
 the `runHandleIO` execution function from our module, but not the data
@@ -1319,10 +1163,7 @@ All that remains is for us to wrap each of the actions we want our monad
 to allow. This is a simple matter of wrapping each `IO` with a
 `HandleIO` data constructor.
 
-:::: captioned-content
-::: caption
 HandleIO.hs
-:::
 
 ``` haskell
 openFile :: FilePath -> IOMode -> HandleIO Handle
@@ -1334,14 +1175,10 @@ hClose = HandleIO . System.IO.hClose
 hPutStrLn :: Handle -> String -> HandleIO ()
 hPutStrLn h s = HandleIO (System.IO.hPutStrLn h s)
 ```
-::::
 
 We can now use our restricted `HandleIO` monad to perform I/O.
 
-:::: captioned-content
-::: caption
 HandleIO.hs
-:::
 
 ``` haskell
 safeHello :: FilePath -> HandleIO ()
@@ -1350,7 +1187,6 @@ safeHello path = do
   hPutStrLn h "hello world"
   hClose h
 ```
-::::
 
 To run this action, we use `runHandleIO`.
 
@@ -1409,24 +1245,17 @@ instance [safe] MonadIO IO -- Defined in ‘Control.Monad.IO.Class’
 Our implementation of this type class is trivial: we just wrap `IO` with
 our data constructor.
 
-:::: captioned-content
-::: caption
 HandleIO.hs
-:::
 
 ``` haskell
 instance MonadIO HandleIO where
     liftIO = HandleIO
 ```
-::::
 
 With judicious use of `liftIO`, we can escape our shackles and invoke
 `IO` actions where necessary.
 
-:::: captioned-content
-::: caption
 HandleIO.hs
-:::
 
 ``` haskell
 tidyHello :: FilePath -> HandleIO ()
@@ -1434,12 +1263,8 @@ tidyHello path = do
   safeHello path
   liftIO (removeFile path)
 ```
-::::
 
-:::: tip
-::: title
 Tip
-:::
 
 Automatic derivation and `MonadIO`
 
@@ -1448,7 +1273,6 @@ We could have had the compiler automatically derive an instance of
 `HandleIO`. In fact, in production code, this would be our usual
 strategy. We avoided that here simply to separate the presentation of
 the earlier material from that of `MonadIO`.
-::::
 
 ### Using type classes
 
@@ -1460,10 +1284,7 @@ some other monad, we must change the type of every action that uses
 As an alternative, we can create a type class that specifies the
 interface we want from a monad that manipulates files.
 
-:::: captioned-content
-::: caption
 MonadHandle.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FunctionalDependencies, MultiParamTypeClasses #-}
@@ -1481,7 +1302,6 @@ class Monad m => MonadHandle h m | m -> h where
     hPutStrLn :: h -> String -> m ()
     hPutStrLn h s = hPutStr h s >> hPutStr h "\n"
 ```
-::::
 
 Here, we've chosen to abstract away both the type of the monad and the
 type of a file handle. To satisfy the type checker, we've added a
@@ -1489,10 +1309,7 @@ functional dependency: for any instance of `MonadHandle`, there is
 exactly one handle type that we can use. When we make the `IO` monad an
 instance of this class, we use a regular Handle.
 
-:::: captioned-content
-::: caption
 MonadHandleIO.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FunctionalDependencies, MultiParamTypeClasses #-}
@@ -1513,16 +1330,12 @@ instance MonadHandle System.IO.Handle IO where
     hGetContents = System.IO.hGetContents
     hPutStrLn = System.IO.hPutStrLn
 ```
-::::
 
 Because any `MonadHandle` must also be a `Monad`, we can write code that
 manipulates files using normal `do` notation, without caring what monad
 it will finally execute in.
 
-:::: captioned-content
-::: caption
 SafeHello.hs
-:::
 
 ``` haskell
 module SafeHello where
@@ -1536,7 +1349,6 @@ safeHello path = do
   hPutStrLn h "hello world"
   hClose h
 ```
-::::
 
 Because we made `IO` an instance of this type class, we can execute this
 action from `ghci`.
@@ -1571,10 +1383,7 @@ controlled environment.
 To do this, we will create a monad that doesn't perform I/O, but
 instead logs every file-related event for later processing.
 
-:::: captioned-content
-::: caption
 WriterIO.hs
-:::
 
 ``` haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -1593,7 +1402,6 @@ data Event = Open FilePath IOMode
            | GetContents String
              deriving (Show)
 ```
-::::
 
 Although we already developed a `Logger` type in [the section called
 "Using a new monad: show your
@@ -1614,24 +1422,17 @@ The values we log can be of any `Monoid` type. Since the list type is a
 We could make `Writer [Event]` an instance of `MonadHandle`, but it's
 cheap, easy, and safer to make a special-purpose monad.
 
-:::: captioned-content
-::: caption
 WriterIO.hs
-:::
 
 ``` haskell
 newtype WriterIO a = W { runW :: Writer [Event] a }
     deriving (Monad, MonadWriter [Event])
 ```
-::::
 
 Our execution function simply removes the `newtype` wrapper we added,
 then calls the normal Writer monad's execution function.
 
-:::: captioned-content
-::: caption
 WriterIO.hs
-:::
 
 ``` haskell
 runWriterIO :: WriterIO a -> (a, [Event])
@@ -1650,7 +1451,6 @@ instance MonadHandle FilePath WriterIO where
     hClose h = tell [Close h]
     hGetContents h = tell [GetContents h] >> return ""
 ```
-::::
 
 When we try this code out in `ghci`, it gives us a log of the
 function's file activities.
@@ -1690,10 +1490,7 @@ If we use the type class approach to restricting `IO`, we may still want
 to retain the ability to perform arbitrary I/O actions. We might try
 adding `MonadIO` as a constraint on our type class.
 
-:::: captioned-content
-::: caption
 MonadHandleIO.hs
-:::
 
 ``` haskell
 class (MonadHandle h m, MonadIO m) => MonadHandleIO h m | m -> h
@@ -1705,7 +1502,6 @@ tidierHello path = do
   safeHello path
   liftIO (removeFile path)
 ```
-::::
 
 This approach has a problem, though: the added `MonadIO` constraint
 loses us the ability to test our code in a pure environment, because we
@@ -1714,10 +1510,7 @@ alternative is to move this constraint from the type class, where it
 "infects" all functions, to only those functions that really need to
 perform I/O.
 
-:::: captioned-content
-::: caption
 MonadHandleIO.hs
-:::
 
 ``` haskell
 tidyHello :: (MonadIO m, MonadHandle h m) => FilePath -> m ()
@@ -1725,7 +1518,6 @@ tidyHello path = do
   safeHello path
   liftIO (removeFile path)
 ```
-::::
 
 We can use pure property tests on the functions that lack `MonadIO`
 constraints, and traditional unit tests on the rest.

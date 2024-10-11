@@ -77,10 +77,7 @@ code before they can cause problems. For example, in a strongly typed
 language, we can't accidentally use a string where an integer is
 expected.
 
-:::: note
-::: title
 Note
-:::
 
 Weaker and stronger types
 
@@ -107,7 +104,6 @@ more programmers speak plain English than academic jargon, and quite
 often academics *really are* throwing brickbats at whatever type system
 doesn't suit their fancy. The result is often that popular Internet
 pastime, a flame war.
-::::
 
 ### Static types
 
@@ -375,17 +371,13 @@ We can write the type "list of `a`" by enclosing the type variable in
 square brackets: `[a]`. This amounts to saying "I don't care what type
 I have; I can make a list with it".
 
-:::: note
-::: title
 Note
-:::
 
 Distinguishing type names and type variables
 
 We can now see why a type name must start with an uppercase letter: this
 makes it distinct from a type variable, which must start with a
 lowercase letter.
-::::
 
 When we talk about a list with values of a specific type, we substitute
 that type for our type variable. So, for example, the type `[Int]` is a
@@ -402,10 +394,7 @@ ghci> :type [[True],[False,False]]
 
 The type of this expression is a list of lists of `Bool`.
 
-:::: note
-::: title
 Note
-:::
 
 Lists are special
 
@@ -417,7 +406,6 @@ for us. Lists are the easiest stepping stone into the idea that we can
 use data to structure our program and its control flow. We'll be
 spending a lot more time discussing lists in [Chapter 4, *Functional
 programming*](4-functional-programming.org).
-::::
 
 A tuple is a fixed-size collection of values, where each value can have
 a different type. This distinguishes them from a list, which can have
@@ -529,10 +517,7 @@ these may look like an application of a function to two arguments. Under
 Haskell's convention for function application, each one is an
 application of a function to a single pair.
 
-:::: note
-::: title
 Note
-:::
 
 Haskell tuples aren't immutable lists
 
@@ -547,7 +532,6 @@ As an illustration, take a look at the type signatures of `fst` and
 of other sizes. Haskell's type system makes it tricky to write a
 generalised "get the second element from any tuple, no matter how
 wide" function.
-::::
 
 ### Passing an expression to a function
 
@@ -630,15 +614,11 @@ Haskell source files are usually identified with a suffix of `.hs`.
 Here's a simple function definition: open up a file named `add.hs`, and
 add these contents to it.
 
-:::: captioned-content
-::: caption
 add.hs
-:::
 
 ``` haskell
 add a b = a + b
 ```
-::::
 
 On the left hand side of the `=` is the name of the function, followed
 by the arguments to the function. On the right hand side is the body of
@@ -654,10 +634,7 @@ ghci> add 1 2
 3
 ```
 
-:::: note
-::: title
 Note
-:::
 
 What if `ghci` cannot find your source file?
 
@@ -673,7 +650,6 @@ ghci> :cd /tmp
 Alternatively, you can provide the path to your Haskell source file as
 the argument to `:load`. This path can be either absolute or relative to
 `ghci`'s current directory.
-::::
 
 When we apply `add` to the values `1` and `2`, the variables `a` and `b`
 on the left hand side of our definition are given (or "bound to") the
@@ -721,16 +697,12 @@ print x
 
 In contrast, trying the equivalent in Haskell results in an error.
 
-:::: captioned-content
-::: caption
 Assign.hs
-:::
 
 ``` haskell
 x = 10
 x = 11
 ```
-::::
 
 We cannot assign a value to `x` twice.
 
@@ -778,17 +750,13 @@ elements until either it runs out or reaches the given number. Here's a
 expression to decide what to do. The `null` function below checks
 whether a list is empty.
 
-:::: captioned-content
-::: caption
 MyDrop.hs
-:::
 
 ``` haskell
 myDrop n xs = if n <= 0 || null xs
               then xs
               else myDrop (n - 1) (tail xs)
 ```
-::::
 
 In Haskell, indentation is important: it *continues* an existing
 definition, instead of starting a new one. Don't omit the indentation!
@@ -860,10 +828,7 @@ ghci> :type (||)
 (||) :: Bool -> Bool -> Bool
 ```
 
-:::: tip
-::: title
 Tip
-:::
 
 Operators are not special
 
@@ -875,7 +840,6 @@ The `(||)` operator "short circuits": if its left operand evaluates to
 `True`, it doesn't evaluate its right operand. In most languages,
 short-circuit evaluation requires special support, but not in Haskell.
 We'll see why shortly.
-::::
 
 Next, our function applies itself recursively. This is our first example
 of recursion, which we'll talk about in some detail shortly.
@@ -885,15 +849,11 @@ and `else` branches under the `if` for neatness. So long as we use some
 indentation, the exact amount is not important. If we wish, we can write
 the entire expression on a single line.
 
-:::: captioned-content
-::: caption
 MyDrop.hs
-:::
 
 ``` haskell
 myDropX n xs = if n <= 0 || null xs then xs else myDropX (n - 1) (tail xs)
 ```
-::::
 
 The length of this version makes it more difficult to read. We will
 usually break an `if` expression across several lines to keep the
@@ -931,15 +891,11 @@ descriptions by trying them yourself.
 We will begin by looking at the definition of a simple, nonrecursive
 function.
 
-:::: captioned-content
-::: caption
 RoundToEven.hs
-:::
 
 ``` haskell
 isOdd n = mod n 2 == 1
 ```
-::::
 
 Here, `mod` is the standard modulo function. The first big step to
 understanding how evaluation works in Haskell is figuring out what the
@@ -1026,10 +982,7 @@ False
 This causes the `if` expression's `else` branch to be evaluated. This
 branch contains a recursive application of `myDrop`.
 
-:::::: note
-::: title
 Note
-:::
 
 Short circuiting for free
 
@@ -1040,15 +993,11 @@ capability into the language.
 
 In Haskell, we can easily define a new function that short circuits.
 
-:::: captioned-content
-::: caption
 ShortCircuit.hs
-:::
 
 ``` haskell
 newOr a b = if a then a else b
 ```
-::::
 
 If we write an expression like `newOr True (length [1..] > 0)`, it will
 not evaluate its second argument. (This is just as well: that expression
@@ -1059,7 +1008,6 @@ Were we to write a comparable function in, say, Python, strict
 evaluation would bite us: both arguments would be evaluated before being
 passed to `newOr`, and we would not be able to avoid the infinite loop
 on the second argument.
-::::::
 
 ### Recursion
 
@@ -1224,10 +1172,7 @@ Here, `a` is the type variable. We can read the signature as "takes a
 list, all of whose elements have some type `a`, and returns a value of
 the same type `a`".
 
-:::: tip
-::: title
 Tip
-:::
 
 Identifying a type variable
 
@@ -1241,7 +1186,6 @@ short. One letter is overwhelmingly common; longer names show up
 infrequently. Type signatures are usually brief; we gain more in
 readability by keeping names short than we would by making them
 descriptive.
-::::
 
 When a function has type variables in its signature, indicating that
 some of its arguments can be of any type, we call the function
@@ -1257,17 +1201,13 @@ choice of naming is easy to understand by analogy: just as a function
 can have parameters that we can later bind to real values, a Haskell
 type can have parameters that we can later bind to other types.
 
-:::: tip
-::: title
 Tip
-:::
 
 A little nomenclature
 
 If a type contains type parameters, we say that it is a parameterised
 type, or a polymorphic type. If a function or value's type contains
 type parameters, we call it polymorphic.
-::::
 
 When we see a parameterised type, we've already noted that the code
 doesn't care what the actual type is. However, we can make a stronger
@@ -1353,15 +1293,11 @@ groups this chain of arrows from right to left; that is, `->` is
 right-associative. If we introduce parentheses, we can make it clearer
 how this type signature is interpreted.
 
-:::: captioned-content
-::: caption
 Take.hs
-:::
 
 ``` haskell
 take :: Int -> ([a] -> [a])
 ```
-::::
 
 From this, it looks like we ought to read the type signature as a
 function that takes one argument, an `Int`, and returns another
@@ -1379,15 +1315,11 @@ and the preceding types to be those of the function's arguments.
 We can now write a type signature for the `myDrop` function that we
 defined earlier.
 
-:::: captioned-content
-::: caption
 MyDrop.hs
-:::
 
 ``` haskell
 myDrop :: Int -> [a] -> [a]
 ```
-::::
 
 ## Exercises
 

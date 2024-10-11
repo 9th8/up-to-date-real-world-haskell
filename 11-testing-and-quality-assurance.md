@@ -40,23 +40,16 @@ and want to test its behaviour.
 
 First, we import the QuickCheck library, and any other modules we need:
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 import Test.QuickCheck
 import Data.List
 ```
-::::
 
 And the function we want to test--a custom sort routine:
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 qsort :: Ord a => [a] -> [a]
@@ -65,7 +58,6 @@ qsort (x:xs) = qsort lhs ++ [x] ++ qsort rhs
     where lhs = filter  (< x) xs
           rhs = filter (>= x) xs
 ```
-::::
 
 This is the classic Haskell sort implementation: a study in functional
 programming elegance, if not efficiency (this isn't an inplace sort).
@@ -77,15 +69,11 @@ sort routine, a stable sort algorithm, this should certainly be true, or
 things have gone horribly wrong! This invariant can be encoded as a
 property simply:
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 prop_idempotent xs = qsort (qsort xs) == qsort xs
 ```
-::::
 
 We'll use the QuickCheck convention of prefixing test properties with
 `prop_` to distinguish them from normal code. This idempotency property
@@ -164,15 +152,11 @@ element in a sorted list should always be the smallest element of the
 input list. We might be tempted to specify this intuition in Haskell,
 using the `List` library's `minimum` function:
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 prop_minimum xs = head (qsort xs) == minimum xs
 ```
-::::
 
 Testing this, though, reveals an error:
 
@@ -184,10 +168,7 @@ ghci> quickCheck (prop_minimum :: [Integer] -> Bool)
 The property failed when sorting an empty list--for which `head` and
 `minimum` aren't defined, as we can see from their definition:
 
-:::: captioned-content
-::: caption
 minimum.hs
-:::
 
 ``` haskell
 head       :: [a] -> a
@@ -198,7 +179,6 @@ minimum    :: (Ord a) => [a] -> a
 minimum [] =  error "Prelude.minimum: empty list"
 minimum xs =  foldl1 min xs
 ```
-::::
 
 So this property will only hold for non-empty lists. QuickCheck,
 thankfully, comes with a full property writing embedded language, so we
@@ -208,15 +188,11 @@ don't want to consider. For the empty list case, we really want to say:
 result is the minimum. This is done by using the `(==>)` implication
 function, which filters out invalid data before running the property:
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 prop_minimum' xs = not (null xs) ==> head (qsort xs) == minimum xs
 ```
-::::
 
 The result is quite clean. By separating out the empty list case, we can
 now confirm the property does in fact hold:
@@ -240,10 +216,7 @@ largest element; and if we find the smallest element of two different
 lists, that should be the first element if we append and sort those
 lists. These properties can be stated as:
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 prop_ordered xs = ordered (qsort xs)
@@ -263,7 +236,6 @@ prop_append xs ys       =
     not (null ys) ==>
         head (qsort (xs ++ ys)) == min (minimum xs) (minimum ys)
 ```
-::::
 
 ### Testing against a model
 
@@ -273,15 +245,11 @@ sort to the reference sort function in the standard list library, and,
 if they behave the same, we gain confidence that our sort does the right
 thing.
 
-:::: captioned-content
-::: caption
 QCBasics.hs
-:::
 
 ``` haskell
 prop_sort_model xs = sort xs == qsort xs
 ```
-::::
 
 This kind of model-based testing is extremely powerful. Often developers
 will have a reference implementation or prototype that, while
@@ -358,10 +326,7 @@ returns a generator of random values from that list. `choose` and
 simple data types. For example, if we define a new data type for ternary
 logic:
 
-:::: captioned-content
-::: caption
 Arbitrary.hs
-:::
 
 ``` haskell
 import Test.QuickCheck
@@ -372,22 +337,17 @@ data Ternary
     | Unknown
     deriving (Eq,Show)
 ```
-::::
 
 we can write an `Arbitrary` instance for the `Ternary` type by defining
 a function that picks elements from a list of the possible values of
 `Ternary` type:
 
-:::: captioned-content
-::: caption
 Arbitrary.hs
-:::
 
 ``` haskell
 instance Arbitrary Ternary where
   arbitrary = elements [Yes, No, Unknown]
 ```
-::::
 
 Another approach to data generation is to generate values for one of the
 basic Haskell types and then translate those values into the type
@@ -395,10 +355,7 @@ you're actually interested in. We could have written the `Ternary`
 instance by generating integer values from 0 to 2 instead, using
 `choose`, and then mapping them onto the ternary values:
 
-:::: captioned-content
-::: caption
 Arbitrary.hs
-:::
 
 ``` haskell
 instance Arbitrary Ternary where
@@ -409,7 +366,6 @@ instance Arbitrary Ternary where
                     1 -> No
                     _ -> Unknown
 ```
-::::
 
 For simple *sum* types, this approach works nicely, as the integers map
 nicely onto the constructors of the data type. For *product* types (such
@@ -418,10 +374,7 @@ the product separately (and recursively for nested types), and then
 combine the components. For example, to generate random pairs of random
 values:
 
-:::: captioned-content
-::: caption
 Arbitrary.hs
-:::
 
 ``` haskell
 instance (Arbitrary a, Arbitrary b) => Arbitrary (a, b) where
@@ -430,7 +383,6 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (a, b) where
       y <- arbitrary
       return (x, y)
 ```
-::::
 
 So let's now write a generator for all the different variants of the
 `Doc` type. We'll start by breaking the problem down, first generating
@@ -440,10 +392,7 @@ document variant to generate, and then dispatch based on the result. To
 generate concat or union document nodes, we just recurse on `arbitrary`,
 letting type inference determine which instance of `Arbitrary` we mean:
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 module QC where
@@ -475,17 +424,13 @@ instance Arbitrary Doc where
                      y <- arbitrary
                      return (Union x y)
 ```
-::::
 
 That was fairly straightforward, and we can clean it up some more by
 using the `oneof` function, whose type we saw earlier, to pick between
 different generators in a list (we can also use the monadic combinator,
 `liftM` to avoid naming intermediate results from each generator):
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 -- import Control.Monad
@@ -498,7 +443,6 @@ instance Arbitrary Doc where
               , liftM2 Concat arbitrary arbitrary
               , liftM2 Union  arbitrary arbitrary ]
 ```
-::::
 
 The latter is more concise, just picking between a list of generators,
 but they describe the same data either way. We can check that the output
@@ -532,15 +476,11 @@ Together, these should have a nice property: appending or prepending the
 empty list onto a second list, should leave the second list unchanged.
 We can state this invariant as a property:
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 prop_empty_id x = empty <> x == x && x <> empty == x
 ```
-::::
 
 Confirming that this is indeed true, we're now underway with our
 testing:
@@ -561,10 +501,7 @@ behaviour fully described via properties. By doing so we can maintain an
 external, checkable description of the function's behaviour, so later
 changes won't break these basic invariants.
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 prop_char c = char c == Char c
@@ -575,7 +512,6 @@ prop_line = line == Line
 
 prop_double d = double d == text (show d)
 ```
-::::
 
 1.  [TODO]{.todo .TODO} explain why `prop_line` only produces one test
 
@@ -601,10 +537,7 @@ We can write tests in isolation for specific instances of fold easily.
 Horizontal concatenation of documents, for example, is easy to specify
 by writing a reference implementation on lists:
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 prop_hcat xs = hcat xs == glue xs
@@ -612,22 +545,17 @@ prop_hcat xs = hcat xs == glue xs
         glue []     = empty
         glue (d:ds) = d <> glue ds
 ```
-::::
 
 It is a similar story for `punctuate`, where we can model inserting
 punctuation with list interspersion (from `Data.List`, `intersperse` is
 a function that takes an element and interleaves it between other
 elements of a list):
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 prop_punctuate s xs = punctuate s xs == intersperse s xs
 ```
-::::
 
 While this looks fine, running it reveals a flaw in our reasoning:
 
@@ -644,10 +572,7 @@ our model to match reality. First, we can intersperse the punctuation
 text throughout the document list, then a little loop to clean up the
 `Empty` documents scattered through, like so:
 
-:::: captioned-content
-::: caption
 QC.hs
-:::
 
 ``` haskell
 prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
@@ -658,7 +583,6 @@ prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
         combine (Empty:y:ys) = y : combine ys
         combine (x:y:ys)     = x `Concat` y : combine ys
 ```
-::::
 
 Running this in GHCi, we can confirm the result. It is reassuring to
 have the test framework spot the flaws in our reasoning about the
@@ -677,10 +601,7 @@ including elaborate parallel ones. The basic batch driver is often good
 enough, however. All we need do is set up some default test parameters,
 and then list the functions we want to test:
 
-:::: captioned-content
-::: caption
 Run.hs
-:::
 
 ``` haskell
 import QC
@@ -713,7 +634,6 @@ main = do
         , run prop_punctuate
         ]
 ```
-::::
 
 We've structured the code here as a separate, standalone test script,
 with instances and properties in their own file, separate to the library

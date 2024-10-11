@@ -80,10 +80,7 @@ We will always use qualified import syntax with the `ByteString`
 modules, because they provide many functions that have the same names as
 Prelude functions.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
@@ -92,7 +89,6 @@ you should need to do is modify an `import` declaration at the top of
 your source file; the rest of your code will probably not need any
 changes. You can thus handily benchmark the two types, to see which is
 best suited to your application's needs.
-::::
 
 Whether or not we use qualified imports, we can always use the entire
 name of a module to identify something unambiguously. For instance, both
@@ -133,17 +129,13 @@ with limited text I/O capabilities, `Data.ByteString.Char8` and
 `Data.ByteString.Lazy.Char8`. These expose individual string elements as
 `Char` instead of `Word8`.
 
-:::: warning
-::: title
 Warning
-:::
 
 Warning
 
 The functions in these modules only work with byte-sized `Char` values,
 so they are only suitable for use with ASCII and some European character
 sets. Values above 255 are truncated.
-::::
 
 The character-oriented `bytestring` modules provide useful functions for
 text processing. Here is a file that contains monthly stock prices for a
@@ -390,10 +382,7 @@ ghci> getAllTextMatches ("I, B. Ionsonii, uurit a lift'd batch" =~ "(uu|ii)") ::
 ["ii","uu"]
 ```
 
-:::: note
-::: title
 Note
-:::
 
 Watch out for `String` results
 
@@ -402,7 +391,6 @@ returns an empty string to signify "no match", this poses an obvious
 difficulty if the empty string could also be a valid match for the
 regexp. If such a case arises, you should use a different return type
 instead, such as `[String]`.
-::::
 
 That's about it for "simple" result types, but we're not by any
 means finished. Before we continue, let's use a single pattern for our
@@ -546,10 +534,7 @@ to have multiple implementations of the regexp API installed at one
 time. The module used in this chapter, `Text.Regex.Posix`, as its name
 suggests, provides POSIX regexp semantics.
 
-:::: note
-::: title
 Note
-:::
 
 Perl and POSIX regular expressions
 
@@ -569,7 +554,6 @@ match).
 POSIX regexps have less uniform syntax than Perl-style regexps. They
 also lack a number of capabilities provided by Perl-style regexps, such
 as zero-width assertions and control over greedy matching.
-::::
 
 Other Haskell regexp packages are available for download from Hackage.
 Some provide better performance than the current POSIX engine (e.g.
@@ -609,10 +593,7 @@ Recall that the `String` is just a synonym for `[Char]`, a list of
 onto the front of a list, where the list is the value returned by the
 yet-to-be-seen `globToRegex'` function.
 
-:::: note
-::: title
 Note
-:::
 
 Using a value before defining it
 
@@ -628,7 +609,6 @@ Haskell module writers often use this flexibility to put "more
 important" code earlier in a source file, relegating "plumbing" to
 later. This is exactly how we are presenting the `globToRegex` function
 and its helpers here.
-::::
 
 With the regular expression rooted, the `globToRegex'` function will do
 the bulk of the translation work. We'll use the convenience of
@@ -920,10 +900,7 @@ we must check the directory name and see if it contains patterns. If it
 does not, we create a singleton list of the directory name. If it
 contains a pattern, we list all of the matching directories.
 
-:::: note
-::: title
 Note
-:::
 
 Things to watch out for
 
@@ -947,7 +924,6 @@ ghci> splitFileName "foo/"
 ```
 
 You can guess what happened to us that led us to add this note!
-::::
 
 Finally, we collect all matches in every directory, giving us a list of
 lists, and concatenate them into a single list of names.
@@ -1120,17 +1096,13 @@ use of the `Either` type occurs frequently in Haskell code.)
     possibility of a bad pattern, and make it use your rewritten
     `globToRegex` function.
 
-:::: tip
-::: title
 Tip
-:::
 
 Tip
 
 You may find the amount of work involved to be surprisingly large.
 Don't worry; we will introduce more concise and sophisticated ways of
 dealing with errors in later chapters.
-::::
 
 ## Putting our code to work
 

@@ -18,10 +18,7 @@ Before we plunge into designing our library, let's solve a few smaller
 problems. Our first problem is to recursively list the contents of a
 directory and its subdirectories.
 
-:::: captioned-content
-::: caption
 RecursiveContents.hs
-:::
 
 ``` haskell
 module RecursiveContents (getRecursiveContents) where
@@ -42,7 +39,6 @@ getRecursiveContents topdir = do
       else return [path]
   return (concat paths)
 ```
-::::
 
 The `filter` expression ensures that a listing for a single directory
 won't contain the special directory names `.` or `..`, which refer to
@@ -130,10 +126,7 @@ these approaches is best in every instance.
 We can use our `getRecursiveContents` function as the basis for a
 simple-minded file finder.
 
-:::: captioned-content
-::: caption
 SimpleFinder.hs
-:::
 
 ``` haskell
 import RecursiveContents (getRecursiveContents)
@@ -143,7 +136,6 @@ simpleFind p path = do
   names <- getRecursiveContents path
   return (filter p names)
 ```
-::::
 
 This function takes a predicate that we use to filter the names returned
 by `getRecursiveContents`. Each name passed to the predicate is a
@@ -307,10 +299,7 @@ looking at its permissions, we don't need to pass in the results of
 `doesFileExist` or `doesDirectoryExist`. We thus have four pieces of
 data that a richer predicate needs to look at.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 import Control.Exception
@@ -342,7 +331,6 @@ type Predicate =  FilePath      -- path to directory entry
                -> UTCTime       -- last modified
                -> Bool
 ```
-::::
 
 Our `Predicate` type is just a synonym for a function of four arguments.
 It will save us a little keyboard work and screen space.
@@ -351,10 +339,7 @@ Notice that the return value of this predicate is `Bool`, not `IO
 Bool`: the predicate is pure, and cannot perform I/O. With this type in
 hand, our more expressive finder function is still quite trim.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 -- soon to be defined
@@ -368,7 +353,6 @@ betterFind p path = getRecursiveContents path >>= filterM check
             modified <- getModificationTime name
             return (p name perms size modified)
 ```
-::::
 
 Let's walk through the code. We'll talk about `getFileSize` in some
 detail soon, so let's skip over it for now.
@@ -399,10 +383,7 @@ is, we can use the similarly portable `System.IO` module to do this. It
 contains a function named `hFileSize`, which returns the size in bytes
 of an open file. Here's a simple function that wraps it.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 simpleFileSize :: FilePath -> IO Integer
@@ -412,7 +393,6 @@ simpleFileSize path = do
   hClose h
   return size
 ```
-::::
 
 While this function works, it's not yet suitable for us to use. In
 `betterFind`, we call `getFileSize` unconditionally on any directory
@@ -424,10 +404,7 @@ unwrapped.
 
 Here's a safer version of this function.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 saferFileSize :: FilePath -> IO (Maybe Integer)
@@ -437,7 +414,6 @@ saferFileSize path = handle (\_ -> return Nothing) $ do
   hClose h
   return (Just size)
 ```
-::::
 
 The body of the function is almost identical, save for the `handle`
 clause.
@@ -515,10 +491,7 @@ We can now write a function that is completely safe: it will not throw
 exceptions; neither will it accumulate garbage file handles that could
 cause spurious failures elsewhere in our program.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 getFileSize path = handle ((\_ -> return Nothing) :: IOError -> IO (Maybe Integer)) $
@@ -526,7 +499,6 @@ getFileSize path = handle ((\_ -> return Nothing) :: IOError -> IO (Maybe Intege
     size <- hFileSize h
     return (Just size)
 ```
-::::
 
 Look closely at the arguments of `bracket` above. The first opens the
 file, and returns the open file handle. The second closes the handle.
@@ -547,17 +519,13 @@ handles, while the latter gets rid of exceptions.
 Let's take a stab at writing a predicate. Our predicate will check for
 a C++ source file that is over 128KB in size.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 myTest path _ (Just size) _ =
     takeExtension path == ".cpp" && size > 131072
 myTest _ _ _ _ = False
 ```
-::::
 
 This isn't especially pleasing. The predicate takes four arguments,
 always ignores two of them, and requires two equations to define. Surely
@@ -572,25 +540,18 @@ specific language*: we use our programming language's native facilities
 Our first step is to write a function that returns one of its arguments.
 This one extracts the path from the arguments passed to a `Predicate`.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 pathP path _ _ _ = path
 ```
-::::
 
 If we don't provide a type signature, a Haskell implementation will
 infer a very general type for this function. This can later lead to
 error messages that are difficult to interpret, so let's give `pathP` a
 type.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 type InfoP a =  FilePath        -- path to directory entry
@@ -601,23 +562,18 @@ type InfoP a =  FilePath        -- path to directory entry
 
 pathP :: InfoP FilePath
 ```
-::::
 
 We've created a type synonym that we can use as shorthand for writing
 other, similarly structured functions. Our type synonym accepts a type
 parameter so that we can specify different result types.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 sizeP :: InfoP Integer
 sizeP _ _ (Just size) _ = size
 sizeP _ _ Nothing     _ = -1
 ```
-::::
 
 (We're being a little sneaky here, and returning a size of -1 for
 entries that are not files, or that we couldn't open.)
@@ -630,16 +586,12 @@ What use are `pathP` and `sizeP`? With a little more glue, we can use
 them in a predicate (the `P` suffix on each name is intended to suggest
 "predicate"). This is where things start to get interesting.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 equalP :: (Eq a) => InfoP a -> a -> InfoP Bool
 equalP f k = \w x y z -> f w x y z == k
 ```
-::::
 
 The type signature of `equalP` deserves a little attention. It takes an
 `InfoP a`, which is compatible with both `pathP` and `sizeP`. It takes
@@ -657,16 +609,12 @@ taking two arguments. Since Haskell curries all functions, writing
 anonymous function and rely on currying to work on our behalf, letting
 us write a function that behaves identically.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 equalP' :: (Eq a) => InfoP a -> a -> InfoP Bool
 equalP' f k w x y z = f w x y z == k
 ```
-::::
 
 Before we continue with our explorations, let's load our module into
 `ghci`.
@@ -702,10 +650,7 @@ We'll take the definition of `equalP`, and instead of calling `(==)`
 directly, we'll pass in as another argument the binary function that we
 want to call.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 liftP :: (a -> b -> c) -> InfoP a -> b -> InfoP c
@@ -715,7 +660,6 @@ greaterP, lesserP :: (Ord a) => InfoP a -> a -> InfoP Bool
 greaterP = liftP (>)
 lesserP = liftP (<)
 ```
-::::
 
 This act of taking a function, such as `(>)`, and transforming it into
 another function that operates in a different context, here `greaterP`,
@@ -756,24 +700,17 @@ flip mapM :: (Monad m, Traversable t) => t a -> (a -> m b) -> m (t b)
 If we want to combine predicates, we can of course follow the obvious
 path of doing so by hand.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 simpleAndP :: InfoP Bool -> InfoP Bool -> InfoP Bool
 simpleAndP f g w x y z = f w x y z && g w x y z
 ```
-::::
 
 Now that we know about lifting, it becomes more natural to reduce the
 amount of code we must write by lifting our existing boolean operators.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 liftP2 :: (a -> b -> c) -> InfoP a -> InfoP b -> InfoP c
@@ -782,15 +719,11 @@ liftP2 q f g w x y z = f w x y z `q` g w x y z
 andP = liftP2 (&&)
 orP = liftP2 (||)
 ```
-::::
 
 Notice that `liftP2` is very similar to our earlier `liftP`. In fact,
 it's more general, because we can write `liftP` in terms of `liftP2`.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 constP :: a -> InfoP a
@@ -798,40 +731,28 @@ constP k _ _ _ _ = k
 
 liftP' q f k w x y z = f w x y z `q` constP k w x y z
 ```
-::::
 
-:::: tip
-::: title
 Tip
-:::
 
 Combinators
 
 In Haskell, we refer to functions that take other functions as
 arguments, returning new functions, as *combinators*.
-::::
 
 Now that we have some helper functions in place, we can return to the
 `myTest` function we defined earlier.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 myTest path _ (Just size) _ =
     takeExtension path == ".cpp" && size > 131072
 myTest _ _ _ _ = False
 ```
-::::
 
 How will this function look if we write it using our new combinators?
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 liftPath :: (FilePath -> a) -> InfoP a
@@ -840,7 +761,6 @@ liftPath f w _ _ _ = f w
 myTest2 = (liftPath takeExtension `equalP` ".cpp") `andP`
           (sizeP `greaterP` 131072)
 ```
-::::
 
 We've added one final combinator, `liftPath`, since manipulating file
 names is such a common activity.
@@ -850,10 +770,7 @@ names is such a common activity.
 We can take our domain specific language further by defining new infix
 operators.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 (==?) = equalP
@@ -862,7 +779,6 @@ BetterPredicate.hs
 
 myTest3 = (liftPath takeExtension ==? ".cpp") &&? (sizeP >? 131072)
 ```
-::::
 
 We chose names like `(==?)` for the lifted functions specifically for
 their visual similarity to their unlifted counterparts.
@@ -902,10 +818,7 @@ infix 4 >
 With these in hand, we can now write a parenthesis-free expression that
 will be parsed identically to `myTest3`.
 
-:::: captioned-content
-::: caption
 BetterPredicate.hs
-:::
 
 ``` haskell
 infix 4 ==?
@@ -914,7 +827,6 @@ infix 4 >?
 
 myTest4 = liftPath takeExtension ==? ".cpp" &&? sizeP >? 131072
 ```
-::::
 
 ## Controlling traversal
 
@@ -931,10 +843,7 @@ here. Instead of an elaborate function type `InfoP a`, we'll use a
 normal algebraic data type to represent substantially the same
 information.
 
-:::: captioned-content
-::: caption
 ControlledVisit.hs
-:::
 
 ``` haskell
 module ControlledVisit where
@@ -969,29 +878,21 @@ data Info = Info
 
 getInfo :: FilePath -> IO Info
 ```
-::::
 
 We're using record syntax to give ourselves "free" accessor
 functions, such as `infoPath`. The type of our `traverseDirs` function
 is simple, as we proposed above. To obtain `Info` about a file or
 directory, we call the `getInfo` action.
 
-:::: captioned-content
-::: caption
 ControlledVisit.hs
-:::
 
 ``` haskell
 traverseDirs :: ([Info] -> [Info]) -> FilePath -> IO [Info]
 ```
-::::
 
 The definition of `traverseDirs` is short, but dense.
 
-:::: captioned-content
-::: caption
 ControlledVisit.hs
-:::
 
 ``` haskell
 traverseDirs order path = do
@@ -1010,7 +911,6 @@ getUsefulContents path = do
 isDirectory :: Info -> Bool
 isDirectory = maybe False searchable . infoPerms
 ```
-::::
 
 While we're not introducing any new techniques here, this is one of the
 densest function definitions we've yet encountered. Let's walk through
@@ -1046,10 +946,7 @@ the result back into the IO monad.
 
 Finally, we mustn't forget to define our `getInfo` function.
 
-:::: captioned-content
-::: caption
 ControlledVisit.hs
-:::
 
 ``` haskell
 maybeIO :: IO a -> IO (Maybe a)
@@ -1061,7 +958,6 @@ getInfo path = do
   modified <- maybeIO (getModificationTime path)
   return (Info path perms size modified)
 ```
-::::
 
 The only noteworthy thing here is a useful combinator, `maybeIO`, which
 turns an I/O action that might throw an exception into one that wraps
@@ -1092,10 +988,7 @@ of practice to be able to fluently read and write code in this style.
 For comparison, here's a less dense presentation of the same code. This
 might be more typical of a less experienced Haskell programmer.
 
-:::: captioned-content
-::: caption
 ControlledVisit.hs
-:::
 
 ``` haskell
 traverseVerbose order path = do
@@ -1113,7 +1006,6 @@ traverseVerbose order path = do
                 then traverseVerbose order (infoPath info)
                 else return [info]
 ```
-::::
 
 All we've done here is make a few substitutions. Instead of liberally
 using partial application and function composition, we've defined some
@@ -1179,10 +1071,7 @@ extend the idea of folding from lists to directory trees, but we'd like
 to add an element of *control* to our fold. We'll represent this
 control as an algebraic data type.
 
-:::: captioned-content
-::: caption
 FoldDir.hs
-:::
 
 ``` haskell
 import ControlledVisit
@@ -1198,7 +1087,6 @@ data Iterate seed = Done     { unwrap :: seed }
 
 type Iterator seed = seed -> Info -> Iterate seed
 ```
-::::
 
 The `Iterator` type gives us a convenient alias for the function that we
 fold with. It takes a seed and an `Info` value representing a directory
@@ -1217,10 +1105,7 @@ Our fold is logically a kind of left fold, because we start folding from
 the first entry we encounter, and the seed for each step is the result
 of the prior step.
 
-:::: captioned-content
-::: caption
 FoldDir.hs
-:::
 
 ``` haskell
 foldTree :: Iterator a -> a -> FilePath -> IO a
@@ -1244,7 +1129,6 @@ foldTree iter initSeed path = do
           | otherwise -> walk seed' names
     walk seed _ = return (Continue seed)
 ```
-::::
 
 There are a few interesting things about the way this code is written.
 The first is the use of scoping to avoid having to pass extra parameters
@@ -1272,10 +1156,7 @@ What does an iterator look like in practice? Here's a somewhat
 complicated example that looks for at most three bitmap images, and
 won't recurse into Subversion metadata directories.
 
-:::: captioned-content
-::: caption
 FoldDir.hs
-:::
 
 ``` haskell
 atMostThreePictures :: Iterator [FilePath]
@@ -1291,7 +1172,6 @@ atMostThreePictures paths info
   where extension = map toLower (takeExtension path)
         path = infoPath info
 ```
-::::
 
 To use this, we'd call `foldTree atMostThreePictures [] "."` (where `.`
 is the current directory, you can supply another path), giving us a
@@ -1300,10 +1180,7 @@ return value of type `IO [FilePath]`.
 Of course, iterators don't have to be this complicated. Here's one
 that counts the number of directories it encounters.
 
-:::: captioned-content
-::: caption
 FoldDir.hs
-:::
 
 ``` haskell
 countDirectories count info =
@@ -1311,7 +1188,6 @@ countDirectories count info =
               then count + 1
               else count)
 ```
-::::
 
 Here, the initial seed that we pass to `foldTree` should be the number
 zero.
@@ -1378,26 +1254,19 @@ to use spaces.
 The `in` keyword is usually aligned directly under the `let` keyword,
 with the expression immediately following it.
 
-:::: captioned-content
-::: caption
 Style.hs
-:::
 
 ``` haskell
 tidyLet = let foo = undefined
               bar = foo * 2
           in undefined
 ```
-::::
 
 While it's *legal* to indent the `in` differently, or to let it
 "dangle" at the end of a series of equations, the following would
 generally be considered odd.
 
-:::: captioned-content
-::: caption
 Style.hs
-:::
 
 ``` haskell
 weirdLet = let foo = undefined
@@ -1408,15 +1277,11 @@ strangeLet = let foo = undefined
                  bar = foo * 2 in
     undefined
 ```
-::::
 
 In contrast, it's usual to let a `do` dangle at the end of a line,
 rather than sit at the beginning of a line.
 
-:::: captioned-content
-::: caption
 Style.hs
-:::
 
 ``` haskell
 commonDo = do
@@ -1428,7 +1293,6 @@ rareDo =
   do something <- undefined
      return ()
 ```
-::::
 
 Curly braces and semicolons, though legal, are almost never used.
 There's nothing wrong with them; they just make code look strange due
@@ -1436,10 +1300,7 @@ to their rarity. They're really intended to let programs generate
 Haskell code without having to implement the layout rules, not for human
 use.
 
-:::: captioned-content
-::: caption
 Style.hs
-:::
 
 ``` haskell
 unusualPunctuation =
@@ -1451,16 +1312,12 @@ preferredLayout = [ (x,y) | x <- [1..a], y <- [1..b] ]
     where b = 7
           a = 6
 ```
-::::
 
 If the right hand side of an equation starts on a new line, it's
 usually indented a small number of spaces relative to the name of the
 variable or function that it's defining.
 
-:::: captioned-content
-::: caption
 Style.hs
-:::
 
 ``` haskell
 normalIndent =
@@ -1469,7 +1326,6 @@ normalIndent =
 strangeIndent =
                            undefined
 ```
-::::
 
 The actual number of spaces used to indent varies, sometimes within a
 single file. Depths of two, three, and four spaces are about equally
@@ -1479,10 +1335,7 @@ it's easy to misread.
 When indenting a `where` clause, it's best to make it visually
 distinctive.
 
-:::: captioned-content
-::: caption
 Style.hs
-:::
 
 ``` haskell
 goodWhere = take 5 lambdas
@@ -1498,7 +1351,6 @@ badWhere =           -- legal, but ugly and hard to read
     where
     lambdas = []
 ```
-::::
 
 ## Exercises {#exercises-3}
 

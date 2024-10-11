@@ -140,10 +140,7 @@ Cabal"](23-gui-programming-with-gtk2hs.org::*Using Cabal) file called
 `podresources.glade`, the XML file saved by Glade that gives the
 information about our GUI widgets.
 
-:::: captioned-content
-::: caption
 PodLocalMain.hs
-:::
 
 ``` haskell
 module Main where
@@ -152,7 +149,6 @@ import qualified PodMainGUI
 
 main = PodMainGUI.main "podresources.glade"
 ```
-::::
 
 Now, let's consider `PodMainGUI.hs`. This file is the only Haskell
 source file that we had to modify from the example in [Chapter 22,
@@ -161,10 +157,7 @@ Programming*](22-web-client-programming.org) to make it work as a GUI.
 Let's start by looking at the start of our new `PodMainGUI.hs`
 file---we've renamed it from `PodMain.hs` for clarity.
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 module PodMainGUI where
@@ -185,7 +178,6 @@ import Graphics.UI.Gtk.Glade
 
 import Control.Concurrent
 ```
-::::
 
 This first part of `PodMainGUI.hs` is similar to our non-GUI version. We
 import three additional components, however. First, we have
@@ -201,10 +193,7 @@ multi-threaded programming. We'll use a few functions from here as
 described above once we get into the guts of the program. Next, let's
 define a type to store information about our GUI.
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 -- | Our main GUI type
@@ -224,7 +213,6 @@ data GUI = GUI {
       awCancelBt :: Button,
       awEntry :: Entry}
 ```
-::::
 
 Our new `GUI` type stores all the widgets we will care about in the
 entire program. Large programs may not wish to have a monolithic type
@@ -237,10 +225,7 @@ Within this record, we have fields for a `Window` (a top-level window),
 text), and `Entry` (place for the user to enter text). Let's now look
 at our `main` function:
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 main :: FilePath -> IO ()
@@ -266,7 +251,6 @@ main gladepath = withSocketsDo $ handleSqlError $
        -- Disconnect from the database at the end
        disconnect dbh
 ```
-::::
 
 Remember that the type of this `main` function is a little different
 than usual because it is being called by `main` in `PodLocalMain.hs`. We
@@ -284,10 +268,7 @@ closed the main window or clicked the Exit button. After that, we
 disconnect from the database and close the program. Now, let's look at
 our `loadGlade` function.
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 loadGlade gladepath =
@@ -316,7 +297,6 @@ loadGlade gladepath =
        return $ GUI mw mwAdd mwUpdate mwDownload mwFetch mwExit
               sw swOK swCancel swl au auOK auCancel aue
 ```
-::::
 
 This function starts by calling `xmlNew`, which loads the Glade XML
 file. It returns `Nothing` on error. Here we are using pattern matching
@@ -337,10 +317,7 @@ buttons. Then, we have two dialogs, a label, and an entry to load.
 Finally, we use all of these to build up the GUI type and return it.
 Next, we need to set our callback functions up as event handlers.
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 connectGui gui dbh =
@@ -357,7 +334,6 @@ connectGui gui dbh =
 
        -- We leave the status window buttons for later
 ```
-::::
 
 We start out the `connectGui` function by calling `onDestroy`. This
 means that when somebody clicks on the operating system's close button
@@ -384,10 +360,7 @@ window. When the user clicks the button to add a new podcast, we need to
 pop up a dialog box to prompt for the URL of the podcast. We have
 defined this dialog box in Glade, so all we need to do is set it up.
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 guiAdd gui dbh =
@@ -403,7 +376,6 @@ guiAdd gui dbh =
                  widgetHide (addWin gui) -- Remove the dialog
                  add dbh url             -- Add to the DB
 ```
-::::
 
 We start by calling `entrySetText` to set the contents of the entry box
 (the place where the user types in the URL) to the empty string. That's
@@ -450,10 +422,7 @@ information, a `String` giving the title of the window, and a function
 that will perform the operation. This function will itself be passed a
 function that it can call to report its progress. Here's the code:
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 statusWindow :: IConnection conn =>
@@ -502,7 +471,6 @@ statusWindow gui dbh title func =
                  updateLabel "Action has been cancelled."
                  enableOK
 ```
-::::
 
 This function starts by clearing the label text from the last run. Next,
 we disable (gray out) the OK button and enable the cancel button. While
@@ -532,10 +500,7 @@ processing the task, updates the label, and enables the OK button.
 We now have the infrastructure in place to define our three GUI
 functions. They look like this:
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 guiUpdate :: IConnection conn => GUI -> conn -> IO ()
@@ -549,7 +514,6 @@ guiFetch gui dbh =
     statusWindow gui dbh "Pod: Fetch"
                      (\logf -> update dbh logf >> download dbh logf)
 ```
-::::
 
 For brevity, we have given the type for only the first one, but all
 three have the same type, and Haskell can work them out via type
@@ -561,10 +525,7 @@ our work. `add` is unmodified from the command-line chapter. `update`
 and `download` are modified only to take a logging function instead of
 calling `putStrLn` for status updates.
 
-:::: captioned-content
-::: caption
 PodMainGUI.hs
-:::
 
 ``` haskell
 add dbh url =
@@ -595,7 +556,6 @@ download dbh logf =
               do logf $ "Downloading " ++ (epURL ep)
                  getEpisode dbh ep
 ```
-::::
 
 Here's what the final result looks like after running an update:
 
@@ -623,10 +583,7 @@ Then, Cabal will export a `Paths_pod` module (the "pod" part comes
 from the `Name` line in the Cabal file) that we can interrogate for the
 location at runtime. Here's our new Cabal description file:
 
-:::: captioned-content
-::: caption
 pod.cabal
-:::
 
     Name: pod
     Version: 1.0.0
@@ -638,14 +595,10 @@ pod.cabal
     Executable: pod
     Main-Is: PodCabalMain.hs
     GHC-Options: -O2
-::::
 
 And, to go with it, `PodCabalMain.hs`:
 
-:::: captioned-content
-::: caption
 PodCabalMain.hs
-:::
 
 ``` haskell
 module Main where
@@ -657,7 +610,6 @@ main =
     do gladefn <- getDataFileName "podresources.glade"
        PodMainGUI.main gladefn
 ```
-::::
 
 ## Exercises
 

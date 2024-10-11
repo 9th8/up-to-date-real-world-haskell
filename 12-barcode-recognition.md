@@ -45,10 +45,7 @@ Before we worry about decoding an EAN-13 barcode, we need to understand
 how they are encoded. The system used by EAN-13 is a little involved. We
 start by computing the check digit, which is the last digit of a string.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 checkDigit :: (Integral a) => [a] -> a
@@ -58,7 +55,6 @@ checkDigit ds = 10 - (sum products `mod` 10)
 mapEveryOther :: (a -> a) -> [a] -> [a]
 mapEveryOther f = zipWith ($) (cycle [f,id])
 ```
-::::
 
 This is one of those algorithms that is more easily understood via the
 code than a verbal description. The computation proceeds from the right
@@ -88,10 +84,7 @@ left, digits are encoded with parity bits. The parity bits encode the
 Before we continue, here are all of the imports that we will be using in
 the remainder of this chapter.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 import Data.Array (Array(..), (!), bounds, elems, indices,
@@ -110,7 +103,6 @@ import qualified Data.Map as M
 
 import Parse                    -- from chapter 10
 ```
-::::
 
 The barcode encoding process can largely be table-driven, in which we
 use small tables of bit patterns to decide how to encode each digit.
@@ -134,10 +126,7 @@ Its contents cannot subsequently be modified. (The standard libraries
 also provide other array types, some of which are mutable, but we won't
 cover those for a while.)
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 leftOddList = ["0001101", "0011001", "0010011", "0111101", "0100011",
@@ -163,7 +152,6 @@ leftEvenCodes = listToArray leftEvenList
 rightCodes = listToArray rightList
 parityCodes = listToArray parityList
 ```
-::::
 
 The `Data.Array` module's `listArray` function populates an array from
 a list. It takes as its first parameter the bounds of the array to
@@ -275,10 +263,7 @@ to create the array. The `indices` function returns a list of every
 index. We can use these to define some useful folds, since the
 `Data.Array` module doesn't define any fold functions itself.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 -- | Strict left fold, similar to foldl' on lists.
@@ -293,7 +278,6 @@ foldA f s a = go s (indices a)
 foldA1 :: Ix k => (a -> a -> a) -> Array k a -> a
 foldA1 f a = foldA f (a ! fst (bounds a)) a
 ```
-::::
 
 You might wonder why the array modules don't already provide such
 useful things as folding functions. There are some obvious
@@ -332,10 +316,7 @@ between successive versions of an array. Unfortunately, it is not
 implemented efficiently at the time we are writing this book, and is
 currently too slow to be of practical use.
 
-:::: note
-::: title
 Note
-:::
 
 Don't lose hope
 
@@ -343,7 +324,6 @@ It *is* in fact possible to modify an array efficiently in Haskell,
 using the `ST` monad. This is a subject that we will return to later, in
 [Chapter 26, *Advanced library design: building a Bloom
 filter*](26-building-a-bloom-filter.org).
-::::
 
 ### Exercises
 
@@ -368,10 +348,7 @@ encoder for reference. This will allow us to, for example, ensure that
 our code is correct by checking that the output of `decode . encode` the
 same as its input.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 encodeEAN13 :: String -> String
@@ -395,7 +372,6 @@ rightEncode = (rightCodes !)
 outerGuard = "101"
 centerGuard = "01010"
 ```
-::::
 
 The string to encode is twelve digits long, with `encodeDigits` adding a
 thirteenth check digit.
@@ -506,10 +482,7 @@ We're using arrays here purely to gain experience with them. For this
 application, we could just as well use a list of lists. The only
 advantage of an array here is slight: we can efficiently extract a row.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type Pixel = Word8
@@ -517,7 +490,6 @@ type RGB = (Pixel, Pixel, Pixel)
 
 type Pixmap = Array (Int,Int) RGB
 ```
-::::
 
 We provide a few type synonyms to make our type signatures more
 readable.
@@ -532,10 +504,7 @@ The actual parser is mercifully short, thanks to the combinators we
 developed in [Chapter 10, *Code case study: parsing a binary data
 format*](10-parsing-a-binary-data-format.org).
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 parseRawPPM :: Parse Pixmap
@@ -560,7 +529,6 @@ parseTimes :: Int -> Parse a -> Parse [a]
 parseTimes 0 _ = identity []
 parseTimes n p = p ==> \x -> (x:) <$> parseTimes (n-1) p
 ```
-::::
 
 The only function of note above is `parseTimes`, which calls another
 parser a given number of times, building up a list of results.
@@ -573,10 +541,7 @@ greyscale. There's a simple, widely used formula[^1] for converting an
 RGB image into a greyscale image, based on the perceived brightness of
 each colour channel.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 luminance :: (Pixel, Pixel, Pixel) -> Pixel
@@ -585,16 +550,12 @@ luminance (r,g,b) = round (r' * 0.30 + g' * 0.59 + b' * 0.11)
           g' = fromIntegral g
           b' = fromIntegral b
 ```
-::::
 
 Haskell arrays are members of the `Functor` type class, so we can simply
 use `fmap` to turn an entire image, or a single scanline, from colour
 into greyscale.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type Greymap = Array (Int,Int) Pixel
@@ -602,7 +563,6 @@ type Greymap = Array (Int,Int) Pixel
 pixmapToGreymap :: Pixmap -> Greymap
 pixmapToGreymap = fmap luminance
 ```
-::::
 
 This `pixmapToGreymap` function is just for illustration. Since we'll
 only be checking a few rows of an image for possible barcodes, there's
@@ -640,10 +600,7 @@ function that expects `Bit` values of zero or one.
 If we define the monochrome type ourselves, the compiler will prevent us
 from accidentally mixing our types up like this.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 data Bit = Zero | One
@@ -658,7 +615,6 @@ threshold n a = binary <$> a
           greatest = fromIntegral $ choose (>) a
           choose f = foldA1 $ \x y -> if f x y then x else y
 ```
-::::
 
 Our `threshold` function computes the minimum and maximum values in its
 input array. It takes these and a threshold valued between zero and one,
@@ -720,10 +676,7 @@ begins.
 How can we overcome the problem of not even knowing how thick our bars
 are? The answer is to run length encode our image data.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type Run = Int
@@ -733,7 +686,6 @@ runLength :: Eq a => [a] -> RunLength a
 runLength = map rle . group
     where rle xs = (length xs, head xs)
 ```
-::::
 
 The `group` function takes sequences of identical elements in a list,
 and groups them into sublists.
@@ -762,16 +714,12 @@ encoded numbers will simply alternate between one and zero. We can throw
 the encoded values away without losing any useful information, keeping
 only the length of each run.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 runLengths :: Eq a => [a] -> [Run]
 runLengths = map fst . runLength
 ```
-::::
 
 ```
 ghci> runLengths bits
@@ -792,10 +740,7 @@ manage these scaled values, as `Ratio~s print out more
 readably in ~ghci`. This makes interactive debugging and development
 much easier.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type Score = Ratio Int
@@ -818,7 +763,6 @@ leftEvenSRL = asSRL leftEvenList
 rightSRL = asSRL rightList
 paritySRL = asSRL parityList
 ```
-::::
 
 We use the `Score` type synonym so that most of our code won't have to
 care what the underlying type is. Once we're done developing our code
@@ -836,16 +780,12 @@ into a measure of "close enough". Given two scaled run length
 sequences, we can calculate an approximate "distance" between them as
 follows.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 distance :: [Score] -> [Score] -> Score
 distance a b = sum . map abs $ zipWith (-) a b
 ```
-::::
 
 An exact match will give a distance of zero, with weaker matches
 resulting in larger distances.
@@ -861,10 +801,7 @@ ghci> distance group (head leftOddSRL)
 Given a scaled run length table, we choose the best few matches in that
 table for a given input sequence.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type Digit = Word8
@@ -874,7 +811,6 @@ bestScores srl ps = take 3 . sort $ scores
     where scores = zip [distance d (scaleToOne ps) | d <- srl] digits
           digits = [0..9]
 ```
-::::
 
 ### List comprehensions
 
@@ -939,10 +875,7 @@ zip (map (flip distance (scaleToOne ps)) srl) digits
 For each match in the left group, we have to remember whether we found
 it in the even parity table or the odd table.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 data Parity a = Even a | Odd a | None a
@@ -961,7 +894,6 @@ parityMap f (None a) = None (f a)
 instance Functor Parity where
     fmap = parityMap
 ```
-::::
 
 We wrap a value in the parity with which it was encoded, and making it a
 `Functor` instance so that we can easily manipulate parity-encoded
@@ -971,10 +903,7 @@ We would like to be able to sort parity-encoded values based on the
 values they contain. The `Data.Function` module provides a lovely
 combinator that we can use for this, named `on`.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 on :: (a -> a -> b) -> (c -> a) -> c -> c -> b
@@ -982,7 +911,6 @@ on f g x y = g x `f` g y
 
 compareWithoutParity = compare `on` fromParity
 ```
-::::
 
 In case it's unclear, try thinking of `on` as a function of two
 arguments, `f` and `g`, which returns a function of two arguments, `x`
@@ -991,10 +919,7 @@ and `y`. It applies `g` to `x` and to `y`, then `f` on the two results
 
 Wrapping a match in a parity value is straightforward.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 bestLeft :: [Run] -> [Parity (Score, Digit)]
@@ -1005,7 +930,6 @@ bestLeft ps = sortBy compareWithoutParity
 bestRight :: [Run] -> [Parity (Score, Digit)]
 bestRight = map None . bestScores rightSRL
 ```
-::::
 
 Once we have the best left-hand matches from the even and odd tables, we
 sort them based only on the quality of each match.
@@ -1016,10 +940,7 @@ sort them based only on the quality of each match.
     Haskell's record syntax to avoid the need to write a `fromParity`
     function. In other words, we could have written it as follows.
 
-    :::: captioned-content
-    ::: caption
     Barcode.hs
-    :::
 
     ``` haskell
     data AltParity a = AltEven {fromAltParity :: a}
@@ -1027,7 +948,6 @@ sort them based only on the quality of each match.
                      | AltNone {fromAltParity :: a}
                        deriving (Show)
     ```
-    ::::
 
     Why did we not do this? The answer is slightly shameful, and has to
     do with interactive debugging in `ghci`. When we tell GHC to
@@ -1065,10 +985,7 @@ example, each digit in a barcode is encoded using a run of four digits.
 We can turn the flat list that represents a row into a list of
 four-element lists as follows.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 chunkWith :: ([a] -> ([a], [a])) -> [a] -> [[a]]
@@ -1079,7 +996,6 @@ chunkWith f xs = let (h, t) = f xs
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf n = chunkWith (splitAt n)
 ```
-::::
 
 It's somewhat rare that we need to write generic list manipulation
 functions like this. Often, a glance through the `Data.List` module will
@@ -1094,17 +1010,13 @@ whether matching even makes sense. A list of runs must start on a black
 (`Zero`) bar, and contain enough bars. Here are the first few equations
 of our function.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 candidateDigits :: RunLength Bit -> [[Parity Digit]]
 candidateDigits ((_, One):_) = []
 candidateDigits rle | length rle < 59 = []
 ```
-::::
 
 If any application of `bestLeft` or `bestRight` results in an empty
 list, we can't possibly have a match. Otherwise, we throw away the
@@ -1114,10 +1026,7 @@ The digits in each sublist are ordered by match quality.
 
 Here is the remainder of the definition of our function.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 candidateDigits rle
@@ -1128,7 +1037,6 @@ candidateDigits rle
         right = chunksOf 4 . take 24 . drop 32 $ runLengths
         runLengths = map fst rle
 ```
-::::
 
 Let's take a glance at the candidate digits chosen for each group of
 bars, from a row taken from the image above.
@@ -1222,17 +1130,13 @@ key/value pairs, and `Data.Set` for sets of values. As we'll be using
 to it below. `Data.Set` is sufficiently similar that you should be able
 to pick it up quickly.
 
-:::: note
-::: title
 Note
-:::
 
 A word about performance
 
 Compared to a hash table, a well-implemented purely functional tree data
 structure will perform competitively. You should not approach trees with
 the assumption that your code will pay a performance penalty.
-::::
 
 ### A brief introduction to maps
 
@@ -1311,10 +1215,7 @@ this chapter, we imported it using the prefix `M`.
     The `findWithDefault` function takes a value to return if the key
     isn't in the map.
 
-    :::: warning
-    ::: title
     Warning
-    :::
 
     Beware the partial functions!
 
@@ -1322,7 +1223,6 @@ this chapter, we imported it using the prefix `M`.
     unadorned value associated with a key (i.e. not wrapped in `Maybe`
     or whatever). Unfortunately, it is not a total function: it calls
     `error` if the key is not present in the map.
-    ::::
 
     To add a key/value pair to the map, the most useful functions are
     `insert` and `insertWith`. The `insert` function simply inserts a
@@ -1428,30 +1328,22 @@ check digit. The check digit for a barcode can assume one of ten
 possible values. For a given parity digit, which input sequences can
 cause that digit to be computed?
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type Map a = M.Map Digit [a]
 ```
-::::
 
 In this map, the key is a check digit, and the value is a sequence that
 evaluates to this check digit. We have two further map types based on
 this definition.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 type DigitMap = Map Digit
 type ParityMap = Map (Parity Digit)
 ```
-::::
 
 We'll generically refer to these as "solution maps", because they
 show us the digit sequence that "solves for" each check digit.
@@ -1459,10 +1351,7 @@ show us the digit sequence that "solves for" each check digit.
 Given a single digit, here's how we can update an existing solution
 map.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 updateMap :: Parity Digit       -- ^ new digit
@@ -1476,7 +1365,6 @@ insertMap :: Digit -> Digit -> [a] -> Map a -> Map a
 insertMap key digit val m = val `seq` M.insert key' val m
     where key' = (key + digit) `mod` 10
 ```
-::::
 
 With an existing check digit drawn from the map, the sequence that
 solves for it, and a new input digit, this function updates the map with
@@ -1493,17 +1381,13 @@ value.
 For each digit in a sequence, we'll generate a new solution map, using
 that digit and an older solution map.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 useDigit :: ParityMap -> ParityMap -> Parity Digit -> ParityMap
 useDigit old new digit =
     new `M.union` M.foldrWithKey (updateMap digit) M.empty old
 ```
-::::
 
 Once again, let's illustrate what this code is doing using some
 examples.
@@ -1520,16 +1404,12 @@ The new solution map that we feed to `useDigits` starts out empty. We
 populate it completely by folding `useDigits` over a sequence of input
 digits.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 incorporateDigits :: ParityMap -> [Parity Digit] -> ParityMap
 incorporateDigits old digits = foldl' (useDigit old) M.empty digits
 ```
-::::
 
 This generates a complete new solution map from an old one.
 
@@ -1543,17 +1423,13 @@ empty map, then fold over each digit position from the barcode in turn.
 For each position, we create a new map from our guesses at the digits in
 that position. This becomes the old map for the next round of the fold.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 finalDigits :: [[Parity Digit]] -> ParityMap
 finalDigits = foldl' incorporateDigits (M.singleton 0 [])
             . mapEveryOther (map (fmap (*3)))
 ```
-::::
 
 (From the `checkDigit` function that we defined in [the section called
 "EAN-13 encoding"](12-barcode-recognition.org::*EAN-13 encoding) digit
@@ -1573,10 +1449,7 @@ We haven't yet discussed how we should extract the value of the first
 digit from the parities of the left group of digits. This is a
 straightforward matter of reusing code that we've already written.
 
-:::: captioned-content
-::: caption
 Barcodes.hs
-:::
 
 ``` haskell
 firstDigit :: [Parity a] -> Digit
@@ -1589,17 +1462,13 @@ firstDigit = snd
   where parityBit (Even _) = Zero
         parityBit (Odd _) = One
 ```
-::::
 
 Each element of our partial solution map now contains a reversed list of
 digits and parity data. Our next task is to create a completed solution
 map, by computing the first digit in each sequence, and using it to
 create that last solution map.
 
-:::: captioned-content
-::: caption
 Barcodes.hs
-:::
 
 ``` haskell
 addFirstDigit :: ParityMap -> DigitMap
@@ -1611,7 +1480,6 @@ updateFirst key seq = insertMap key digit (digit:renormalize qes)
         digit = firstDigit qes
         qes = reverse seq
 ```
-::::
 
 Along the way, we get rid of the `Parity` type, and reverse our earlier
 multiplications by three. Our last step is to complete the check digit
@@ -1633,10 +1501,7 @@ We now have a map of all possible checksums and the sequences that lead
 to each. All that remains is to take our guesses at the check digit, and
 see if we have a corresponding solution map entry.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 solve :: [[Parity Digit]] -> [[Digit]]
@@ -1646,7 +1511,6 @@ solve xs = catMaybes $ map (addCheckDigit m) checkDigits
           m = buildMap (init xs)
           addCheckDigit m k = (++[k]) <$> M.lookup k m
 ```
-::::
 
 Let's try this out on the row we picked from our photo, and see if we
 get a sensible answer.
@@ -1664,26 +1528,19 @@ photographed.
 We've mentioned repeatedly that we are taking a single row from our
 image. Here's how.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 withRow :: Int -> Pixmap -> (RunLength Bit -> a) -> a
 withRow n greymap f = f . runLength . elems $ posterized
     where posterized = threshold 0.4 . fmap luminance . row n $ greymap
 ```
-::::
 
 The `withRow` function takes a row, converts it to monochrome, then
 calls another function on the run length encoded row data. To get the
 row data, it calls `row`.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 row :: (Ix a, Ix b) => b -> Array (a,b) c -> Array a c
@@ -1691,7 +1548,6 @@ row j a = ixmap (l,u) project a
     where project i = (i,j)
           ((l,_), (u,_)) = bounds a
 ```
-::::
 
 This function takes a bit of explaining. Whereas `fmap` transforms the
 *values* in an array, `ixmap` transforms the *indices* of an array.
@@ -1716,10 +1572,7 @@ Our `candidateDigits` function gives an empty result unless we call it
 at the beginning of a barcode sequence. We can easily scan across a row
 until we get a match as follows.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 findMatch :: [(Run, Bit)] -> Maybe [[Digit]]
@@ -1728,17 +1581,13 @@ findMatch = listToMaybe
           . map (solve . candidateDigits)
           . tails
 ```
-::::
 
 Here, we're taking advantage of lazy evaluation. The call to `map` over
 `tails` will only be evaluated until it results in a non-empty list.
 
 Next, we choose a row from an image, and try to find a barcode in it.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 findEAN13 :: Pixmap -> Maybe [Digit]
@@ -1746,16 +1595,12 @@ findEAN13 pixmap = withRow center pixmap (fmap head . findMatch)
   where (_, (maxX, _)) = bounds pixmap
         center = (maxX + 1) `div` 2
 ```
-::::
 
 Finally, here's a very simple wrapper that prints barcodes from
 whatever netpbm image files we pass into our program on the command
 line.
 
-:::: captioned-content
-::: caption
 Barcode.hs
-:::
 
 ``` haskell
 main :: IO ()
@@ -1767,7 +1612,6 @@ main = do
       Left err ->     print $ "error: " ++ err
       Right pixmap -> print $ findEAN13 pixmap
 ```
-::::
 
 Notice that, of the more than thirty functions we've defined in this
 chapter, `main` is the only one that lives in `IO`.
